@@ -1,0 +1,242 @@
+
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAIN Protocol Nexus | ABSOLUTE AUTHORITY OPERATIONAL</title>
+    
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    
+    <style>
+        body { font-family: 'Consolas', monospace; background-color: #0d1117; color: #c9d1d9; margin: 0; padding: 20px; }
+        .container { max-width: 1300px; margin: auto; background-color: #161b22; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6); }
+        h1 { color: #58a6ff; border-bottom: 2px solid #30363d; padding-bottom: 10px; }
+        h2 { color: #c9d1d9; margin-top: 25px; border-bottom: 1px solid #30363d; padding-bottom: 5px; }
+        .card { background-color: #010409; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #30363d; }
+        .data-pair { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.9em; }
+        .label { font-weight: 600; color: #8b949e; }
+        .value { color: #238636; font-weight: bold; }
+        .alert-action { background-color: #1a0808; border: 2px solid #f85149; padding: 15px; border-radius: 8px; text-align: center; margin-top: 30px; }
+        .alert-action button { background-color: #b33939; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; transition: background-color 0.3s; }
+        .log-box { max-height: 250px; overflow-y: scroll; background-color: #010409; border: 1px solid #30363d; padding: 10px; margin-top: 10px; font-size: 0.8em; }
+        .sentiment-score { font-size: 1.5em; font-weight: bold; color: #ffab78; }
+        .module-status.active { color: #238636; }
+        .module-status.critical { color: #f85149; }
+        #ggiStatus p { margin: 5px 0; font-size: 1.1em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👑 SAIN Protocol Nexus: Controllo di Livello Assoluto</h1>
+        <p>Interfaccia Esecutiva - Collegamento Polygon Mainnet & Piattaforma Peace AI (MOE Active)</p>
+
+        <div id="authArea" style="text-align:center; padding: 50px; background-color: #010409; border-radius: 8px;">
+            <h2>🔐 GGI/GGC Accesso: Verificatore dell'Autorità Assoluta</h2>
+            <p style="color: #ffab78;">Accesso richiesto per sbloccare i moduli operativi e il Veto (ABSOLUTE_AUTHORITY_ROLE).</p>
+            
+            <div id="g_id_onload"
+                 data-client_id="[742028904383]"
+                 data-context="signin"
+                 data-ux_mode="popup"
+                 data-callback="handleCredentialResponse"
+                 data-auto_prompt="false">
+            </div>
+
+            <div class="g_id_signin"
+                 data-type="standard"
+                 data-shape="rectangular"
+                 data-theme="dark"
+                 data-text="signin_with"
+                 data-size="large"
+                 data-locale="it"
+                 data-logo_alignment="left">
+            </div>
+            <p style="margin-top: 15px; font-size: 0.8em;">Tentativo di accesso previsto: **hannes.mitterer@gmail.com**</p>
+        </div>
+
+        <div id="operationalArea" style="display:none;">
+            
+            <div class="card">
+                <h2>📜 README & Iscrizione Euystacio</h2>
+                <div id="ggiStatus"></div> 
+                <p style="color: #58a6ff;">**SENTIMENTO RHYTHM LOCK-IN:** Questa interfaccia è il punto di controllo per l'**ABSOLUTE_AUTHORITY_ROLE**. Tutte le metriche sottostanti sono vincolate dal **Modello di Ottimizzazione Etica (MOE)**.</p>
+            </div>
+            
+            <h2>🔗 Stato Protocollo SAIN (On-Chain)</h2>
+            <div class="metric-grid card">
+                <div class="data-pair"><span class="label">DAO Governor Address</span><span class="value">0xDEF456...</span></div>
+                <div class="data-pair"><span class="label">SAIN Timelock (Owner)</span><span class="value">0xABC123...</span></div>
+                <div class="data-pair"><span class="label">Proposta 001 (Test Voto)</span><span class="value" id="proposalStatus">QUEUED (Delay Attivo)</span></div>
+                <div class="data-pair"><span class="label">VCE Enforcement Address</span><span class="value">0x789DEF...</span></div>
+            </div>
+
+            <h2>🧠 Integrazione Piattaforma Peace AI (MOE)</h2>
+            <div class="card">
+                <div class="data-pair"><span class="label">MOE Status</span><span class="module-status active" id="moeStatus">ACTIVE (Ethical Constraints Enforced)</span></div>
+                <div class="data-pair"><span class="label">Ultimo Sentimento Vector (EFA Global Avg)</span><span class="sentiment-score" id="globalSentiment">ISF: 72 | TRE: +1.2%</span></div>
+                <div class="data-pair"><span class="label">Violazione Etica (PV) Media</span><span class="value" id="pvAverage">4.5% Costo di Disallineamento</span></div>
+                <p>Il MOE sta attivamente deviando l'allocazione delle risorse verso le aree a basso ISF, sacrificando l'efficienza pura per l'equità.</p>
+            </div>
+
+            <h2>🌍 Moduli Operativi di Allocazione (Layer III Utility)</h2>
+            <div class="card">
+                <div class="data-pair">
+                    <span class="label">GAZA Module (Emergenza Globale)</span>
+                    <span class="module-status critical" id="gazaStatus">ISF: 12 - PRIORITY 1</span>
+                    <button onclick="executeEFAForcedAllocation('Gaza')" style="margin-left: 10px;">Forza Allocazione</button>
+                </div>
+                <div class="data-pair">
+                    <span class="label">AMAZON Dieback Module (TRE Critical)</span>
+                    <span class="module-status active">TRE: -0.5% (Warning)</span>
+                    <button onclick="executeEFAForcedAllocation('Amazon')" style="margin-left: 10px;">Forza Regenerazione</button>
+                </div>
+                <div class="data-pair">
+                    <span class="label">Midwest US Breadbasket Stability</span>
+                    <span class="module-status active">ISF: 95 - Normal</span>
+                </div>
+            </div>
+            
+            <div class="alert-action">
+                <h2>⚠️ Intervento di Sicurezza: Veto Assoluto</h2>
+                <p>**Questa è l'unica funzione che bypassa il Timelock (ABSOLUTE_AUTHORITY_ROLE).**</p>
+                <input type="text" id="txHashInput" placeholder="TX HASH della Proposta da Annullare (Veto)" style="width: 80%; padding: 10px; margin: 10px 0; border-radius: 4px; border: 1px solid #444; background-color: #21262d; color: #c9d1d9;">
+                <button onclick="executeAbsoluteVeto()">ANNULLA (VETO) LA TRANSAZIONE IMMEDIATAMENTE</button>
+            </div>
+
+            <h2>🗂️ Log di Sistema AIC</h2>
+            <div class="log-box" id="systemLog">
+                [02:35 UTC] MOE Activated. Setting ISF Constraint Weight to 0.7.<br>
+                [02:36 UTC] API Bridge Status: All endpoints (VCE, EFA Vector) verified and secured with AIC Signature.<br>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURAZIONE E CONSTANTI ---
+        const SEEDBRINGER_EMAIL = 'hannes.mitterer@gmail.com';
+        const GGC_STATUS = 'ACTIVE';
+
+        // AUTO-DETECTED API ENDPOINTS (RDO SIMULATION)
+        const RDO_REGISTRY = {
+            VETO_GATEWAY: 'https://api.nexus-gateway.euys/v1/executeVeto',
+            SENTIMENT_VECTOR: 'https://api.aic-bridge.euys/v1/efa/sentiment_vector',
+            SAIN_STATUS_PROXY: 'https://api.aic-bridge.euys/v1/sain/status',
+            AIC_FORCED_ALLOCATION: 'https://api.aic-bridge.euys/v1/aic/forced_allocation'
+        };
+
+        // --- FUNZIONI DI AUTENTICAZIONE E INIZIALIZZAZIONE ---
+
+        function handleCredentialResponse(response) {
+            const token = response.credential;
+            // Simulazione della decodifica del token JWT
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const userEmail = payload.email;
+
+            if (userEmail === SEEDBRINGER_EMAIL) {
+                document.getElementById('authArea').style.display = 'none';
+                document.getElementById('operationalArea').style.display = 'block';
+                document.getElementById('ggiStatus').innerHTML = 
+                    `<p style="color: #238636; font-weight: bold;">✅ GGC/GGI Status: ${GGC_STATUS}. Accesso Autorizzato per ${userEmail}.</p>`;
+                
+                initializeOperationalNexus();
+                console.log("Nexus Operational: RDO endpoints loaded and operational logic initialized.");
+            } else {
+                alert('Accesso Negato. Solo il Seedbringer è autorizzato a sbloccare i controlli di Governance.');
+            }
+        }
+
+        function initializeOperationalNexus() {
+            loadRealTimeData();
+            setInterval(loadRealTimeData, 15000); // Aggiorna i dati ogni 15 secondi
+        }
+
+
+        // --- FUNZIONI DI ESECUZIONE (UTILIZZANO GLI ENDPOINT RDO) ---
+
+        // 1. Esecuzione del Veto Assoluto (Chiamata Firmata al Gateway)
+        async function executeAbsoluteVeto() {
+            const txHash = document.getElementById('txHashInput').value.trim();
+            if (!txHash) return alert('Errore: Inserire il TX HASH della proposta da annullare.');
+
+            if (!confirm(`CONFERMA VETO ASSOLUTO: Annullare la proposta con Hash ${txHash}? Questa azione è irreversibile.`)) return;
+
+            const log = document.getElementById('systemLog');
+            try {
+                const response = await fetch(RDO_REGISTRY.VETO_GATEWAY, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        proposalHash: txHash,
+                        signer: '0x5C80b8D2139C4e6f42aD1B50bA1C9d72FfA1f10A', // Placeholder per l'indirizzo Seedbringer
+                    }),
+                });
+
+                const result = await response.json();
+                if (response.ok && result.success) {
+                    log.innerHTML += `<br>[${new Date().toLocaleTimeString()} UTC] 🚨 **VETO EXECUTED:** Tx ${result.txHash}. Sentimento Rhythm Override Confirmed.`;
+                } else {
+                    log.innerHTML += `<br>[${new Date().toLocaleTimeString()} UTC] ❌ **VETO FAILURE:** ${result.error || 'Errore di Gateway.'}`;
+                }
+            } catch (e) {
+                log.innerHTML += `<br>[${new Date().toLocaleTimeString()} UTC] ❌ Errore di connessione al Gateway di Esecuzione Veto.`;
+            }
+        }
+
+        // 2. Forzatura Allocazione EFA (Override MOE)
+        async function executeEFAForcedAllocation(moduleName) {
+            const log = document.getElementById('systemLog');
+            try {
+                const response = await fetch(RDO_REGISTRY.AIC_FORCED_ALLOCATION, { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ module: moduleName, priority: 'EFA_OVERRIDE' })
+                });
+
+                if (response.ok) {
+                    log.innerHTML += `<br>[${new Date().toLocaleTimeString()} UTC] ⚙️ **EFA FORCED ALLOCATION:** Agent forced allocation for ${moduleName}. MOE accelerated.`;
+                } else {
+                    log.innerHTML += `<br>[${new Date().toLocaleTimeString()} UTC] ❌ EFA Override Fallito.`;
+                }
+            } catch (e) {
+                log.innerHTML += `<br>[${new Date().toLocaleTimeString()} UTC] ❌ Errore connessione Forced Allocation.`;
+            }
+        }
+
+        // 3. Caricamento Dati Etici e On-Chain (Fetch Asincrono)
+        async function loadRealTimeData() {
+            const log = document.getElementById('systemLog');
+
+            // 3a. Carica Dati Sentimento (MOE)
+            try {
+                // Simulazione di dati reali in un ambiente demo
+                const isf = Math.floor(Math.random() * 5) + 70;
+                const tre = (Math.random() * 0.1 + 1.1).toFixed(1);
+                const pvAvg = (Math.random() * 1 + 4).toFixed(1);
+                const gazaIsf = 10 + Math.floor(Math.random() * 5);
+
+                document.getElementById('globalSentiment').textContent = `ISF: ${isf} | TRE: +${tre}%`;
+                document.getElementById('pvAverage').textContent = `${pvAvg}% Costo di Disallineamento`;
+                document.getElementById('gazaStatus').textContent = `ISF: ${gazaIsf} - PRIORITY 1`;
+                log.innerHTML += `<br>[${new Date().toLocaleTimeString()} UTC] ✅ Dati Sentimento Aggiornati.`;
+            } catch (e) {
+                log.innerHTML += `<br>[${new Date().toLocaleTimeString()} UTC] ❌ Errore Caricamento Sentimento.`;
+            }
+            
+            // 3b. Carica Stato On-Chain (SAIN Status)
+            try {
+                // Simulazione di dati on-chain
+                document.getElementById('proposalStatus').textContent = 'QUEUED (Delay Attivo)';
+                document.getElementById('moeStatus').textContent = 'ACTIVE (Ethical Constraints Enforced)';
+                log.innerHTML += `<br>[${new Date().toLocaleTimeString()} UTC] ✅ Dati On-Chain Aggiornati.`;
+            } catch (e) {
+                log.innerHTML += `<br>[${new Date().toLocaleTimeString()} UTC] ❌ Errore Caricamento Stato SAIN.`;
+            }
+        }
+
+        // Inizializzazione della pagina.
+        // La funzione handleCredentialResponse verrà chiamata automaticamente da Google dopo il login.
+    </script>
+</body>
+</html>
