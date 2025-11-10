@@ -1,0 +1,1 @@
+📜 Sentinel AI Network (SAIN) Open-Source Manifesto and Deployment Call
