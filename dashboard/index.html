@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="it" data-lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Euystacio – Cruscotto Pubblico di Trasparenza</title>
+  <meta name="description" content="Cruscotto pubblico per la trasparenza etica e finanziaria del Protocollo SAIN / Euystacio. Dati chiave: TRE, ISF, PV, RA, ULP, Audit EFA, votazioni GGC." />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-wrap">
+      <h1 data-i18n="title">Euystacio – Cruscotto Pubblico</h1>
+      <p class="subtitle" data-i18n="subtitle">Dignità e Umiltà: trasparenza per tutti, non solo per sviluppatori</p>
+      <div class="meta">
+        <span id="last-updated" data-i18n="last_update_label">Aggiornamento:</span>
+        <span class="dot"></span>
+        <span id="network-name" data-i18n="network_label">Rete:</span>
+        <div class="locale-switch">
+          <button type="button" data-lang-switch="it">IT</button>
+          <button type="button" data-lang-switch="en">EN</button>
+          <button type="button" data-lang-switch="es">ES</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="cards-grid" aria-label="Indicatori chiave" data-i18n-aria="key_indicators">
+      <article class="card" data-status="neutral" id="card-tre">
+        <h3 data-i18n="tre_title">TRE (Rigenerazione Ecologica)</h3>
+        <p class="kpi">
+          <span id="tre-current">—</span>
+          <small data-i18n="target_label">Target: <span id="tre-target">—</span></small>
+        </p>
+        <p class="note" data-i18n="tre_note">Il TRE misura la rigenerazione ecologica. Obiettivo minimo etico: +0.3% annuo.</p>
+        <div class="badge" id="tre-badge">—</div>
+      </article>
+
+      <article class="card" data-status="neutral" id="card-isf">
+        <h3 data-i18n="isf_title">ISF (Scarsità Funzionale)</h3>
+        <p class="kpi"><span id="isf">—</span></p>
+        <p class="note" data-i18n="isf_note">Valori più alti significano meno scarsità. Sotto 75 richiede attenzione prioritaria.</p>
+        <div class="badge" id="isf-badge">—</div>
+      </article>
+
+      <article class="card" data-status="neutral" id="card-pv">
+        <h3 data-i18n="pv_title">PV (Costo Violazione Etica)</h3>
+        <p class="kpi"><span id="pv">—</span></p>
+        <p class="note" data-i18n="pv_note">Quota di rendimento “perso” per rispettare l’etica. Obiettivo: < 1.0%.</p>
+        <div class="badge" id="pv-badge">—</div>
+      </article>
+
+      <article class="card" data-status="neutral" id="card-ra">
+        <h3 data-i18n="ra_title">RA – SA-07 Water</h3>
+        <p class="kpi"><span id="ra-sa07">—</span></p>
+        <p class="note" data-i18n="ra_note">Rendimento Allineato dopo ricalibrazione MOE. Maggiore è meglio.</p>
+        <div class="badge" id="ra-badge">—</div>
+      </article>
+
+      <article class="card" data-status="neutral" id="card-price">
+        <h3 data-i18n="price_title">Prezzo SAIN & Floor</h3>
+        <p class="kpi">
+          <span id="sain-price">—</span>
+          <small data-i18n="floor_label">Floor: <span id="price-floor">—</span></small>
+        </p>
+        <p class="note" data-i18n="price_note">Difesa proattiva del floor via Stabilization Fee e Fondo di Contro-Ciclicità.</p>
+        <div class="badge" id="price-badge">—</div>
+      </article>
+
+      <article class="card" data-status="neutral" id="card-fee">
+        <h3 data-i18n="fee_title">Stabilization Fee & Ripartizione</h3>
+        <p class="kpi"><span id="stabilization-fee">—</span></p>
+        <p class="note">
+          <span id="fee-split">—</span>
+        </p>
+        <div class="badge" id="fee-badge">—</div>
+      </article>
+    </section>
+
+    <section class="panel" aria-label="Stato Etico e Governance" data-i18n-aria="ethics_governance">
+      <h2 data-i18n="ethics_gov_title">Stato Etico & Governance</h2>
+      <ul class="list">
+        <li><strong data-i18n="moe_change_label">MOE (ultimo cambiamento):</strong> <span id="moe-change">—</span></li>
+        <li><strong data-i18n="last_vote_label">Votazione recente GGC:</strong> <span id="ggc-vote">—</span></li>
+        <li><strong data-i18n="multisig_label">Multisig Guardian:</strong> <span id="multisig">—</span></li>
+        <li><strong data-i18n="audit_status_label">Audit EFA:</strong> <span id="audit-status">—</span></li>
+      </ul>
+    </section>
+
+    <section class="panel" aria-label="Fondi & Difesa del Prezzo" data-i18n-aria="funds_defense">
+      <h2 data-i18n="funds_title">Fondi & Difesa del Prezzo</h2>
+      <ul class="list">
+        <li><strong data-i18n="defense_threshold_label">Soglia Difesa Proattiva:</strong> <span id="defense-threshold">—</span></li>
+        <li><strong data-i18n="fc_balance_label">Saldo Fondo Contro-Ciclicità (FC):</strong> <span id="fc-balance">—</span></li>
+      </ul>
+    </section>
+
+    <section class="panel" aria-label="Grafici Storici" data-i18n-aria="historical_charts">
+      <h2 data-i18n="charts_title">Andamento Storico</h2>
+      <div class="charts">
+        <canvas id="chart-tre" height="140"></canvas>
+        <canvas id="chart-isf" height="140"></canvas>
+        <canvas id="chart-pv" height="140"></canvas>
+      </div>
+    </section>
+
+    <section class="panel" aria-label="Ultimi Eventi" data-i18n-aria="latest_events">
+      <h2 data-i18n="events_title">Ultimi Eventi</h2>
+      <ol id="events" class="events"></ol>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p data-i18n="footer">© Euystacio / SAIN – Trasparenza Pubblica • Contatto: governance@euystacio.example</p>
+    </div>
+  </footer>
+
+  <script src="./app.js" defer></script>
+</body>
+</html>
