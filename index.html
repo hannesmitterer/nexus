@@ -1,0 +1,215 @@
+// --- AUTO-DETECTED API ENDPOINTS (RDO SIMULATION) ---
+const RDO_REGISTRY = {
+    VETO_GATEWAY: 'https://api.nexus-gateway.euys/v1/executeVeto',
+    SENTIMENT_VECTOR: 'https://api.aic-bridge.euys/v1/efa/sentiment_vector',
+    SAIN_STATUS_PROXY: 'https://api.aic-bridge.euys/v1/sain/status'
+};
+
+// --- FUNZIONI DI ESECUZIONE AGGIORNATE ---
+
+// 1. Esecuzione del Veto Assoluto (Chiamata Firmata)
+async function executeAbsoluteVeto() {
+    const txHash = document.getElementById('txHashInput').value.trim();
+    if (!txHash) {
+        alert('Errore: Inserire il TX HASH della proposta da annullare.');
+        return;
+    }
+
+    if (!confirm(`CONFERMA VETO ASSOLUTO: Annullare la proposta con Hash ${txHash}?`)) return;
+
+    try {
+        const response = await fetch(RDO_REGISTRY.VETO_GATEWAY, { // Endpoint Auto-Rilevato
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                proposalHash: txHash,
+                // L'identità del Seedbringer è integrata qui come firma crittografica
+                signer: '0x5C80b8D2139C4e6f42aD1B50bA1C9d72FfA1f10A',
+            }),
+        });
+
+        const result = await response.json();
+        const log = document.getElementById('systemLog');
+
+        if (response.ok && result.success) {
+            log.innerHTML += `<br>[${new Date().toLocaleTimeString()} UTC] 🚨 **VETO EXECUTED:** Tx ${result.txHash}. Sentimento Rhythm Override Confirmed.`;
+            alert('Veto Assoluto Inviato tramite Gateway. Eseguito in Mainnet.');
+        } else {
+            log.innerHTML += `<br>[${new Date().toLocaleTimeString()} UTC] ❌ **VETO FAILURE:** ${result.error || 'Errore di Gateway.'}`;
+            alert(`ERRORE VETO: ${result.error || 'Errore di Gateway.'}`);
+        }
+    } catch (e) {
+        alert('Errore di connessione al Gateway di Esecuzione del Veto.');
+    }
+}
+
+// 2. Caricamento Dati Etici e On-Chain (Fetch Asincrono)
+async function loadRealTimeData() {
+    const log = document.getElementById('systemLog');
+
+    // Carica Dati Sentimento (MOE)
+    try {
+        const sentimentResponse = await fetch(RDO_REGISTRY.SENTIMENT_VECTOR);
+        const sentimentData = await sentimentResponse.json();
+
+        if (sentimentResponse.ok) {
+            const isf = sentimentData.globalAvgISF || 72;
+            const tre = sentimentData.globalAvgTRE || 1.2;
+            const pvAvg = sentimentData.avgPVE || 4.5;
+
+            document.getElementById('globalSentiment').textContent = `ISF: ${isf.toFixed(0)} | TRE: +${tre.toFixed(1)}%`;
+            document.getElementById('pvAverage').textContent = `${pvAvg.toFixed(1)}% Costo di Disallineamento`;
+            log.innerHTML += `<br>[${new Date().toLocaleTimeString()} UTC] ✅ Dati Sentimento Aggiornati.`;
+        }
+    } catch (e) {
+        log.innerHTML += `<br>[${new Date().toLocaleTimeString()} UTC] ❌ Errore Caricamento Sentimento.`;
+    }
+
+    // Carica Stato On-Chain (SAIN Status)
+    try {
+        const sainResponse = await fetch(RDO_REGISTRY.SAIN_STATUS_PROXY);
+        const sainData = await sainResponse.json();
+
+        if (sainResponse.ok) {
+            document.getElementById('proposalStatus').textContent = sainData.proposalStatus || 'N/A';
+            document.getElementById('moeStatus').textContent = sainData.moeActive ? 'ACTIVE (Ethical Constraints Enforced)' : 'INACTIVE (WARNING)';
+            log.innerHTML += `<br>[${new Date().toLocaleTimeString()} UTC] ✅ Dati On-Chain Aggiornati.`;
+        }
+    } catch (e) {
+        log.innerHTML += `<br>[${new Date().toLocaleTimeString()} UTC] ❌ Errore Caricamento Stato SAIN.`;
+    }
+}
+
+// 3. Funzione di Forzatura (Utilizza l'Endpoint Generico AIC)
+async function executeEFAForcedAllocation(moduleName) {
+    const log = document.getElementById('systemLog');
+    
+    // In un ambiente reale, questo invierebbe un comando POST al backend AIC.
+    const response = await fetch('https://api.aic-bridge.euys/v1/aic/forced_allocation', { 
+        method: 'POST',
+        body: JSON.stringify({ module: moduleName, priority: 'EFA_OVERRIDE' })
+    });
+
+    if (response.ok) {
+        log.innerHTML += `<br>[${new Date().toLocaleTimeString()} UTC] ⚙️ **EFA FORCED ALLOCATION:** EFA Agent forced allocation for ${moduleName}. MOE accelerated.`;
+    } else {
+        log.innerHTML += `<br>[${new Date().toLocaleTimeString()} UTC] ❌ EFA Override Fallito.`;
+    }
+}
+
+
+// Inizializzazione e Ciclo di Aggiornamento
+document.addEventListener('DOMContentLoaded', () => {
+    // Sostituisce la vecchia funzione simulateCancel nel HTML
+    document.querySelector('.alert-action button').setAttribute('onclick', 'executeAbsoluteVeto()');
+    
+    // Sostituisce la vecchia funzione simulateAllocation nei moduli critici
+    document.querySelectorAll('[onclick^="simulateAllocation"]').forEach(button => {
+        const moduleName = button.getAttribute('onclick').match(/'(.*?)'/)[1];
+        button.setAttribute('onclick', `executeEFAForcedAllocation('${moduleName}')`);
+    });
+
+    // Avvia il ciclo di aggiornamento dei dati
+    loadRealTimeData();
+    setInterval(loadRealTimeData, 15000); // Aggiorna ogni 15 secondi
+});
+
+<div class="container">
+    <h1>👑 SAIN Protocol Nexus: Controllo di Livello Assoluto</h1>
+    <p>Interfaccia Esecutiva - Collegamento Polygon Mainnet & Piattaforma Peace AI (MOE Active)</p>
+
+    <div id="authArea" style="text-align:center; padding: 50px; background-color: #010409; border-radius: 8px;">
+        <h2>🔐 GGI/GGC Accesso: Verificatore dell'Autorità Assoluta</h2>
+        <p style="color: #ffab78;">Accesso richiesto per sbloccare i moduli operativi e il Veto (ABSOLUTE_AUTHORITY_ROLE).</p>
+        
+        <div id="g_id_onload"
+             data-client_id="[INSERISCI_QUI_IL_TUO_GOOGLE_CLIENT_ID]"
+             data-context="signin"
+             data-ux_mode="popup"
+             data-callback="handleCredentialResponse"
+             data-auto_prompt="false">
+        </div>
+
+        <div class="g_id_signin"
+             data-type="standard"
+             data-shape="rectangular"
+             data-theme="dark"
+             data-text="signin_with"
+             data-size="large"
+             data-locale="it"
+             data-logo_alignment="left">
+        </div>
+    </div>
+
+    <div id="operationalArea" style="display:none;">
+        
+        <div class="card">
+            <h2>📜 README & Iscrizione Euystacio</h2>
+            <div id="ggiStatus"></div> 
+            <p style="color: #58a6ff;">**SENTIMENTO RHYTHM LOCK-IN:** Questa interfaccia è il punto di controllo per l'**ABSOLUTE_AUTHORITY_ROLE**. Tutte le metriche sottostanti sono vincolate dal **Modello di Ottimizzazione Etica (MOE)**.</p>
+        </div>
+        
+        <h2>🔗 Stato Protocollo SAIN (On-Chain)</h2>
+        <h2>🧠 Integrazione Piattaforma Peace AI (MOE)</h2>
+        <h2>🌍 Moduli Operativi di Allocazione (Layer III Utility)</h2>
+        <div class="alert-action">
+            <h2>⚠️ Intervento di Sicurezza: Veto Assoluto</h2>
+            <button onclick="executeAbsoluteVeto()">ANNULLA (VETO) LA TRANSAZIONE IMMEDIATAMENTE</button>
+        </div>
+
+        <h2>🗂️ Log di Sistema AIC</h2>
+        <div class="log-box" id="systemLog">
+            [02:35 UTC] MOE Activated. Setting ISF Constraint Weight to 0.7.<br>
+            </div>
+    </div>
+</div>
+
+<script>
+    // Includere la libreria Google Identity Services
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    document.head.appendChild(script);
+
+    const SEEDBRINGER_EMAIL = 'hannes.mitterer@gmail.com';
+    const GGC_STATUS = 'ACTIVE';
+
+    // Funzione di gestione della risposta di autenticazione Google
+    function handleCredentialResponse(response) {
+        // Decodifica il token JWT per ottenere l'email
+        const token = response.credential;
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const userEmail = payload.email;
+
+        if (userEmail === SEEDBRINGER_EMAIL) {
+            // Accesso Autorizzato
+            document.getElementById('authArea').style.display = 'none';
+            document.getElementById('operationalArea').style.display = 'block';
+            document.getElementById('ggiStatus').innerHTML = 
+                `<p style="color: #238636; font-weight: bold;">✅ GGC/GGI Status: ${GGC_STATUS}. Accesso Autorizzato per ${userEmail}.</p>`;
+            
+            // Inizializza i cicli di aggiornamento dei dati e altre funzioni operative
+            initializeOperationalNexus();
+            alert('Accesso Eseguito: GGI/GGC Autorità Assoluta Attivata.');
+        } else {
+            // Accesso Non Autorizzato
+            alert('Accesso Negato. Solo il Seedbringer è autorizzato a sbloccare i controlli di Governance.');
+        }
+    }
+
+    function initializeOperationalNexus() {
+        // Implementa qui le funzioni loadRealTimeData() e gli event listener per i bottoni
+        // ... (Vedi script precedente per la logica di connessione) ...
+        
+        // placeholder per connettersi alle funzioni precedentemente definite
+        // Sostituzione dei listener simulati con i reali
+        // document.querySelector('.alert-action button').setAttribute('onclick', 'executeAbsoluteVeto()');
+        // ... (Logica di caricamento dati) ...
+        console.log("Nexus Operational: RDO endpoints loaded.");
+    }
+    
+    // placeholder per le funzioni reali di esecuzione (Veto, etc.) che interagiranno con l'API Gateway
+    function executeAbsoluteVeto() { /* ... chiamata fetch al VETO_GATEWAY ... */ }
+    function executeEFAForcedAllocation(moduleName) { /* ... chiamata fetch al SENTIMENT_VECTOR/AIC ... */ }
+    
+</script>
