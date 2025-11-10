@@ -1,0 +1,1 @@
+/* Node script as provided earlier */

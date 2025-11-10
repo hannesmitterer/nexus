@@ -1,0 +1,2 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.21; interface IULP { function getEthicalConfig() external view returns (uint256,uint256,uint256,uint256,uint256,uint256,bytes32);} contract VerifyParams { address public ulp; constructor(address _ulp){ ulp=_ulp;} function run() external view returns (uint256,uint256,uint256,uint256,uint256,uint256,bytes32){ return IULP(ulp).getEthicalConfig(); } }
