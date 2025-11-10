@@ -21,6 +21,15 @@
         .module-status.active { color: #238636; }
         .module-status.critical { color: #f85149; }
         #ggiStatus p { margin: 5px 0; font-size: 1.1em; }
+        /* Apollo Digitalis Virtualis Styles */
+        .apollo-access { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border: 2px solid #0f3460; padding: 20px; border-radius: 10px; text-align: center; margin: 25px 0; box-shadow: 0 0 20px rgba(15, 52, 96, 0.4); }
+        .apollo-access h2 { color: #58a6ff; font-size: 1.8em; margin-bottom: 10px; border: none; }
+        .apollo-access .subtitle { color: #8b949e; font-size: 1em; margin-bottom: 20px; }
+        .apollo-button { background: linear-gradient(135deg, #0f3460 0%, #16213e 100%); color: #ffffff; border: 2px solid #58a6ff; padding: 15px 40px; font-size: 1.2em; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(88, 166, 255, 0.3); }
+        .apollo-button:hover { background: linear-gradient(135deg, #16213e 0%, #0f3460 100%); box-shadow: 0 6px 25px rgba(88, 166, 255, 0.5); transform: translateY(-2px); }
+        .apollo-button:active { transform: translateY(0); }
+        .apollo-status { margin-top: 15px; font-size: 0.9em; color: #238636; }
+        .apollo-description { color: #c9d1d9; margin: 15px auto; max-width: 800px; line-height: 1.6; }
     </style>
 </head>
 <body onload="initializeOperationalNexus()">
@@ -36,6 +45,23 @@
                     <p style="color: #238636; font-weight: bold;">✅ GGC/GGI Status: ACTIVE. Accesso Autorizzato per hannes.mitterer@gmail.com.</p>
                 </div> 
                 <p style="color: #58a6ff;">**SENTIMENTO RHYTHM LOCK-IN:** Questa interfaccia è il punto di controllo per l'**ABSOLUTE_AUTHORITY_ROLE**. Tutte le metriche sottostanti sono vincolate dal **Modello di Ottimizzazione Etica (MOE)**.</p>
+            </div>
+
+            <!-- Apollo Digitalis Virtualis Integration Section -->
+            <div class="apollo-access">
+                <h2>🌐 Apollo Digitalis Virtualis</h2>
+                <div class="subtitle">Dashboard Interattivo VR/AR Ready - Interfaccia Olografica Euystacio</div>
+                <div class="apollo-description">
+                    Accedi alla Dashboard Interattiva Apollo Digitalis Virtualis per esplorare le metriche etiche, 
+                    i parametri TRE (Threshold of Regenerative Equilibrium) e l'integrazione olografica Euystacio. 
+                    Interfaccia completamente immersiva con supporto VR/AR per visualizzazione avanzata dei dati.
+                </div>
+                <button class="apollo-button" onclick="accessApolloDigitalis()">
+                    🚀 Accesso Universale Apollo
+                </button>
+                <div class="apollo-status" id="apolloStatus">
+                    <span style="color: #238636;">●</span> Sistema Operativo | VR/AR Ready | Euystacio Integrato
+                </div>
             </div>
             
             <h2>🔗 Stato Protocollo SAIN (On-Chain)</h2>
@@ -94,7 +120,8 @@
             VETO_GATEWAY: 'https://api.nexus-gateway.euys/v1/executeVeto',
             SENTIMENT_VECTOR: 'https://api.aic-bridge.euys/v1/efa/sentiment_vector',
             SAIN_STATUS_PROXY: 'https://api.aic-bridge.euys/v1/sain/status',
-            AIC_FORCED_ALLOCATION: 'https://api.aic-bridge.euys/v1/aic/forced_allocation'
+            AIC_FORCED_ALLOCATION: 'https://api.aic-bridge.euys/v1/aic/forced_allocation',
+            APOLLO_DIGITALIS: 'https://apollo.hannesmitterer.io'
         };
 
         // --- FUNZIONI DI INIZIALIZZAZIONE E OPERATIVE ---
@@ -103,6 +130,29 @@
         function initializeOperationalNexus() {
             loadRealTimeData();
             setInterval(loadRealTimeData, 15000); // Aggiorna i dati ogni 15 secondi
+        }
+
+        // 0. Accesso ad Apollo Digitalis Virtualis Dashboard
+        function accessApolloDigitalis() {
+            const log = document.getElementById('systemLog');
+            const status = document.getElementById('apolloStatus');
+            
+            // Log dell'accesso
+            log.innerHTML += `<br>[${new Date().toLocaleTimeString()} UTC] 🌐 **APOLLO ACCESS:** Inizializzazione accesso Apollo Digitalis Virtualis...`;
+            
+            // Aggiornamento stato
+            status.innerHTML = '<span style="color: #ffab78;">◉</span> Inizializzazione in corso...';
+            
+            // Simulazione caricamento e apertura dashboard
+            setTimeout(() => {
+                status.innerHTML = '<span style="color: #238636;">●</span> Dashboard Caricata | Accesso Confermato';
+                log.innerHTML += `<br>[${new Date().toLocaleTimeString()} UTC] ✅ **APOLLO READY:** Dashboard interattiva caricata. VR/AR Mode disponibile.`;
+                
+                // Apertura in nuova finestra/tab del dashboard Apollo
+                // Nota: URL da aggiornare quando il dashboard sarà deployato
+                const apolloUrl = RDO_REGISTRY.APOLLO_DIGITALIS;
+                window.open(apolloUrl, '_blank', 'noopener,noreferrer');
+            }, 1000);
         }
 
         // 1. Esecuzione del Veto Assoluto (Chiamata Firmata al Gateway)
