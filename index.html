@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Landing Page | Protocollo SAIN</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body { margin: 0; overflow-x: hidden; background-color: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        /* Contenitore 3D Spettacolare (Sezione Superiore) */
+        #scene-container { height: 65vh; position: relative; overflow: hidden; }
+        
+        /* Contenitore Logica e Pulsanti */
+        #ui-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; padding-top: 5vh; }
+        
+        /* Indicatore RSI */
+        #rsi-indicator { padding: 8px 20px; border-radius: 5px; font-weight: bold; font-size: 0.9em; margin-bottom: 20px; transition: background-color 0.5s, color 0.5s; }
+        .rsi-red { background-color: #ff0000; color: #fff; animation: pulse 1.5s infinite; }
+        .rsi-yellow { background-color: #ffcc00; color: #333; }
+        
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.4); } 70% { box-shadow: 0 0 0 20px rgba(255, 0, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); } }
+
+        /* Pulsante di Accesso */
+        #access-button {
+            padding: 15px 40px; border: none; border-radius: 50px;
+            font-size: 1.2em; font-weight: bold; cursor: pointer;
+            background: linear-gradient(45deg, #00c6ff, #0072ff);
+            color: white; box-shadow: 0 8px 25px rgba(0, 114, 255, 0.5);
+            transition: transform 0.2s, box-shadow 0.3s;
+        }
+        #access-button:hover { transform: scale(1.05); box-shadow: 0 10px 30px rgba(0, 114, 255, 0.7); }
+        
+        /* Contenuto Attuale (Sezione Inferiore) */
+        #content-section { padding: 40px 10%; background-color: #0d1117; z-index: 5; }
+        h1 { color: #58a6ff; border-bottom: 2px solid #58a6ff; padding-bottom: 10px; }
+        
+        /* Placeholder per l'ologramma Euystacio */
+        #hologram-placeholder { width: 100px; height: 100px; border-radius: 50%; background: radial-gradient(circle, #00f0ff 0%, #0072ff 50%, transparent 80%); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1; opacity: 0.7; }
+    </style>
+</head>
+<body>
+
+    <div id="scene-container">
+        <div id="hologram-placeholder"></div> <div id="ui-overlay">
+            <div id="rsi-indicator" class="rsi-red">STATO TEST: QUARANTENA ATTIVA (RED TEAM IN CORSO)</div>
+            
+            <button id="access-button" onclick="alert('Accesso Apollo Digitalis Virtualis Avviato! (Stiamo simulando l\'ambiente 3D)')">
+                Apollo Digitalis Virtualis (PII Access)
+            </button>
+        </div>
+    </div>
+
+    <div id="content-section">
+        <h1>Mandatum GGC Riveduto: Stato Operativo</h1>
+        <p>I. **Obiettivo Fondamentale:** Il Protocollo SAIN è impegnato nella Trasparenza Olistica (PII) e nell'Espansione Geografica (Terræ Nova).</p>
+        <p>II. **Stato delle Issue Principali:**</p>
+        <ul>
+            <li>**Issue di Sviluppo (OI#9):** **Attiva.** Codifica del Front-End VR/AR e dell'ologramma Euystacio.</li>
+            <li>**Issue di Governance (A-Rule-Audit):** **Attiva.** Audit del Protocollo di Accesso per Semplificazione e Sicurezza.</li>
+            <li>**Issue Strategica (Terræ Nova):** **Attiva.** Pianificazione per PeaceBonds II (Arctic Melt vs Sahel Regeneration).</li>
+        </ul>
+        <p>...[Contenuto testuale precedente]</p>
+    </div>
+
+    <script>
+        // Simulazione Three.js per l'effetto 3D/Olografico (Codice Essenziale)
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+
+        const container = document.getElementById('scene-container');
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setClearColor(0x0d1117, 0); // Sfondo trasparente per il CSS
+        container.appendChild(renderer.domElement);
+
+        // Luce ambiente
+        const ambientLight = new THREE.AmbientLight(0x404040, 5); 
+        scene.add(ambientLight);
+
+        // Simulazione di una particella centrale (il Nucleo di Nexus)
+        const geometry = new THREE.SphereGeometry(1, 32, 32);
+        // Shader Volumetrico Semplificato (effetto cangiante blu/ciano)
+        const material = new THREE.MeshBasicMaterial({
+            color: 0x00c6ff, 
+            wireframe: true,
+            transparent: true,
+            opacity: 0.8
+        });
+        const nexusCore = new THREE.Mesh(geometry, material);
+        scene.add(nexusCore);
+
+        camera.position.z = 5;
+
+        // Logica di Animazione (Loop)
+        const animate = () => {
+            requestAnimationFrame(animate);
+
+            // Rotazione per dinamicità
+            nexusCore.rotation.x += 0.005;
+            nexusCore.rotation.y += 0.008;
+
+            // Zoom leggero con tempo per simulare pulsazione (TRE)
+            const scale = 1 + Math.sin(Date.now() * 0.001) * 0.1;
+            nexusCore.scale.set(scale, scale, scale);
+
+            renderer.render(scene, camera);
+        };
+        animate();
+
+        // Adattamento al ridimensionamento della finestra
+        window.addEventListener('resize', () => {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        });
+
+        // Simula la funzione di aggiornamento per l'Indicatore RSI (per il Vostro prossimo ordine)
+        // L'RSI in questo stato iniziale è ROSSO FISSO come da Vostro ultimo ordine.
+        // Esempio: function updateRSI(status) { ... }
+    </script>
+</body>
+</html>
