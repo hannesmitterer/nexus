@@ -3,6 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stato Connessione Firestore</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+
+    <div id="app-container" class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-lg transition-all duration-300">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">
+            Stato del Database Firestore
+        </h1>
+        
+        <div id="status-display" class="p-4 mb-6 rounded-lg font-medium text-center shadow-inner transition-colors duration-300">
+            <!-- Lo stato verrà aggiornato qui dal JavaScript -->
+            Inizializzazione in corso...
+        </div>
+
+        <div id="content" class="text-gray-600 hidden">
+            <p class="mb-4">Autenticazione riuscita. Ora è possibile eseguire operazioni sicure sul database.</p>
+            <p class="text-sm">ID Applicazione (App ID): <span id="app-id" class="font-mono bg-gray-100 p-1 rounded"></span></p>
+            <p class="text-sm">ID Utente (User ID): <span id="user-id" class="font-mono bg-gray-100 p-1 rounded break-all"></span></p>
+
+            <button onclick="checkConnection()" 
+                    class="mt-6 w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow-md transition duration-150 transform hover:scale-[1.01] focus:outline-none focus:ring-4 focus:ring-indigo-500/50">
+                Verifica Stato Firestore
+            </button>
+        </div>
+
+        <div id="log-output" class="mt-8 p-4 bg-gray-800 text-green-400 text-xs rounded-lg whitespace-pre-wrap max-h-48 overflow-y-auto">
+            <!-- I messaggi di log appariranno qui -->
+            Log di Firebase:
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, setLogLevel, collection, doc, getDoc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Variabili globali fornite dall'ambiente Canvas
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let app;
+        let auth;
+        let db;
+        let currentUserId = null;
+        let isAuthReady = false;
+
+        const statusDisplay = document.getElementById('status-display');
+        const contentDiv = document.getElementById('content');
+        const logOutput = document.getElementById('log-output');
+
+        // Funzione per aggiornare lo stato sulla UI
+        function updateStatus(message, bgColorClass = 'bg-blue-100', textColorClass = 'text-blue-800') {
+            statusDisplay.textContent = message;
+            statusDisplay.className = `p-4 mb-6 rounded-lg font-medium text-center shadow-inner transition-colors duration-300 ${bgColorClass} ${textColorClass}`;
+        }
+
+        // Funzione per loggare sulla UI (per debug)
+        function logToUI(message) {
+            const time = new Date().toLocaleTimeString('it-IT');
+            logOutput.textContent += `\n[${time}] ${message}`;
+            logOutput.scrollTop = logOutput.scrollHeight;
+        }
+
+        // 1. Abilita il log di debug per Firestore (SOLUZIONE CHIAVE per diagnosticare i problemi di connessione)
+        setLogLevel('debug');
+        logToUI("Log level di Firebase impostato su 'debug'.");
+
+
+        async function initializeFirebase() {
+            if (!firebaseConfig) {
+                updateStatus('ERRORE: Configurazione Firebase non trovata.', 'bg-red-200', 'text-red-800');
+                logToUI("ERRORE: __firebase_config non definito.");
+                return;
+            }
+
+            try {
+                logToUI("Inizializzazione App Firebase...");
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                // Autenticazione: usa il token personalizzato o anonima
+                await setPersistence(auth, browserSessionPersistence);
+                
+                if (initialAuthToken) {
+                    logToUI("Accesso con token personalizzato...");
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    logToUI("Accesso anonimo...");
+                    await signInAnonymously(auth);
+                }
+
+                // Gestisce il cambio di stato di autenticazione
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        currentUserId = user.uid;
+                        isAuthReady = true;
+                        updateStatus('Connesso e Autenticato', 'bg-green-100', 'text-green-800');
+                        document.getElementById('app-id').textContent = appId;
+                        document.getElementById('user-id').textContent = currentUserId;
+                        contentDiv.classList.remove('hidden');
+                        logToUI(`Autenticazione riuscita. UID: ${currentUserId}`);
+
+                        // Avvia il listener Firestore dopo l'autenticazione
+                        startFirestoreListener();
+
+                    } else {
+                        isAuthReady = false;
+                        currentUserId = null;
+                        updateStatus('Disconnesso', 'bg-yellow-100', 'text-yellow-800');
+                        contentDiv.classList.add('hidden');
+                        logToUI("Utente disconnesso.");
+                    }
+                });
+
+            } catch (error) {
+                updateStatus(`ERRORE di Autenticazione: ${error.code}`, 'bg-red-200', 'text-red-800');
+                logToUI(`ERRORE in initializeFirebase: ${error.message}`);
+                console.error("Firebase Initialization Error:", error);
+            }
+        }
+
+        // 2. Funzione per eseguire un'operazione Firestore con onSnapshot (listener in tempo reale)
+        function startFirestoreListener() {
+            // Se l'autenticazione non è pronta, esci. Questo previene l'errore 403.
+            if (!isAuthReady || !currentUserId || !db) {
+                logToUI("Firestore Listener non avviato: Autenticazione non completata.");
+                return;
+            }
+
+            // Definisce il percorso della collezione privata
+            const collectionPath = `/artifacts/${appId}/users/${currentUserId}/status_checks`;
+            const docRef = doc(db, collectionPath, 'last_check');
+            
+            logToUI(`Avvio listener su: ${collectionPath}/last_check`);
+
+            // Usa onSnapshot per una connessione in tempo reale e resiliente
+            const unsubscribe = onSnapshot(docRef, 
+                (docSnapshot) => {
+                    if (docSnapshot.exists()) {
+                        const data = docSnapshot.data();
+                        logToUI(`Firestore Live Data Received: ${JSON.stringify(data)}`);
+                        // Il listener attivo dimostra una connessione sana.
+                        updateStatus(`Live Connection OK. Ultimo controllo: ${new Date(data.timestamp).toLocaleTimeString('it-IT')}`, 'bg-emerald-100', 'text-emerald-800');
+                    } else {
+                        logToUI("Documento di stato non trovato, ne creerò uno.");
+                        // Se il documento non esiste, crealo per stabilire una connessione di scrittura
+                        setDoc(docRef, { timestamp: Date.now(), message: "Initial status check" });
+                    }
+                }, 
+                (error) => {
+                    // Gestione degli errori di connessione e permessi
+                    updateStatus(`ERRORE Firestore: ${error.code}. Offline Mode?`, 'bg-red-200', 'text-red-800');
+                    logToUI(`ERRORE nel listener onSnapshot: ${error.message}`);
+                    console.error("Firestore Listener Error:", error);
+                }
+            );
+
+            // In un'app reale, si userebbe 'unsubscribe' in un cleanup. 
+            // Qui lo mettiamo in una variabile ma non lo usiamo attivamente.
+            window.unsubscribeFirestore = unsubscribe;
+        }
+
+        // Funzione per un controllo manuale della connessione (getDoc)
+        window.checkConnection = async function() {
+             if (!isAuthReady || !currentUserId || !db) {
+                updateStatus('Attendere l\'autenticazione...', 'bg-yellow-100', 'text-yellow-800');
+                return;
+            }
+
+            const collectionPath = `/artifacts/${appId}/users/${currentUserId}/status_checks`;
+            const docRef = doc(db, collectionPath, 'manual_check');
+
+            updateStatus('Esecuzione controllo manuale...', 'bg-indigo-100', 'text-indigo-800');
+            logToUI("Tentativo di getDoc...");
+
+            try {
+                // Tenta di scrivere e leggere per assicurarsi che entrambe le operazioni funzionino
+                await setDoc(docRef, { timestamp: Date.now(), source: "Manual button check" });
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    updateStatus('Controllo manuale OK. Lettura e scrittura riuscite.', 'bg-emerald-100', 'text-emerald-800');
+                    logToUI("Controllo manuale riuscito (Lettura/Scrittura).");
+                } else {
+                    updateStatus('Controllo manuale fallito (Documento non trovato).', 'bg-orange-100', 'text-orange-800');
+                    logToUI("Controllo manuale fallito (Documento non trovato).");
+                }
+            } catch (error) {
+                 updateStatus(`ERRORE Manuale: ${error.code}. Problema di connessione?`, 'bg-red-200', 'text-red-800');
+                 logToUI(`ERRORE nel controllo manuale: ${error.message}`);
+                 console.error("Manual Check Error:", error);
+            }
+        }
+
+
+        // Avvia l'inizializzazione al caricamento
+        document.addEventListener('DOMContentLoaded', initializeFirebase);
+        
+    </script>
+</body>
+</html>
+
+<\p>
+</p>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nexus Landing Page | Protocollo SAIN</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
