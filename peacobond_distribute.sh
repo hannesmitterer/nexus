@@ -142,8 +142,11 @@ pin_on_remote() {
     local peer="$1"
     local cid="$2"
     
-    # Extract peer ID from multi-address
-    local peer_id=$(echo "${peer}" | grep -oP '/p2p/\K[^/]+$' || echo "${peer}" | grep -oP '/ipfs/\K[^/]+$')
+    # Extract peer ID from multi-address (portable method)
+    local peer_id=$(echo "${peer}" | sed -n 's#.*/p2p/\([^/]*\).*#\1#p')
+    if [ -z "${peer_id}" ]; then
+        peer_id=$(echo "${peer}" | sed -n 's#.*/ipfs/\([^/]*\).*#\1#p')
+    fi
     
     if [ -z "${peer_id}" ]; then
         log_warning "Could not extract peer ID from: ${peer}"
@@ -167,7 +170,11 @@ validate_on_peer() {
     local peer="$1"
     local cid="$2"
     
-    local peer_id=$(echo "${peer}" | grep -oP '/p2p/\K[^/]+$' || echo "${peer}" | grep -oP '/ipfs/\K[^/]+$')
+    # Extract peer ID from multi-address (portable method)
+    local peer_id=$(echo "${peer}" | sed -n 's#.*/p2p/\([^/]*\).*#\1#p')
+    if [ -z "${peer_id}" ]; then
+        peer_id=$(echo "${peer}" | sed -n 's#.*/ipfs/\([^/]*\).*#\1#p')
+    fi
     
     if [ -z "${peer_id}" ]; then
         log_warning "Could not extract peer ID for validation: ${peer}"
@@ -290,7 +297,16 @@ main() {
     log_info "File Information:"
     log_info "  File: ${PEACOBOND_FILE}"
     log_info "  CID: ${CID}"
-    log_info "  Size: $(stat -f%z "${PEACOBOND_FILE}" 2>/dev/null || stat -c%s "${PEACOBOND_FILE}" 2>/dev/null) bytes"
+    
+    # Get file size in a portable way
+    local file_size
+    if file_size=$(stat -f%z "${PEACOBOND_FILE}" 2>/dev/null); then
+        log_info "  Size: ${file_size} bytes"
+    elif file_size=$(stat -c%s "${PEACOBOND_FILE}" 2>/dev/null); then
+        log_info "  Size: ${file_size} bytes"
+    else
+        log_info "  Size: (unable to determine)"
+    fi
     echo ""
     
     # Distribute to peers
