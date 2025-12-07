@@ -1,0 +1,38 @@
+# Peacobond IPFS Peers Configuration
+# 
+# This file contains multi-addresses of IPFS nodes that should receive
+# the Peacobond distribution files. Each line should contain one peer
+# multi-address in the format:
+#   /ip4/<IP_ADDRESS>/tcp/<PORT>/p2p/<PEER_ID>
+# or
+#   /ip6/<IPv6_ADDRESS>/tcp/<PORT>/p2p/<PEER_ID>
+# or
+#   /dns4/<DOMAIN>/tcp/<PORT>/p2p/<PEER_ID>
+#
+# Lines starting with # are treated as comments and will be ignored.
+# Empty lines are also ignored.
+#
+# Example entries (these are example public IPFS bootstrap nodes):
+# /dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN
+# /dnsaddr/bootstrap.libp2p.io/p2p/QmQCU2EcMqAqQPR2i9bChDtGNJchTbq5TbXJJ16u19uLTa
+# /dnsaddr/bootstrap.libp2p.io/p2p/QmbLHAnMoJPWSCR5Zhtx6BHJX9KiKNN6tpvbUcqanj75Nb
+# /dnsaddr/bootstrap.libp2p.io/p2p/QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt
+#
+# For production use, replace these with your actual IPFS node addresses
+# in conflict zones or secure distribution points.
+#
+# Regional Node Examples:
+# /ip4/192.168.1.100/tcp/4001/p2p/QmYourRegionalNodeID1
+# /ip4/192.168.1.101/tcp/4001/p2p/QmYourRegionalNodeID2
+# /dns4/ipfs-node-africa.example.org/tcp/4001/p2p/QmAfricaNodeID
+# /dns4/ipfs-node-asia.example.org/tcp/4001/p2p/QmAsiaNodeID
+#
+# For testing, you can use public bootstrap nodes or local test nodes:
+
+# Public IPFS Bootstrap Nodes (for testing)
+/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN
+/dnsaddr/bootstrap.libp2p.io/p2p/QmQCU2EcMqAqQPR2i9bChDtGNJchTbq5TbXJJ16u19uLTa
+/dnsaddr/bootstrap.libp2p.io/p2p/QmbLHAnMoJPWSCR5Zhtx6BHJX9KiKNN6tpvbUcqanj75Nb
+
+# Add your custom peer addresses below:
+# /ip4/<YOUR_NODE_IP>/tcp/4001/p2p/<YOUR_PEER_ID>
