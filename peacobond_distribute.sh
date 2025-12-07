@@ -43,7 +43,8 @@ NC='\033[0m' # No Color
 
 log() {
     local message="$1"
-    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    local timestamp
+    timestamp=$(date '+%Y-%m-%d %H:%M:%S')
     echo -e "${timestamp} - ${message}" | tee -a "${LOG_FILE}"
 }
 
@@ -143,7 +144,8 @@ pin_on_remote() {
     local cid="$2"
     
     # Extract peer ID from multi-address (portable method)
-    local peer_id=$(echo "${peer}" | sed -n 's#.*/p2p/\([^/]*\).*#\1#p')
+    local peer_id
+    peer_id=$(echo "${peer}" | sed -n 's#.*/p2p/\([^/]*\).*#\1#p')
     if [ -z "${peer_id}" ]; then
         peer_id=$(echo "${peer}" | sed -n 's#.*/ipfs/\([^/]*\).*#\1#p')
     fi
@@ -171,7 +173,8 @@ validate_on_peer() {
     local cid="$2"
     
     # Extract peer ID from multi-address (portable method)
-    local peer_id=$(echo "${peer}" | sed -n 's#.*/p2p/\([^/]*\).*#\1#p')
+    local peer_id
+    peer_id=$(echo "${peer}" | sed -n 's#.*/p2p/\([^/]*\).*#\1#p')
     if [ -z "${peer_id}" ]; then
         peer_id=$(echo "${peer}" | sed -n 's#.*/ipfs/\([^/]*\).*#\1#p')
     fi
