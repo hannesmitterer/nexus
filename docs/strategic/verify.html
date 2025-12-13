@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifica Integrità Documento - GPT-OSS 120B</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .hash-display { 
+            font-family: 'Courier New', monospace; 
+            word-break: break-all; 
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen py-8 px-4">
+    
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-lg p-8 mb-6">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                🔐 Verifica Integrità Documento
+            </h1>
+            <p class="text-gray-600">
+                GPT-OSS 120B Rapporto di Convergenza Strategica (2026+)
+            </p>
+        </div>
+
+        <!-- Document Information -->
+        <div class="bg-white rounded-lg shadow-lg p-8 mb-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">📄 Informazioni Documento</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <p class="text-sm text-gray-500 font-medium">Titolo</p>
+                    <p class="text-gray-900" id="doc-title">Caricamento...</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500 font-medium">Versione</p>
+                    <p class="text-gray-900" id="doc-version">—</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500 font-medium">Data Archiviazione</p>
+                    <p class="text-gray-900" id="doc-timestamp">—</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500 font-medium">Stato</p>
+                    <p class="text-green-600 font-semibold" id="doc-status">—</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hash Verification Section -->
+        <div class="bg-white rounded-lg shadow-lg p-8 mb-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">🔍 Verifica Hash SHA-256</h2>
+            
+            <!-- Official Hash -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Hash Ufficiale (da metadata firmato)
+                </label>
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <p class="hash-display text-green-800" id="official-hash">Caricamento...</p>
+                </div>
+            </div>
+
+            <!-- File Upload for Verification -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Carica documento per verifica
+                </label>
+                <input 
+                    type="file" 
+                    id="file-input"
+                    accept=".md,.txt,.pdf"
+                    class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                />
+            </div>
+
+            <!-- Calculated Hash -->
+            <div class="mb-6" id="calculated-hash-section" style="display: none;">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Hash Calcolato (dal file caricato)
+                </label>
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <p class="hash-display text-blue-800" id="calculated-hash">—</p>
+                </div>
+            </div>
+
+            <!-- Verification Result -->
+            <div id="verification-result" class="hidden mt-6 p-6 rounded-lg">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <svg id="success-icon" class="h-8 w-8 text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <svg id="error-icon" class="h-8 w-8 text-red-400 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-lg font-medium" id="result-title">—</h3>
+                        <p class="mt-2 text-sm" id="result-message">—</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- IPFS Archive Information -->
+        <div class="bg-white rounded-lg shadow-lg p-8 mb-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">📦 Archiviazione IPFS</h2>
+            
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">CID (Content Identifier)</label>
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                    <p class="hash-display text-gray-800" id="ipfs-cid">Caricamento...</p>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Gateway IPFS</label>
+                <div id="ipfs-gateways" class="space-y-2">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p class="text-sm text-blue-800">
+                    <strong>ℹ️ Nota:</strong> Il documento è archiviato in modo immutabile su IPFS per garantire 
+                    la persistenza a lungo termine e la resistenza alla censura. Utilizza i link sopra per 
+                    accedere alla versione ufficiale.
+                </p>
+            </div>
+        </div>
+
+        <!-- Governance Signatures -->
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">✍️ Firme e Consenso</h2>
+            <div id="signatures-list" class="space-y-3">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let metadata = null;
+
+        // Load metadata on page load
+        async function loadMetadata() {
+            try {
+                const response = await fetch('./metadata.json');
+                metadata = await response.json();
+                displayMetadata();
+            } catch (error) {
+                console.error('Error loading metadata:', error);
+                alert('Errore nel caricamento dei metadati del documento');
+            }
+        }
+
+        // Display metadata in the UI
+        function displayMetadata() {
+            if (!metadata) return;
+
+            // Document info
+            document.getElementById('doc-title').textContent = metadata.document.title;
+            document.getElementById('doc-version').textContent = metadata.document.version;
+            document.getElementById('doc-timestamp').textContent = new Date(metadata.document.timestamp).toLocaleString('it-IT');
+            document.getElementById('doc-status').textContent = metadata.document.status;
+
+            // Official hash
+            document.getElementById('official-hash').textContent = metadata.integrity.sha256;
+
+            // IPFS CID
+            document.getElementById('ipfs-cid').textContent = metadata.ipfs.cid;
+
+            // IPFS Gateways
+            const gatewaysContainer = document.getElementById('ipfs-gateways');
+            gatewaysContainer.innerHTML = metadata.ipfs.gateway_urls.map(url => `
+                <a href="${url}" target="_blank" rel="noopener noreferrer" 
+                   class="block px-4 py-2 bg-indigo-50 hover:bg-indigo-100 rounded-lg text-indigo-700 text-sm transition-colors">
+                    ${url}
+                </a>
+            `).join('');
+
+            // Signatures
+            const signaturesContainer = document.getElementById('signatures-list');
+            signaturesContainer.innerHTML = metadata.governance.signatures.map(sig => `
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div>
+                        <p class="font-medium text-gray-900">${sig.entity}</p>
+                        <p class="text-sm text-gray-600 font-mono">${sig.signature}</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                            ✓ ${sig.status}
+                        </span>
+                        <p class="text-xs text-gray-500 mt-1">${new Date(sig.timestamp).toLocaleString('it-IT')}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Handle file upload and hash calculation
+        document.getElementById('file-input').addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            try {
+                // Show loading state
+                const calculatedHashSection = document.getElementById('calculated-hash-section');
+                calculatedHashSection.style.display = 'block';
+                document.getElementById('calculated-hash').textContent = 'Calcolo in corso...';
+
+                // Read file and calculate hash
+                const arrayBuffer = await file.arrayBuffer();
+                const wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
+                const hash = CryptoJS.SHA256(wordArray).toString();
+
+                // Display calculated hash
+                document.getElementById('calculated-hash').textContent = hash;
+
+                // Verify hash
+                verifyHash(hash);
+            } catch (error) {
+                console.error('Error calculating hash:', error);
+                alert('Errore nel calcolo dell\'hash');
+            }
+        });
+
+        // Verify hash against official hash
+        function verifyHash(calculatedHash) {
+            const officialHash = metadata.integrity.sha256;
+            const resultDiv = document.getElementById('verification-result');
+            const successIcon = document.getElementById('success-icon');
+            const errorIcon = document.getElementById('error-icon');
+            const resultTitle = document.getElementById('result-title');
+            const resultMessage = document.getElementById('result-message');
+
+            resultDiv.classList.remove('hidden');
+
+            if (calculatedHash === officialHash) {
+                // Success
+                resultDiv.classList.remove('bg-red-50', 'border-red-200');
+                resultDiv.classList.add('bg-green-50', 'border', 'border-green-200');
+                successIcon.classList.remove('hidden');
+                errorIcon.classList.add('hidden');
+                resultTitle.classList.remove('text-red-800');
+                resultTitle.classList.add('text-green-800');
+                resultTitle.textContent = '✓ Verifica Riuscita';
+                resultMessage.classList.remove('text-red-700');
+                resultMessage.classList.add('text-green-700');
+                resultMessage.textContent = 'L\'integrità del documento è confermata. Gli hash corrispondono perfettamente. Il documento non è stato modificato e corrisponde alla versione ufficiale firmata archiviata su IPFS.';
+            } else {
+                // Failure
+                resultDiv.classList.remove('bg-green-50', 'border-green-200');
+                resultDiv.classList.add('bg-red-50', 'border', 'border-red-200');
+                successIcon.classList.add('hidden');
+                errorIcon.classList.remove('hidden');
+                resultTitle.classList.remove('text-green-800');
+                resultTitle.classList.add('text-red-800');
+                resultTitle.textContent = '✗ Verifica Fallita';
+                resultMessage.classList.remove('text-green-700');
+                resultMessage.classList.add('text-red-700');
+                resultMessage.textContent = 'ATTENZIONE: L\'integrità del documento è compromessa. Gli hash NON corrispondono. Il documento potrebbe essere stato modificato o corrotto. Si prega di recuperare la versione ufficiale da IPFS utilizzando i link sopra.';
+            }
+        }
+
+        // Initialize on page load
+        loadMetadata();
+    </script>
+
+</body>
+</html>

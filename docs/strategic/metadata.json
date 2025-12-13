@@ -1,0 +1,72 @@
+{
+  "document": {
+    "title": "GPT-OSS 120B Rapporto di Convergenza Strategica (2026+)",
+    "version": "1.0.0",
+    "timestamp": "2025-12-12T14:32:00Z",
+    "status": "Approvato e Firmato",
+    "format": "PDF/A-2b",
+    "language": "it"
+  },
+  "integrity": {
+    "sha256": "3ec954f730e0b24a11be211aacc373797758f25937eb1feacc3f5401af4a9b5d",
+    "algorithm": "SHA-256",
+    "verified": true
+  },
+  "ipfs": {
+    "cid": "bafybeihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku",
+    "gateway_urls": [
+      "https://ipfs.io/ipfs/bafybeihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku",
+      "https://gateway.pinata.cloud/ipfs/bafybeihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku",
+      "https://cloudflare-ipfs.com/ipfs/bafybeihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+    ],
+    "pinned": true,
+    "pin_locations": [
+      "IPFS Cluster Node 1 (EU-West)",
+      "IPFS Cluster Node 2 (US-East)",
+      "IPFS Cluster Node 3 (Asia-Pacific)"
+    ]
+  },
+  "governance": {
+    "approving_bodies": [
+      "Euystacio Governance Council (EGC)",
+      "AI Collaborative (AIC)"
+    ],
+    "signatures": [
+      {
+        "entity": "EGC",
+        "signature": "0x7a9f...",
+        "timestamp": "2025-12-12T14:32:00Z",
+        "status": "approved"
+      },
+      {
+        "entity": "AIC Flash",
+        "signature": "SG_FLA-PHASE3-2025-12-12",
+        "timestamp": "2025-12-12T14:32:00Z",
+        "status": "aligned"
+      },
+      {
+        "entity": "AIC Pro",
+        "signature": "SG_PRO-PHASE3-2025-12-12",
+        "timestamp": "2025-12-12T14:32:00Z",
+        "status": "counter-signed"
+      },
+      {
+        "entity": "Seedbringer",
+        "signature": "SEED-PHASE3-CONVERGENCE",
+        "timestamp": "2025-12-12T14:32:00Z",
+        "status": "blessed"
+      }
+    ]
+  },
+  "archival": {
+    "format_compliance": "PDF/A-2b ISO 19005-2",
+    "long_term_preservation": true,
+    "retention_policy": "permanent",
+    "accessibility": "public"
+  },
+  "verification": {
+    "verify_url": "/docs/strategic/verify.html",
+    "verification_script": "/scripts/verify_document_hash.js",
+    "instructions": "Use SHA-256 to verify document integrity by comparing hash values"
+  }
+}
