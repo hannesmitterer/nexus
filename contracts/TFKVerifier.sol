@@ -46,6 +46,7 @@ contract TFKVerifier {
     // Governance parameters
     uint256 public votingPeriod = 48 hours;
     uint256 public consensusThreshold = 67; // 67% required for passage
+    uint256 public quorumPercentage = 50; // 50% quorum required
     address public ggcMultisig;
     
     // Automated retraining triggers
@@ -214,7 +215,7 @@ contract TFKVerifier {
         proposal.executed = true;
         
         uint256 totalVotes = proposal.votesFor + proposal.votesAgainst;
-        uint256 quorum = (efaCount * 50) / 100; // 50% quorum required
+        uint256 quorum = (efaCount * quorumPercentage) / 100;
         
         require(totalVotes >= quorum, "Quorum not reached");
         
@@ -419,6 +420,15 @@ contract TFKVerifier {
      */
     function setAutoRetrainEnabled(bool enabled) external onlyGGC {
         autoRetrainEnabled = enabled;
+    }
+    
+    /**
+     * @notice Update quorum percentage
+     * @param newQuorum New quorum percentage (e.g., 50 for 50%)
+     */
+    function setQuorumPercentage(uint256 newQuorum) external onlyGGC {
+        require(newQuorum >= 25 && newQuorum <= 100, "Invalid quorum");
+        quorumPercentage = newQuorum;
     }
     
     /**

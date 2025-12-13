@@ -502,6 +502,13 @@
     <script>
         // Dashboard data loading and real-time updates
         
+        // Configuration - can be overridden via environment
+        const CONFIG = {
+            stateDataUrl: window.DASHBOARD_STATE_URL || './dashboard/data/state.json',
+            onchainDataUrl: window.DASHBOARD_ONCHAIN_URL || './dashboard/data/onchain.json',
+            refreshInterval: window.DASHBOARD_REFRESH_MS || 30000
+        };
+        
         function updateDashboard(data) {
             // Update ethics metrics
             if (data.ethics) {
@@ -548,7 +555,7 @@
         // Load initial data
         async function loadData() {
             try {
-                const response = await fetch('./dashboard/data/state.json');
+                const response = await fetch(CONFIG.stateDataUrl);
                 const data = await response.json();
                 updateDashboard(data);
             } catch (error) {
@@ -559,7 +566,7 @@
         // Load on-chain data
         async function loadOnChainData() {
             try {
-                const response = await fetch('./dashboard/data/onchain.json');
+                const response = await fetch(CONFIG.onchainDataUrl);
                 const data = await response.json();
                 
                 document.getElementById('tfk-link').href = 
@@ -576,8 +583,8 @@
         loadData();
         loadOnChainData();
         
-        // Auto-refresh every 30 seconds
-        setInterval(loadData, 30000);
+        // Auto-refresh at configured interval
+        setInterval(loadData, CONFIG.refreshInterval);
     </script>
 </body>
 </html>

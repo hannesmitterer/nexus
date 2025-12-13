@@ -7,6 +7,10 @@ pragma solidity ^0.8.20;
  * @dev Part of Euystacio Framework Phase II - Issue #6
  */
 
+interface ITFKVerifier {
+    function currentModelCID() external view returns (bytes32);
+}
+
 interface IFinalizable {
     /**
      * @notice Finalize a transaction atomically
@@ -241,7 +245,18 @@ contract EIMClient is IFinalizable {
         }
         
         // Check 2: Model digest should match current approved model
-        // (In production, this would call TFKVerifier to verify model CID)
+        // Verify against TFKVerifier to ensure SAN is using approved EAL version
+        if (tfkVerifier != address(0)) {
+            try ITFKVerifier(tfkVerifier).currentModelCID() returns (bytes32 approvedCID) {
+                if (validation.modelDigest != approvedCID) {
+                    isValid = false;
+                }
+            } catch {
+                // If TFKVerifier call fails, we cannot verify model version
+                // Mark as invalid for safety
+                isValid = false;
+            }
+        }
         
         // Check 3: Timestamp must be recent (within timeout period)
         if (block.timestamp > validation.timestamp + validationTimeout) {
