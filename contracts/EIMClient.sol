@@ -59,6 +59,7 @@ contract EIMClient is IFinalizable {
     
     // VCE (Veto Consensus Event) tracking
     mapping(bytes32 => VCETrigger) public vceTriggers;
+    mapping(bytes32 => mapping(address => bool)) public vceReported; // Track reporters efficiently
     uint256 public vceCount;
     
     // Authorized entities
@@ -117,6 +118,12 @@ contract EIMClient is IFinalizable {
         uint256 indexed vceId,
         bytes32 indexed sepId,
         bool slashingOccurred,
+        uint256 timestamp
+    );
+    
+    event TFKVerifierCheckFailed(
+        bytes32 indexed operationHash,
+        string reason,
         uint256 timestamp
     );
     
@@ -250,11 +257,21 @@ contract EIMClient is IFinalizable {
             try ITFKVerifier(tfkVerifier).currentModelCID() returns (bytes32 approvedCID) {
                 if (validation.modelDigest != approvedCID) {
                     isValid = false;
+                    emit TFKVerifierCheckFailed(
+                        operationHash,
+                        "Model CID mismatch",
+                        block.timestamp
+                    );
                 }
             } catch {
                 // If TFKVerifier call fails, we cannot verify model version
                 // Mark as invalid for safety
                 isValid = false;
+                emit TFKVerifierCheckFailed(
+                    operationHash,
+                    "TFKVerifier call failed",
+                    block.timestamp
+                );
             }
         }
         
@@ -358,8 +375,13 @@ contract EIMClient is IFinalizable {
     ) external onlyAuthorizedEFA automationActive returns (uint256 vceId) {
         require(processedSEPs[sepId], "SEP not found");
         
-        // Find existing VCE or create new one
-        bytes32 vceKey = keccak256(abi.encodePacked(sepId, violationType));
+        // Create unique VCE key including timestamp to prevent collisions
+        bytes32 vceKey = keccak256(abi.encodePacked(
+            sepId, 
+            violationType, 
+            vceCount  // Use counter for uniqueness
+        ));
+        
         VCETrigger storage vce = vceTriggers[vceKey];
         
         if (vce.timestamp == 0) {
@@ -371,17 +393,10 @@ contract EIMClient is IFinalizable {
             vce.executed = false;
         }
         
-        // Add reporter if not already added
-        bool alreadyReported = false;
-        for (uint256 i = 0; i < vce.reporters.length; i++) {
-            if (vce.reporters[i] == msg.sender) {
-                alreadyReported = true;
-                break;
-            }
-        }
-        
-        if (!alreadyReported) {
+        // Add reporter if not already added (O(1) lookup via mapping)
+        if (!vceReported[vceKey][msg.sender]) {
             vce.reporters.push(msg.sender);
+            vceReported[vceKey][msg.sender] = true;
         }
         
         // Execute VCE if threshold reached

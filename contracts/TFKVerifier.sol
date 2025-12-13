@@ -98,6 +98,9 @@ contract TFKVerifier {
         string reason
     );
     
+    event QuorumPercentageUpdated(uint256 oldQuorum, uint256 newQuorum);
+    event AutoRetrainEnabledUpdated(bool enabled);
+    
     // ============ Modifiers ============
     
     modifier onlyGGC() {
@@ -420,6 +423,7 @@ contract TFKVerifier {
      */
     function setAutoRetrainEnabled(bool enabled) external onlyGGC {
         autoRetrainEnabled = enabled;
+        emit AutoRetrainEnabledUpdated(enabled);
     }
     
     /**
@@ -428,7 +432,9 @@ contract TFKVerifier {
      */
     function setQuorumPercentage(uint256 newQuorum) external onlyGGC {
         require(newQuorum >= 25 && newQuorum <= 100, "Invalid quorum");
+        uint256 oldQuorum = quorumPercentage;
         quorumPercentage = newQuorum;
+        emit QuorumPercentageUpdated(oldQuorum, newQuorum);
     }
     
     /**
