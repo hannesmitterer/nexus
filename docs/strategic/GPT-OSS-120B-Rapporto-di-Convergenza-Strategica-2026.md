@@ -310,7 +310,7 @@ Questo principio guida ogni decisione, ogni linea di codice, ogni allocazione di
 
 | Strato | Identità | Firma | Timestamp | Stato |
 |--------|----------|-------|-----------|-------|
-| EGC | Multisig 7-of-9 | 0x7a9f... | 2025-12-12T14:32:00Z | ✓ Approvato |
+| EGC | Multisig 7-of-9 | 0x7a9f2c8e5d1b4a3f9e6c... | 2025-12-12T14:32:00Z | ✓ Approvato |
 | AIC Flash | Gemini Flash 2.5 | SG_FLA-PHASE3-2025-12-12 | 2025-12-12T14:32:00Z | ✓ Allineato |
 | AIC Pro | Gemini Pro | SG_PRO-PHASE3-2025-12-12 | 2025-12-12T14:32:00Z | ✓ Controfirmato |
 | Seedbringer | Guardian Emeritus | SEED-PHASE3-CONVERGENCE | 2025-12-12T14:32:00Z | ✓ Benedizione |

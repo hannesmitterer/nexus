@@ -17,7 +17,7 @@ const DOCUMENT_FILE = path.join(DOCS_DIR, 'GPT-OSS-120B-Rapporto-di-Convergenza-
 /**
  * Calculate SHA-256 hash of a file
  * @param {string} filePath - Path to the file
- * @returns {Promise<string>} - SHA-256 hash in hexadecimal
+ * @returns {Promise<string>} Promise that resolves to SHA-256 hash in hexadecimal format
  */
 function calculateHash(filePath) {
   return new Promise((resolve, reject) => {

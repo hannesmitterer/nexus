@@ -5,9 +5,15 @@
 
 set -e
 
+# Configuration
 DOCS_DIR="./docs/strategic"
 DOCUMENT="$DOCS_DIR/GPT-OSS-120B-Rapporto-di-Convergenza-Strategica-2026.md"
 METADATA="$DOCS_DIR/metadata.json"
+
+# Fallback values (update if metadata changes)
+FALLBACK_TITLE="GPT-OSS 120B Rapporto di Convergenza Strategica (2026+)"
+FALLBACK_VERSION="1.0.0"
+FALLBACK_CID="bafybeihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "  📜 Quick Document Verification"
@@ -34,9 +40,9 @@ if command -v jq &> /dev/null; then
 else
     # Fallback without jq
     EXPECTED_HASH=$(grep -A 1 '"sha256"' "$METADATA" | tail -1 | sed 's/.*: "\(.*\)".*/\1/')
-    DOC_TITLE="GPT-OSS 120B Rapporto di Convergenza Strategica (2026+)"
-    DOC_VERSION="1.0.0"
-    IPFS_CID="bafybeihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"
+    DOC_TITLE="$FALLBACK_TITLE"
+    DOC_VERSION="$FALLBACK_VERSION"
+    IPFS_CID="$FALLBACK_CID"
 fi
 
 echo "Document: $DOC_TITLE"

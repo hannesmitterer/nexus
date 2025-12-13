@@ -46,7 +46,7 @@ All strategic documents are archived on IPFS (InterPlanetary File System) to ens
 
 The integrity of each document can be verified using SHA-256 hashing:
 
-**Official Hash:** `3ec954f730e0b24a11be211aacc373797758f25937eb1feacc3f5401af4a9b5d`
+**Official Hash:** `475929e7231914b965f2e57752a3d422d7ad7ee9ac36fd45fccf6ca9b8f7b4ac`
 
 #### Command Line Verification
 

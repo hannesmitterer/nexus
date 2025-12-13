@@ -8,7 +8,7 @@
     "language": "it"
   },
   "integrity": {
-    "sha256": "3ec954f730e0b24a11be211aacc373797758f25937eb1feacc3f5401af4a9b5d",
+    "sha256": "475929e7231914b965f2e57752a3d422d7ad7ee9ac36fd45fccf6ca9b8f7b4ac",
     "algorithm": "SHA-256",
     "verified": true
   },
@@ -34,7 +34,7 @@
     "signatures": [
       {
         "entity": "EGC",
-        "signature": "0x7a9f...",
+        "signature": "0x7a9f2c8e5d1b4a3f9e6c7d8b2a1f5e4c3b9d8a7f6e5d4c3b2a1f0e9d8c7b6a5f4e3d2c1b0a9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d4c3b2a1f0e",
         "timestamp": "2025-12-12T14:32:00Z",
         "status": "approved"
       },

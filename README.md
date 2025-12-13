@@ -22,7 +22,7 @@ This strategic convergence report outlines the transition plan to Phase III of t
 node scripts/verify_document_hash.js
 
 # Expected hash
-3ec954f730e0b24a11be211aacc373797758f25937eb1feacc3f5401af4a9b5d
+475929e7231914b965f2e57752a3d422d7ad7ee9ac36fd45fccf6ca9b8f7b4ac
 ```
 
 For complete documentation on strategic documents, see [docs/strategic/README.md](./docs/strategic/README.md)
