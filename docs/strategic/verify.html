@@ -6,7 +6,7 @@
     <title>Verifica Integrità Documento - GPT-OSS 120B</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js" 
-            integrity="sha512-E8QSvWZ0eCLGk4km3hxSsNs8n9SBe5aHsQxJtFCDGeCSKMJdWW0G7x0Q3WvNEWY8FLRdNHYF1wbJJaM0XPgmzg==" 
+            integrity="sha384-OLBgp1GsljhM2TJ+sbHjaiH9txEUvgdDTAzHv2P24donTt6/529l+9Ua0vFImLlb" 
             crossorigin="anonymous"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -232,6 +232,7 @@
                 document.getElementById('calculated-hash').textContent = 'Calcolo in corso...';
 
                 // Read file and calculate hash
+                // Note: For very large files (>100MB), consider implementing streaming
                 const arrayBuffer = await file.arrayBuffer();
                 const wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
                 const hash = CryptoJS.SHA256(wordArray).toString();

@@ -85,7 +85,8 @@ async function verifyDocument() {
     }
   } catch (error) {
     console.error('\n✗ ERROR during verification:');
-    console.error('  ', error.message);
+    // Log sanitized error message (avoid exposing sensitive paths/details in production)
+    console.error('  ', error.code || error.message || 'Unknown error');
     console.log('\n═══════════════════════════════════════════════════════════\n');
     return false;
   }

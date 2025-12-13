@@ -33,16 +33,23 @@ fi
 
 # Extract expected hash from metadata
 if command -v jq &> /dev/null; then
-    EXPECTED_HASH=$(jq -r '.integrity.sha256' "$METADATA")
-    DOC_TITLE=$(jq -r '.document.title' "$METADATA")
-    DOC_VERSION=$(jq -r '.document.version' "$METADATA")
-    IPFS_CID=$(jq -r '.ipfs.cid' "$METADATA")
+    EXPECTED_HASH=$(jq -r '.integrity.sha256' "$METADATA" 2>/dev/null)
+    DOC_TITLE=$(jq -r '.document.title' "$METADATA" 2>/dev/null)
+    DOC_VERSION=$(jq -r '.document.version' "$METADATA" 2>/dev/null)
+    IPFS_CID=$(jq -r '.ipfs.cid' "$METADATA" 2>/dev/null)
 else
-    # Fallback without jq
-    EXPECTED_HASH=$(grep -A 1 '"sha256"' "$METADATA" | tail -1 | sed 's/.*: "\(.*\)".*/\1/')
+    # Fallback without jq - basic regex extraction with error handling
+    EXPECTED_HASH=$(grep -A 1 '"sha256"' "$METADATA" 2>/dev/null | tail -1 | sed 's/.*: "\(.*\)".*/\1/' || echo "")
     DOC_TITLE="$FALLBACK_TITLE"
     DOC_VERSION="$FALLBACK_VERSION"
     IPFS_CID="$FALLBACK_CID"
+fi
+
+# Validate that we got a hash
+if [ -z "$EXPECTED_HASH" ]; then
+    echo "❌ Error: Could not extract hash from metadata"
+    echo "   Please ensure metadata.json is properly formatted"
+    exit 1
 fi
 
 echo "Document: $DOC_TITLE"
