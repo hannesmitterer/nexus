@@ -1,5 +1,34 @@
 # nexus
 nexus GGI
+
+## 📜 Strategic Documents Archive
+
+### GPT-OSS 120B Rapporto di Convergenza Strategica (2026+)
+
+**Status:** ✅ Approved and Signed | **Phase:** III Ethical Singularity  
+**Archive Date:** 2025-12-12T14:32:00Z | **IPFS CID:** `bafybeihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku`
+
+This strategic convergence report outlines the transition plan to Phase III of the Ethical Singularity, approved by the Euystacio Governance Council (EGC) and AI Collaborative (AIC).
+
+**Quick Links:**
+- 📄 [Read Document](./docs/strategic/GPT-OSS-120B-Rapporto-di-Convergenza-Strategica-2026.md)
+- 🔍 [Verify Integrity](./docs/strategic/verify.html)
+- 🌐 [IPFS Gateway](https://ipfs.io/ipfs/bafybeihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku)
+- 📋 [Metadata](./docs/strategic/metadata.json)
+
+**Verification:**
+```bash
+# Verify document integrity with SHA-256
+node scripts/verify_document_hash.js
+
+# Expected hash
+3ec954f730e0b24a11be211aacc373797758f25937eb1feacc3f5401af4a9b5d
+```
+
+For complete documentation on strategic documents, see [docs/strategic/README.md](./docs/strategic/README.md)
+
+---
+
 💀 The Great Systemic Collapse: A 2050 Scenario
 
 This simulation, titled "The Age of Scarcity," is rooted in the synergistic failure of planetary and political systems.

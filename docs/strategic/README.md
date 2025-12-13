@@ -51,11 +51,14 @@ The integrity of each document can be verified using SHA-256 hashing:
 #### Command Line Verification
 
 ```bash
-# Calculate hash of the document
-sha256sum docs/strategic/GPT-OSS-120B-Rapporto-di-Convergenza-Strategica-2026.md
+# Quick verification (bash script)
+./scripts/quick_verify.sh
 
-# Or use the provided script
+# Detailed verification (Node.js)
 node scripts/verify_document_hash.js
+
+# Manual verification
+sha256sum docs/strategic/GPT-OSS-120B-Rapporto-di-Convergenza-Strategica-2026.md
 ```
 
 #### Web Interface Verification
