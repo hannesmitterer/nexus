@@ -11,7 +11,7 @@
 # 4. Pins the resulting CID to Pinata
 # ==============================================================================
 
-set -e  # Exit on error
+set -eo pipefail  # Exit on error and propagate pipe failures
 
 # Color codes for output
 RED='\033[0;31m'
@@ -213,9 +213,7 @@ add_docs_to_ipfs() {
     print_status "Processing: $DOCS_DIR"
     
     # Add directory recursively and capture output
-    IPFS_OUTPUT=$(ipfs add -r "$DOCS_DIR" 2>&1)
-    
-    if [ $? -ne 0 ]; then
+    if ! IPFS_OUTPUT=$(ipfs add -r "$DOCS_DIR" 2>&1); then
         print_error "Failed to add documentation to IPFS."
         echo "$IPFS_OUTPUT"
         exit 1
@@ -267,26 +265,30 @@ EOF
     
     print_status "Sending pin request to Pinata..."
     
-    # Make API request to Pinata
-    PINATA_RESPONSE=$(curl -s -X POST \
+    # Make API request to Pinata and capture both response and HTTP status
+    HTTP_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
         "https://api.pinata.cloud/pinning/pinByHash" \
         -H "Content-Type: application/json" \
         -H "Authorization: Bearer $PINATA_JWT" \
         -d "$PINATA_PAYLOAD")
     
-    # Check if pinning was successful
-    if echo "$PINATA_RESPONSE" | grep -q "error"; then
-        print_error "Failed to pin to Pinata."
+    # Extract HTTP status code (last line) and response body (everything else)
+    HTTP_STATUS=$(echo "$HTTP_RESPONSE" | tail -n 1)
+    PINATA_RESPONSE=$(echo "$HTTP_RESPONSE" | sed '$d')
+    
+    # Check HTTP status code
+    if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
+        if echo "$PINATA_RESPONSE" | grep -q "ipfsHash"; then
+            print_success "Successfully pinned to Pinata!"
+            echo "Response: $PINATA_RESPONSE"
+        else
+            print_warning "Pinata request succeeded but response format unexpected."
+            echo "Response: $PINATA_RESPONSE"
+        fi
+    else
+        print_error "Failed to pin to Pinata (HTTP $HTTP_STATUS)."
         echo "Response: $PINATA_RESPONSE"
         exit 1
-    fi
-    
-    if echo "$PINATA_RESPONSE" | grep -q "ipfsHash"; then
-        print_success "Successfully pinned to Pinata!"
-        echo "Response: $PINATA_RESPONSE"
-    else
-        print_warning "Pinata response received but status unclear."
-        echo "Response: $PINATA_RESPONSE"
     fi
 }
 
@@ -315,9 +317,6 @@ cleanup() {
 # ==============================================================================
 
 main() {
-    # Set trap for cleanup on exit
-    trap cleanup EXIT
-    
     echo "===================================================================="
     echo "  IPFS and Pinata Framework Eternalization Script"
     echo "===================================================================="
@@ -344,9 +343,6 @@ main() {
     # Step 6: Pin to Pinata
     pin_to_pinata
     
-    # Step 7: Cleanup and finish
-    cleanup
-    
     echo ""
     echo "===================================================================="
     echo "  Eternalization Complete!"
@@ -355,6 +351,9 @@ main() {
     echo "  CID: $DOCS_CID"
     echo "===================================================================="
 }
+
+# Set trap for cleanup on exit
+trap cleanup EXIT
 
 # Run main function
 main
