@@ -68,7 +68,7 @@ check_docs_directory() {
         exit 1
     fi
     
-    if [ -z "$(ls -A $DOCS_DIR)" ]; then
+    if [ -z "$(ls -A "$DOCS_DIR")" ]; then
         print_error "Documentation directory '$DOCS_DIR' is empty."
         echo "Please add documentation files to the 'docs/' directory."
         exit 1
@@ -177,8 +177,12 @@ start_ipfs_daemon() {
     print_status "Starting IPFS daemon..."
     print_warning "This may take a few moments..."
     
+    # Create secure temporary log file
+    DAEMON_LOG=$(mktemp)
+    export DAEMON_LOG
+    
     # Start daemon in background
-    ipfs daemon &> /tmp/ipfs-daemon.log &
+    ipfs daemon &> "$DAEMON_LOG" &
     IPFS_DAEMON_PID=$!
     
     # Wait for daemon to be ready
@@ -196,7 +200,7 @@ start_ipfs_daemon() {
     done
     
     print_error "IPFS daemon failed to start within expected time."
-    print_error "Check logs at /tmp/ipfs-daemon.log for details."
+    print_error "Check logs at $DAEMON_LOG for details."
     exit 1
 }
 
@@ -292,6 +296,12 @@ EOF
 
 cleanup() {
     print_status "Cleaning up..."
+    
+    # Clean up daemon log file if it exists
+    if [ -n "$DAEMON_LOG" ] && [ -f "$DAEMON_LOG" ]; then
+        rm -f "$DAEMON_LOG"
+    fi
+    
     # Daemon will continue running in background
     # User can stop it manually with: ipfs shutdown
     print_success "Script completed."
@@ -305,6 +315,9 @@ cleanup() {
 # ==============================================================================
 
 main() {
+    # Set trap for cleanup on exit
+    trap cleanup EXIT
+    
     echo "===================================================================="
     echo "  IPFS and Pinata Framework Eternalization Script"
     echo "===================================================================="
@@ -342,9 +355,6 @@ main() {
     echo "  CID: $DOCS_CID"
     echo "===================================================================="
 }
-
-# Set trap for cleanup on exit
-trap cleanup EXIT
 
 # Run main function
 main
