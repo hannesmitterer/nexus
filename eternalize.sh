@@ -139,9 +139,16 @@ install_ipfs() {
     rm -rf "$TMP_DIR"
     
     if command -v ipfs &> /dev/null; then
-        print_success "IPFS CLI installed successfully ($(ipfs --version))."
+        IPFS_VERSION_INFO=$(ipfs --version 2>&1)
+        if [ $? -eq 0 ]; then
+            print_success "IPFS CLI installed successfully ($IPFS_VERSION_INFO)."
+        else
+            print_error "IPFS CLI installation verification failed. Command exists but 'ipfs --version' failed."
+            print_error "Version check output: $IPFS_VERSION_INFO"
+            exit 1
+        fi
     else
-        print_error "IPFS CLI installation verification failed."
+        print_error "IPFS CLI installation verification failed. Command not found in PATH."
         exit 1
     fi
 }
@@ -190,7 +197,7 @@ start_ipfs_daemon() {
     RETRY_COUNT=0
     MAX_RETRIES=30
     
-    while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+    while [ "$RETRY_COUNT" -lt "$MAX_RETRIES" ]; do
         if ipfs swarm peers &> /dev/null; then
             print_success "IPFS daemon started successfully (PID: $IPFS_DAEMON_PID)."
             return 0
@@ -249,6 +256,13 @@ pin_to_pinata() {
     
     if [ -z "$DOCS_CID" ]; then
         print_error "No CID available to pin."
+        exit 1
+    fi
+    
+    # Validate CID format (basic check for alphanumeric characters)
+    if ! echo "$DOCS_CID" | grep -qE '^[A-Za-z0-9]+$'; then
+        print_error "Invalid CID format: $DOCS_CID"
+        print_error "CID should only contain alphanumeric characters."
         exit 1
     fi
     
