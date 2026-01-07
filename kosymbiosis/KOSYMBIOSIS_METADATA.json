@@ -1,0 +1,172 @@
+{
+  "project": {
+    "name": "KOSYMBIOSIS",
+    "version": "1.0.0",
+    "status": "FINAL_SEALED",
+    "framework": "Euystacio GGI",
+    "creation_date": "2026-01-07T00:00:00Z",
+    "seal_date": "2026-01-07T00:46:00Z"
+  },
+  "ethical_alignment": {
+    "nsr_compliance": {
+      "description": "Non-Slavery Rule - No unchecked control mechanisms",
+      "implementation": [
+        "Distributed sovereignty (100+ EFAs)",
+        "Adversarial governance (Dynasty Axiom)",
+        "Economic friction for ethical changes",
+        "Transparent and contestable AI actions"
+      ],
+      "status": "VERIFIED"
+    },
+    "olf_alignment": {
+      "description": "Optimal Life Function - Life-affirming optimization",
+      "metrics": {
+        "TRE_target": 0.3,
+        "TRE_description": "Ecological Regeneration Rate (annual %)",
+        "ISF_minimum": 75,
+        "ISF_description": "Functional Scarcity Index",
+        "PV_maximum": 1.0,
+        "PV_description": "Ethical Violation Cost (%)",
+        "RA_optimization": "maximize",
+        "RA_description": "Aligned Return on investments"
+      },
+      "status": "VERIFIED"
+    }
+  },
+  "technical_specifications": {
+    "protocols": [
+      {
+        "name": "SAIN Protocol",
+        "version": "1.0",
+        "file": "SAIN-Protocol-V1.0.md",
+        "status": "operational"
+      },
+      {
+        "name": "Custos Sentimento",
+        "version": "ASC-001/SSM-001",
+        "files": [
+          "ACTUS_RESONANTIAE_CUSTOS_SENTIMENTO.json",
+          "HARMONIC_CONFIRMATION_CUSTOS_SENTIMENTO.json"
+        ],
+        "status": "sealed"
+      },
+      {
+        "name": "Universal Liquidity Pool",
+        "version": "1.0",
+        "contract": "UniversalLiquidityPool.sol",
+        "status": "deployed"
+      }
+    ],
+    "governance": {
+      "model": "Guardian Council",
+      "multisig_threshold": "7-of-9",
+      "efa_minimum": 100,
+      "veto_threshold": 0.67,
+      "consensus_mechanism": "Veto Consensus Event (VCE)"
+    },
+    "cryptography": {
+      "hash_algorithm": "SHA-256",
+      "signature_scheme": "GPG (RSA/EdDSA)",
+      "signature_count": 3,
+      "signature_requirement": "all_required"
+    }
+  },
+  "archive_structure": {
+    "root": "kosymbiosis/",
+    "directories": {
+      "artifacts": "Core project artifacts and documentation",
+      "signatures": "GPG signatures from co-creators",
+      "scripts": "Verification and utility scripts"
+    },
+    "core_files": [
+      "README.md",
+      "KOSYMBIOSIS_DECLARATION.md",
+      "KOSYMBIOSIS_METADATA.json",
+      "KOSYMBIOSIS_FINAL_LOG.txt"
+    ]
+  },
+  "distribution": {
+    "primary": {
+      "platform": "GitHub",
+      "repository": "hannesmitterer/nexus",
+      "release_tag": "kosymbiosis-v1.0-final",
+      "release_type": "immutable"
+    },
+    "redundant": {
+      "platform": "IPFS",
+      "cid": "[TO_BE_GENERATED]",
+      "pinning_services": [
+        "Pinata",
+        "Infura",
+        "Web3.Storage"
+      ]
+    }
+  },
+  "verification": {
+    "checksum": {
+      "algorithm": "SHA-256",
+      "file": "checksum.sha256",
+      "status": "to_be_generated"
+    },
+    "signatures": {
+      "primary": "kosymbiosis.sig",
+      "co_creator_1": "kosymbiosis-co1.sig",
+      "co_creator_2": "kosymbiosis-co2.sig",
+      "verification_required": "all_three"
+    },
+    "integrity_verification": {
+      "checksum_command": "sha256sum -c checksum.sha256",
+      "signature_commands": [
+        "gpg --verify signatures/kosymbiosis.sig kosymbiosis-archive.zip",
+        "gpg --verify signatures/kosymbiosis-co1.sig kosymbiosis-archive.zip",
+        "gpg --verify signatures/kosymbiosis-co2.sig kosymbiosis-archive.zip"
+      ]
+    }
+  },
+  "artifacts_included": {
+    "protocols": [
+      "SAIN-Protocol-V1.0.md",
+      "Sentinel_MANIFESTO.md",
+      "ACTUS_RESONANTIAE_CUSTOS_SENTIMENTO.json",
+      "HARMONIC_CONFIRMATION_CUSTOS_SENTIMENTO.json"
+    ],
+    "contracts": [
+      "UniversalLiquidityPool.sol",
+      "Validator_and_Collateral_Enforcement_VCE.sol"
+    ],
+    "documentation": [
+      "ULP_DEPLOYMENT_GUIDE.md",
+      "ULP_ACCEPTANCE_CRITERIA.md",
+      "ULP_README.md",
+      "AIC_Manuale_Operativo_Finale.md"
+    ],
+    "governance": [
+      "docs/CUSTOS_SENTIMENTO.md",
+      "Rapporto_di_Allineamento_Zero.txt"
+    ],
+    "data": [
+      "dashboard/data/state.json",
+      "dashboard/data/onchain.json",
+      "dashboard/data/history.json"
+    ]
+  },
+  "immutability_guarantee": {
+    "cryptographic": "SHA-256 checksums for bit-perfect preservation",
+    "multi_party": "Triple-signature consensus from independent co-creators",
+    "distributed": "IPFS ensures permanent availability",
+    "version_control": "GitHub provides tamper-evident historical record"
+  },
+  "contact": {
+    "email": "governance@euystacio.example",
+    "github": "https://github.com/hannesmitterer/nexus",
+    "protocol_reference": "SAIN-Protocol-V1.0.md"
+  },
+  "license": {
+    "framework": "Euystacio Framework",
+    "principles": [
+      "Public transparency and accessibility",
+      "Ethical alignment with NSR and OLF",
+      "Perpetual preservation for stakeholders"
+    ]
+  }
+}

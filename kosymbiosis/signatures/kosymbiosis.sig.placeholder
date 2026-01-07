@@ -1,0 +1,15 @@
+# PLACEHOLDER FOR GPG SIGNATURE
+# 
+# This file will be replaced with the actual GPG signature from the primary co-creator.
+# 
+# To create the signature, run:
+#   gpg --detach-sign --armor -o signatures/kosymbiosis.sig kosymbiosis-archive.zip
+# 
+# Status: PENDING SIGNATURE
+# Co-Creator: Primary (1 of 3)
+# Expected Format: ASCII-armored detached signature
+# 
+# Once signed, this file will contain:
+# -----BEGIN PGP SIGNATURE-----
+# [signature data]
+# -----END PGP SIGNATURE-----
