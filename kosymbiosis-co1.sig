@@ -4,7 +4,7 @@ Comment: In production, this would be generated using: gpg --detach-sign --armor
 Comment: Co-Creator 1 Signature
 Comment: GPG Key ID: [CO_CREATOR_1_KEY_ID]
 Comment: Archive: kosymbiosis-final-archive.zip
-Comment: SHA-256: 64e038c00860ea31edf23b78f21c8c28ee0d48cf9f35f3869313c7616b9fef6b
+Comment: SHA-256: 28345c5e4f09d0111767e775db5e1540fd1bddea4adfee34c980b26541da3373
 
 [PLACEHOLDER SIGNATURE DATA]
 This file represents where co-creator 1's GPG signature would be placed.

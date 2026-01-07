@@ -297,7 +297,7 @@ The archive is authenticated through three independent GPG signatures from proje
 
 #### 2. Cryptographic Integrity
 - **Algorithm**: SHA-256
-- **Checksum**: `64e038c00860ea31edf23b78f21c8c28ee0d48cf9f35f3869313c7616b9fef6b`
+- **Checksum**: `28345c5e4f09d0111767e775db5e1540fd1bddea4adfee34c980b26541da3373`
 - **Verification**: `sha256sum -c checksum.sha256`
 
 #### 3. Distributed Redundancy
