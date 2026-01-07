@@ -1,0 +1,15 @@
+# Exclude the generated archive file
+kosymbiosis-archive.zip
+
+# Exclude actual signature files (keep placeholders)
+signatures/kosymbiosis.sig
+signatures/kosymbiosis-co1.sig
+signatures/kosymbiosis-co2.sig
+
+# Exclude temporary files
+*.tmp
+*.bak
+*~
+
+# Exclude IPFS CID file (will be generated after upload)
+IPFS_CID.txt
