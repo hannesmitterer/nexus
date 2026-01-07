@@ -48,7 +48,7 @@ The archive integrity can be verified using the checksum file:
 sha256sum -c checksum.sha256
 ```
 
-**Archive Checksum:** `4438343af650f84de83f5742eb2f233d461c15a51545cb84cf999f9024b2b5e7`
+**Archive Checksum:** `f9f19c8ca825be3888e63ef2aeaaf41aaf3b48861dd216586fbff42d7d727e6b`
 
 ### Triple-Signature Verification
 Verify all three GPG signatures:

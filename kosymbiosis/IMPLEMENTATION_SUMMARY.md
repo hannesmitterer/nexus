@@ -313,5 +313,5 @@ The implementation provides a robust, transparent, and ethically-aligned archiva
 
 **Checksum of Final Archive:**
 ```
-4438343af650f84de83f5742eb2f233d461c15a51545cb84cf999f9024b2b5e7  kosymbiosis-archive.zip
+f9f19c8ca825be3888e63ef2aeaaf41aaf3b48861dd216586fbff42d7d727e6b  kosymbiosis-archive.zip
 ```
