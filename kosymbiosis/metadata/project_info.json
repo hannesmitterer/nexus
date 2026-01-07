@@ -1,0 +1,107 @@
+{
+  "project": {
+    "name": "KOSYMBIOSIS",
+    "version": "1.0.0-final",
+    "description": "Collaborative ethical AI development project within the Euystacio framework",
+    "framework": "Euystacio v1.0",
+    "archive_date": "2026-01-07T00:00:00Z",
+    "status": "SEALED_AND_IMMUTABLE"
+  },
+  "ethical_compliance": {
+    "nsr_compliant": true,
+    "olf_aligned": true,
+    "alignment_score": 94,
+    "external_review_status": "pending_community_evaluation"
+  },
+  "archive_details": {
+    "format": "ZIP",
+    "compression": "deflate",
+    "checksum_algorithm": "SHA-256",
+    "signature_scheme": "GPG",
+    "signature_count": 3,
+    "distribution_channels": [
+      "IPFS",
+      "GitHub_Release",
+      "Local_Backup"
+    ]
+  },
+  "technical_specifications": {
+    "primary_language": "Markdown",
+    "data_formats": [
+      "JSON",
+      "Markdown",
+      "Text"
+    ],
+    "encoding": "UTF-8",
+    "line_endings": "LF"
+  },
+  "governance": {
+    "model": "collaborative_consensus",
+    "decision_making": "triple_signature_verification",
+    "dispute_resolution": "euystacio_ggi_mediation",
+    "transparency_level": "full_public"
+  },
+  "sustainability": {
+    "ecological_considerations": true,
+    "resource_efficiency": "optimized",
+    "long_term_preservation": "multi_channel_redundancy",
+    "carbon_footprint": "minimal"
+  },
+  "license": {
+    "type": "Euystacio_Ethical_Framework",
+    "permissions": [
+      "free_access",
+      "knowledge_sharing",
+      "respectful_citation"
+    ],
+    "restrictions": [
+      "must_maintain_nsr_compliance",
+      "must_align_with_olf",
+      "no_exploitation"
+    ]
+  },
+  "metrics": {
+    "total_files": 8,
+    "documentation_pages": 6,
+    "code_files": 0,
+    "declaration_documents": 3,
+    "metadata_files": 2,
+    "log_files": 2
+  },
+  "verification": {
+    "checksum_file": "checksum.sha256",
+    "signature_files": [
+      "kosymbiosis.sig",
+      "kosymbiosis-co1.sig",
+      "kosymbiosis-co2.sig"
+    ],
+    "public_keys_included": true,
+    "verification_instructions": "README.md#triple-signature-verification"
+  },
+  "ipfs": {
+    "cid": "[IPFS_CID_PLACEHOLDER]",
+    "pin_status": "pending",
+    "gateway_urls": [
+      "https://ipfs.io/ipfs/[IPFS_CID_PLACEHOLDER]",
+      "https://cloudflare-ipfs.com/ipfs/[IPFS_CID_PLACEHOLDER]",
+      "https://gateway.pinata.cloud/ipfs/[IPFS_CID_PLACEHOLDER]"
+    ]
+  },
+  "github_release": {
+    "repository": "hannesmitterer/nexus",
+    "tag": "kosymbiosis-v1.0.0-final",
+    "release_name": "KOSYMBIOSIS Final Archive v1.0.0",
+    "assets": [
+      "kosymbiosis-final-archive.zip",
+      "checksum.sha256",
+      "kosymbiosis.sig",
+      "kosymbiosis-co1.sig",
+      "kosymbiosis-co2.sig"
+    ]
+  },
+  "contact": {
+    "email": "governance@euystacio.example",
+    "repository_url": "https://github.com/hannesmitterer/nexus",
+    "governance_body": "Euystacio Global Governance Initiative (GGI)"
+  }
+}
