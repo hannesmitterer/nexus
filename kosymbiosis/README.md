@@ -35,7 +35,7 @@ This archive contains the following components:
 ### SHA-256 Checksum
 Archive checksum:
 ```
-69ece107f0cb8564e0ab02d46d64bad2181ee85a01e44910c4eeb38a948b406d  kosymbiosis-final-archive.zip
+1248c87c5f2aa18b6032f54b9544e67c5ee9e79e4e9dcd94611c4d10f31645d6  kosymbiosis-final-archive.zip
 ```
 
 Verify the archive integrity:
