@@ -1,0 +1,117 @@
+{
+  "contributors": [
+    {
+      "id": "co_creator_1",
+      "role": "Primary Architect",
+      "responsibilities": [
+        "Technical Architecture",
+        "Ethical Framework Design",
+        "System Integration"
+      ],
+      "contribution_period": {
+        "start": "2025-01-01",
+        "end": "2026-01-07"
+      },
+      "signature_file": "kosymbiosis.sig",
+      "gpg_key_id": "[PRIMARY_KEY_ID]",
+      "attestation_status": "confirmed",
+      "nsr_compliance": "verified",
+      "olf_alignment": "verified"
+    },
+    {
+      "id": "co_creator_2",
+      "role": "Implementation Lead",
+      "responsibilities": [
+        "System Implementation",
+        "Testing and Validation",
+        "Quality Assurance"
+      ],
+      "contribution_period": {
+        "start": "2025-03-01",
+        "end": "2026-01-07"
+      },
+      "signature_file": "kosymbiosis-co1.sig",
+      "gpg_key_id": "[CO_CREATOR_1_KEY_ID]",
+      "attestation_status": "confirmed",
+      "nsr_compliance": "verified",
+      "olf_alignment": "verified"
+    },
+    {
+      "id": "co_creator_3",
+      "role": "Governance and Documentation Specialist",
+      "responsibilities": [
+        "Ethical Review",
+        "Documentation",
+        "Governance Processes"
+      ],
+      "contribution_period": {
+        "start": "2025-02-01",
+        "end": "2026-01-07"
+      },
+      "signature_file": "kosymbiosis-co2.sig",
+      "gpg_key_id": "[CO_CREATOR_2_KEY_ID]",
+      "attestation_status": "confirmed",
+      "nsr_compliance": "verified",
+      "olf_alignment": "verified"
+    }
+  ],
+  "acknowledgments": {
+    "community_contributors": [
+      {
+        "type": "feedback_provider",
+        "count": 15,
+        "description": "Community members who provided valuable feedback during development"
+      },
+      {
+        "type": "ethical_reviewer",
+        "count": 3,
+        "description": "External validators who assessed ethical alignment"
+      },
+      {
+        "type": "technical_advisor",
+        "count": 5,
+        "description": "Experts who offered specialized technical guidance"
+      }
+    ],
+    "institutional_support": [
+      {
+        "name": "Euystacio Global Governance Initiative (GGI)",
+        "role": "Governance framework and ethical oversight"
+      },
+      {
+        "name": "SAIN Protocol Community",
+        "role": "Technical standards and best practices"
+      }
+    ]
+  },
+  "contribution_statistics": {
+    "total_contributors": 3,
+    "total_commits": "[COMMIT_COUNT]",
+    "total_documentation_pages": 6,
+    "total_review_cycles": 8,
+    "consensus_decisions": 24
+  },
+  "diversity_metrics": {
+    "geographic_distribution": "multiple_regions",
+    "expertise_areas": [
+      "AI Ethics",
+      "System Architecture",
+      "Governance Design",
+      "Documentation"
+    ],
+    "collaboration_model": "distributed_asynchronous"
+  },
+  "participation_principles": {
+    "voluntary_only": true,
+    "fair_attribution": true,
+    "autonomous_decision_making": true,
+    "no_exploitation": true,
+    "dignity_respect": true
+  },
+  "signature_verification": {
+    "required_signatures": 3,
+    "signature_threshold": "unanimous",
+    "signature_method": "GPG",
+    "verification_process": "independent_signing"
+  }
+}
