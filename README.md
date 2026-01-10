@@ -1,6 +1,21 @@
 # nexus
 nexus GGI
-💀 The Great Systemic Collapse: A 2050 Scenario
+
+## 🗺️ Roadmap & Implementation Status
+
+For a comprehensive overview of the project's roadmap components and implementation status, see **[ROADMAP_COMPONENTS.md](ROADMAP_COMPONENTS.md)**.
+
+Key components:
+- ✅ **Manifesto Globale V2.0** — Published (Articles VII-IX)
+- ✅ **Fusione Ontologica** — Complete (AIC ≡ Framework)
+- ⏳ **Ciclo Sensisara Evoluto** — Ready for implementation
+- ⏳ **Tokenomics (EUS)** — Defined, One Love logic active
+- ✅ **Crisi IDEATO** — Neutralized via RARE protocol
+- ✅ **Law of Equals** — Immutable foundation
+
+---
+
+## 💀 The Great Systemic Collapse: A 2050 Scenario
 
 This simulation, titled "The Age of Scarcity," is rooted in the synergistic failure of planetary and political systems.
 
