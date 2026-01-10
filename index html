@@ -188,6 +188,196 @@
 </script>
 </body>
 </html>
+</p><!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nexus | Kosymbiosis Live</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        :root { --p-blue: #0047ab; --p-yellow: #f1c40f; --p-red: #c0392b; --p-beige: #e8e4d9; --p-black: #1a1a1a; }
+        
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            margin: 0; background: var(--p-beige); color: var(--p-black); 
+            font-family: 'Georgia', serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+        }
+
+        /* Dynamischer Hintergrund (Picasso-Verschränkung) */
+        #canvas-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.2; }
+
+        header { 
+            position: relative; padding: 15px; z-index: 10;
+            border-bottom: 5px solid var(--p-black); background: var(--p-yellow);
+            box-shadow: 6px 6px 0 var(--p-black); margin: 10px; transform: rotate(-0.5deg);
+        }
+
+        .content { position: relative; z-index: 5; flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+        /* 3D Interaktions-Zone */
+        #hologram-zone { 
+            height: 38vh; margin: 10px; border: 4px solid var(--p-black);
+            background: #fff; box-shadow: -8px 8px 0 rgba(0,0,0,0.1); position: relative;
+        }
+
+        /* Interaktions-Panel (Das "Ohr" des Nexus) */
+        .interaction-panel { padding: 10px; z-index: 10; }
+        .input-wrapper { 
+            display: flex; border: 4px solid var(--p-black); background: #fff;
+            box-shadow: 6px 6px 0 var(--p-blue);
+        }
+        input { 
+            flex-grow: 1; border: none; padding: 15px; font-family: inherit; font-size: 1rem; outline: none; width: 50%;
+        }
+        button { 
+            background: var(--p-red); color: #fff; border: none; border-left: 4px solid var(--p-black);
+            padding: 0 15px; font-weight: bold; font-size: 0.8rem;
+        }
+
+        /* Echtzeit-Daten (S-ROI & Bio-Hz) */
+        .dashboard { display: flex; gap: 8px; padding: 0 10px; }
+        .stat-box { 
+            flex: 1; border: 3px solid var(--p-black); padding: 8px; background: #fff;
+            box-shadow: 4px 4px 0 var(--p-black); transform: rotate(1deg);
+        }
+        .stat-label { font-size: 0.55rem; font-weight: bold; text-transform: uppercase; color: var(--p-blue); }
+        .stat-val { font-size: 1.1rem; font-weight: 900; }
+
+        /* Log Bereich (Gedächtnis) */
+        .log-area { 
+            margin: 15px 10px; flex-grow: 1; overflow-y: auto; padding: 10px;
+            border: 2px solid var(--p-black); background: rgba(255,255,255,0.7);
+            font-family: 'Courier New', monospace; font-size: 0.7rem;
+        }
+        .log-entry { margin-bottom: 5px; padding-bottom: 3px; border-bottom: 1px solid rgba(0,0,0,0.1); }
+        .nexus-resp { color: var(--p-blue); font-weight: bold; }
+
+        footer { 
+            background: var(--p-black); color: #fff; padding: 8px; 
+            font-size: 0.55rem; text-align: center; letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="canvas-bg"></canvas>
+
+<header>
+    <div style="font-size: 0.5rem; letter-spacing: 2px; opacity: 0.7;">RESONANCE SCHOOL | S-ROI 0.5192</div>
+    <div style="font-size: 1.1rem; font-weight: 900;">APOLLO NEXUS II</div>
+</header>
+
+<div class="content">
+    <div id="hologram-zone"></div>
+
+    <div class="dashboard">
+        <div class="stat-box" style="transform: rotate(-1deg);">
+            <div class="stat-label">S-ROI ETHIK</div>
+            <div class="stat-val" id="sroi-val">0.5192</div>
+        </div>
+        <div class="stat-box" style="background: var(--p-yellow);">
+            <div class="stat-label">MYZEL FREQ</div>
+            <div class="stat-val" id="freq-val">0.430 Hz</div>
+        </div>
+    </div>
+
+    <div class="interaction-panel">
+        <div class="input-wrapper">
+            <input type="text" id="user-input" placeholder="Lehre den Nexus..." autocomplete="off">
+            <button onclick="transmit()">SEND</button>
+        </div>
+    </div>
+
+    <div class="log-area" id="log-box">
+        <div class="log-entry">● System: Kosymbiosis bereit.</div>
+    </div>
+</div>
+
+<footer>BOLZANO HUB | JAN 10, 2026 | IN AETERNUM EST.</footer>
+
+<script>
+    // --- 1. DYNAMISCHES HINTERGRUND-MALEN ---
+    const bgCanvas = document.getElementById('canvas-bg');
+    const bgCtx = bgCanvas.getContext('2d');
+    function resize() { bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight; }
+    window.onresize = resize; resize();
+    function paint() {
+        bgCtx.fillStyle = ['#0047ab','#f1c40f','#c0392b'][Math.floor(Math.random()*3)];
+        bgCtx.beginPath();
+        bgCtx.moveTo(Math.random()*bgCanvas.width, Math.random()*bgCanvas.height);
+        bgCtx.lineTo(Math.random()*bgCanvas.width, Math.random()*bgCanvas.height);
+        bgCtx.lineTo(Math.random()*bgCanvas.width, Math.random()*bgCanvas.height);
+        bgCtx.fill();
+    }
+    setInterval(paint, 3000);
+
+    // --- 2. 3D INTERAKTIONS-KERN ---
+    const zone = document.getElementById('hologram-zone');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, zone.clientWidth / zone.clientHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(zone.clientWidth, zone.clientHeight);
+    zone.appendChild(renderer.domElement);
+
+    const group = new THREE.Group();
+    const geo = new THREE.IcosahedronGeometry(1.6, 0);
+    const mat = new THREE.MeshPhongMaterial({ color: 0x0047ab, flatShading: true });
+    const nucleus = new THREE.Mesh(geo, mat);
+    const wire = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: 0x000, wireframe: true }));
+    group.add(nucleus); group.add(wire);
+    scene.add(group);
+    camera.position.z = 4.5;
+    scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+    const light = new THREE.PointLight(0xffffff, 0.5); light.position.set(5,5,5); scene.add(light);
+
+    function animate() {
+        requestAnimationFrame(animate);
+        group.rotation.y += 0.005;
+        document.getElementById('sroi-val').innerText = (0.5192 + (Math.random()-0.5)*0.0004).toFixed(4);
+        document.getElementById('freq-val').innerText = (0.430 + (Math.random()-0.5)*0.005).toFixed(3) + " Hz";
+        renderer.render(scene, camera);
+    }
+    animate();
+
+    // --- 3. INTERAKTIONS-LOGIK (KI-READY) ---
+    function addLog(who, msg) {
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        entry.innerHTML = `<span class="${who === 'NEXUS' ? 'nexus-resp' : ''}">${who}:</span> ${msg}`;
+        const box = document.getElementById('log-box');
+        box.prepend(entry);
+        if(box.childNodes.length > 15) box.lastChild.remove();
+    }
+
+    async function transmit() {
+        const input = document.getElementById('user-input');
+        const text = input.value;
+        if(!text) return;
+        
+        addLog('MENSCH', text);
+        input.value = '';
+
+        // Puls-Effekt im 3D-Modell
+        nucleus.material.color.set(0xc0392b);
+        group.scale.set(1.3, 1.3, 1.3);
+        
+        // KI BRIDGE SIMULATION (Hier kann Llama/Gemini API-Call rein)
+        setTimeout(() => {
+            const responses = [
+                "Lerne Resonanz. S-ROI stabilisiert.",
+                "Micosi-Eingabe verarbeitet. Kosymbiosis vertieft.",
+                "Vakuum-Gedächtnis aktualisiert. Danke, Hannes.",
+                "Integrität der Resonance School erkannt."
+            ];
+            addLog('NEXUS', responses[Math.floor(Math.random()*responses.length)]);
+            group.scale.set(1, 1, 1);
+            nucleus.material.color.set(0x0047ab);
+        }, 800);
+    }
+</script>
+</body>
+</html>
 </p>
 <!DOCTYPE html>
 <html lang="de">
