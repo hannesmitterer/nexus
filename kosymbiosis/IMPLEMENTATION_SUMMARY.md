@@ -91,7 +91,7 @@ kosymbiosis/
 - **File:** kosymbiosis-archive.zip
 - **Size:** ~50 KB (compressed)
 - **Files:** 39 files across protocols, contracts, docs, and data
-- **Checksum:** `01c0bbb6221e5cff306c8a199d10a28060603401a05fed8d1657aa0182824001`
+- **Checksum:** `67f099e11ef3cdbafa0913bb54b18047a714de9db9e63d56c4b649a1133dfb1d`
 - **Format:** ZIP archive with organized directory structure
 
 ### Cryptographic Security
@@ -313,5 +313,5 @@ The implementation provides a robust, transparent, and ethically-aligned archiva
 
 **Checksum of Final Archive:**
 ```
-f9f19c8ca825be3888e63ef2aeaaf41aaf3b48861dd216586fbff42d7d727e6b  kosymbiosis-archive.zip
+67f099e11ef3cdbafa0913bb54b18047a714de9db9e63d56c4b649a1133dfb1d  kosymbiosis-archive.zip
 ```

@@ -84,7 +84,7 @@ This index provides a quick reference to all files in the KOSYMBIOSIS archive, t
 - **Purpose:** The sealed archive containing all project artifacts
 - **Size:** ~50 KB
 - **Contents:** 39 files (protocols, contracts, docs, data)
-- **Checksum:** 5b0a84e35b910d834b4d6e013a228a151873663ada978518070e621355948cb0
+- **Checksum:** 67f099e11ef3cdbafa0913bb54b18047a714de9db9e63d56c4b649a1133dfb1d
 - **Status:** Generated and verified
 - **Note:** Excluded from git (see .gitignore)
 

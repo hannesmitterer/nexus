@@ -109,7 +109,7 @@ for sig_file in "${SIG_FILES[@]}"; do
     
     echo "Verifying: $sig_file"
     
-    if gpg --verify "$SIG_PATH" "$ARCHIVE_FILE" 2>&1; then
+    if gpg --verify "$SIG_PATH" "$ARCHIVE_FILE"; then
         echo "✓ Signature verified: $sig_file"
         SIGNATURES_VERIFIED=$((SIGNATURES_VERIFIED + 1))
     else

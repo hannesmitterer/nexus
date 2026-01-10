@@ -14,8 +14,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 REPO_ROOT="$(dirname "$PROJECT_ROOT")"
 ARCHIVE_NAME="kosymbiosis-archive"
-TIMESTAMP=$(date -u +"%Y%m%d_%H%M%S")
+TIMESTAMP=$(TZ=UTC date '+%Y-%m-%dT%H:%M:%SZ')
 ARCHIVE_DIR="/tmp/${ARCHIVE_NAME}_${TIMESTAMP}"
+
+# Set up cleanup trap to ensure temporary files are removed even on error
+trap 'rm -rf "$ARCHIVE_DIR"' EXIT ERR
 
 echo "================================================"
 echo "KOSYMBIOSIS Archive Creation Script"
@@ -109,8 +112,4 @@ echo "To create signatures, run:"
 echo "  gpg --detach-sign --armor -o signatures/kosymbiosis.sig ${ARCHIVE_NAME}.zip"
 echo ""
 
-# Cleanup
-rm -rf "$ARCHIVE_DIR"
-
-echo "Temporary files cleaned up."
 echo "Archive creation complete!"

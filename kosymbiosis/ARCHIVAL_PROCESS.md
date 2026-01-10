@@ -61,7 +61,7 @@ This document provides a complete walkthrough of the KOSYMBIOSIS project archiva
 **Archive Details:**
 - **File:** `kosymbiosis-archive.zip`
 - **Size:** 50 KB
-- **SHA-256:** `5b0a84e35b910d834b4d6e013a228a151873663ada978518070e621355948cb0`
+- **SHA-256:** `67f099e11ef3cdbafa0913bb54b18047a714de9db9e63d56c4b649a1133dfb1d`
 - **Files Included:** 39 files (protocols, contracts, docs, data)
 
 **Verification:**

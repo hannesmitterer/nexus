@@ -48,7 +48,7 @@ The archive integrity can be verified using the checksum file:
 sha256sum -c checksum.sha256
 ```
 
-**Archive Checksum:** `f9f19c8ca825be3888e63ef2aeaaf41aaf3b48861dd216586fbff42d7d727e6b`
+**Archive Checksum:** `67f099e11ef3cdbafa0913bb54b18047a714de9db9e63d56c4b649a1133dfb1d`
 
 ### Triple-Signature Verification
 Verify all three GPG signatures:
@@ -120,7 +120,7 @@ This archive represents the final and immutable state of the KOSYMBIOSIS project
 ## Contact and Governance
 
 For questions or verification assistance:
-- **Email:** governance@euystacio.example
+- **Email (placeholder for documentation purposes):** governance@euystacio.example
 - **GitHub Issues:** https://github.com/hannesmitterer/nexus/issues
 - **SAIN Protocol:** See `SAIN-Protocol-V1.0.md` for governance structure
 

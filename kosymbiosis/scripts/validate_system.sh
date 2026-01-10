@@ -97,7 +97,10 @@ echo ""
 
 # Test 5: Test Archive Creation
 echo "[TEST 5/8] Testing archive creation..."
-cd "$PROJECT_ROOT"
+if ! cd "$PROJECT_ROOT"; then
+    echo "  ✗ Failed to change directory to PROJECT_ROOT: $PROJECT_ROOT"
+    exit 1
+fi
 
 # Clean up any existing archive
 rm -f kosymbiosis-archive.zip checksum.sha256
@@ -114,7 +117,7 @@ fi
 # Check if archive was created
 if [ -f "kosymbiosis-archive.zip" ]; then
     echo "  ✓ Archive file created"
-    ARCHIVE_SIZE=$(stat -f%z "kosymbiosis-archive.zip" 2>/dev/null || stat -c%s "kosymbiosis-archive.zip" 2>/dev/null)
+    ARCHIVE_SIZE=$(stat -f%z "kosymbiosis-archive.zip" 2>/dev/null || stat -c%s "kosymbiosis-archive.zip" 2>/dev/null || echo "unknown")
     echo "    Size: $ARCHIVE_SIZE bytes"
 else
     echo "  ✗ Archive file not created"

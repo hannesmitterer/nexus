@@ -11,9 +11,11 @@ This guide explains how to upload the KOSYMBIOSIS archive to IPFS (InterPlanetar
 
 ### Install IPFS
 ```bash
-# Download and install IPFS (https://docs.ipfs.tech/install/)
-wget https://dist.ipfs.tech/kubo/v0.18.0/kubo_v0.18.0_linux-amd64.tar.gz
-tar -xvzf kubo_v0.18.0_linux-amd64.tar.gz
+# Download and install IPFS (see https://docs.ipfs.tech/install/ and https://dist.ipfs.tech/#kubo for the latest version)
+# Example for Linux AMD64 - replace with the latest version from the releases page
+KUBO_VERSION="v0.30.0"  # Check https://dist.ipfs.tech/#kubo for the latest version
+wget "https://dist.ipfs.tech/kubo/${KUBO_VERSION}/kubo_${KUBO_VERSION}_linux-amd64.tar.gz"
+tar -xvzf "kubo_${KUBO_VERSION}_linux-amd64.tar.gz"
 cd kubo
 sudo bash install.sh
 ```

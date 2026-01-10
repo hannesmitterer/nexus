@@ -11,7 +11,8 @@ KOSYMBIOSIS is the final, immutable archive of an ethical AI governance project 
 
 **Step 1: Download the Archive**
 ```bash
-# From GitHub (once released)
+# From GitHub (once the kosymbiosis-v1.0-final release is created)
+# Note: The release must be created first before these URLs will work
 wget https://github.com/hannesmitterer/nexus/releases/download/kosymbiosis-v1.0-final/kosymbiosis-archive.zip
 wget https://github.com/hannesmitterer/nexus/releases/download/kosymbiosis-v1.0-final/checksum.sha256
 ```

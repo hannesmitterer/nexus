@@ -94,7 +94,8 @@
     },
     "redundant": {
       "platform": "IPFS",
-      "cid": "[TO_BE_GENERATED]",
+      "cid": null,
+      "cid_note": "To be generated upon IPFS upload",
       "pinning_services": [
         "Pinata",
         "Infura",
@@ -106,7 +107,7 @@
     "checksum": {
       "algorithm": "SHA-256",
       "file": "checksum.sha256",
-      "status": "to_be_generated"
+      "status": "generated"
     },
     "signatures": {
       "primary": "kosymbiosis.sig",
