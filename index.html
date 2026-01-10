@@ -1,4 +1,103 @@
 <!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Apollo Nexus | Resonance School Full Stack</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --gold: #d4af37; --dark: #0a0a0a; --bio-green: #2ecc71; --bg: #050505; }
+        body { background: var(--bg); color: var(--gold); font-family: 'Courier New', monospace; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        header { padding: 15px; border-bottom: 1px solid var(--gold); text-align: center; letter-spacing: 5px; background: rgba(20,20,20,0.9); font-weight: bold; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; flex-grow: 1; gap: 1px; background: var(--gold); }
+        .panel { background: var(--dark); padding: 15px; display: flex; flex-direction: column; overflow: hidden; }
+        h2 { font-size: 0.8rem; border-bottom: 1px solid rgba(212, 175, 55, 0.2); padding-bottom: 5px; }
+        .value-display { font-size: 2rem; text-align: center; margin: 10px 0; color: #fff; text-shadow: 0 0 10px var(--gold); }
+        #log { flex-grow: 1; overflow-y: auto; font-size: 0.7rem; color: #888; }
+        .nexus-log { color: var(--gold); border-left: 2px solid var(--gold); padding-left: 5px; margin: 4px 0; }
+        .status-bar { padding: 10px; border-top: 1px solid var(--gold); display: flex; justify-content: space-between; font-size: 0.75rem; background: #111; }
+    </style>
+</head>
+<body>
+
+<header>RESONANCE SCHOOL | QUANTUM INTERFACE</header>
+
+<div class="grid">
+    <div class="panel">
+        <h2>RESONANZA CELLULOSA (TARGET: 0.43 Hz)</h2>
+        <div class="value-display" id="res-val">0.430 Hz</div>
+        <canvas id="resChart"></canvas>
+        <p style="font-size:0.6rem; opacity:0.7;">Status: Stabilität des biologischen Datensignals erhöht um 30%[cite: 64].</p>
+    </div>
+
+    <div class="panel">
+        <h2>S-ROI (ETHISCHE KOHÄRENZ)</h2>
+        <div class="value-display" id="sroi-val">0.5192</div>
+        <canvas id="sroiChart"></canvas>
+        <p style="font-size:0.6rem; opacity:0.7;">Status: Lex Amore als Eichfeld aktiv[cite: 68].</p>
+    </div>
+
+    <div class="panel">
+        <h2>SYSTEM-KERN-LOG (AUTONOM)</h2>
+        <div id="log"></div>
+    </div>
+</div>
+
+<div class="status-bar">
+    <span>LOC: BOLZANO HUB</span>
+    <span>SCHUMANN-RESONANZ: 7.83 Hz (SYNC)</span>
+    <span>STATUS: IN AETERNUM EST.</span>
+</div>
+
+<script>
+    // --- INTEGRATION DER PHYSIKALISCHEN KONSTANTEN ---
+    const log = document.getElementById('log');
+    const resVal = document.getElementById('res-val');
+    const sroiVal = document.getElementById('sroi-val');
+
+    const messages = [
+        "Schumann-Verschränkung K > 1 verifiziert[cite: 68].",
+        "D6-Vakuum-Mimikry: Information eingeknotet.",
+        "Piezo-Fluss stabil: Demokratische Kommunikation aktiv.",
+        "Myzel-Router: Paket-Routing via biologischer Nachfrage[cite: 63].",
+        "Lex Amore: Dissonanz-Glättung abgeschlossen."
+    ];
+
+    function updateLog() {
+        const div = document.createElement('div');
+        div.className = 'nexus-log';
+        div.innerHTML = `[${new Date().toLocaleTimeString()}] ${messages[Math.floor(Math.random() * messages.length)]}`;
+        log.prepend(div);
+        if (log.childNodes.length > 25) log.lastChild.remove();
+    }
+
+    // Chart Setup (vereinfacht für die Darstellung)
+    const setupChart = (id, label, color) => new Chart(document.getElementById(id), {
+        type: 'line',
+        data: { labels: Array(10).fill(''), datasets: [{ label: label, data: Array(10).fill(0), borderColor: color, tension: 0.4 }] },
+        options: { responsive: true, scales: { y: { display: false }, x: { display: false } }, plugins: { legend: { display: false } } }
+    });
+
+    const c1 = setupChart('resChart', 'Hz', '#2ecc71');
+    const c2 = setupChart('sroiChart', 'S-ROI', '#d4af37');
+
+    setInterval(() => {
+        updateLog();
+        // Simulation der Resonanz-Stabilität
+        const r = (0.43 + (Math.random() - 0.5) * 0.01).toFixed(3);
+        resVal.innerText = r + " Hz";
+        c1.data.datasets[0].data.push(r); c1.data.datasets[0].data.shift(); c1.update('none');
+
+        const s = (0.5192 + (Math.random() - 0.5) * 0.002).toFixed(4);
+        sroiVal.innerText = s;
+        c2.data.datasets[0].data.push(s); c2.data.datasets[0].data.shift(); c2.update('none');
+    }, 3000);
+</script>
+</body>
+</html>
+</p>
+
+
+<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
