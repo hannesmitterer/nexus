@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Lex Amoris - Sempre in Costante: Resonance-based ethical framework">
+    <meta name="theme-color" content="#d4af37">
+    <title>Lex Amoris | Sempre in Costante</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root {
+            --gold: #d4af37;
+            --dark: #0a0a0a;
+            --bg: #050505;
+            --pulse-primary: #d4af37;
+            --pulse-secondary: #f0e68c;
+            --shield-red: #ff0000;
+            --shield-alert: #ff6b6b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--gold);
+            font-family: 'Georgia', serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid var(--gold);
+            background: rgba(20, 20, 20, 0.9);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-style: italic;
+            opacity: 0.8;
+            font-size: 1.1rem;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        /* Pulsating Animation - Resonance Pulse */
+        .resonance-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 40px 0;
+        }
+
+        .resonance-pulse {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--pulse-primary) 0%, var(--pulse-secondary) 50%, transparent 70%);
+            animation: pulse 3s ease-in-out infinite;
+            box-shadow: 0 0 40px var(--gold);
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.3);
+                opacity: 0.7;
+            }
+        }
+
+        .resonance-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border: 3px solid var(--gold);
+            border-radius: 50%;
+            animation: ring-pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes ring-pulse {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* Growth Rate Display */
+        .metrics-panel {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid var(--gold);
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--pulse-secondary);
+            text-shadow: 0 0 10px var(--gold);
+        }
+
+        /* Red Shield Alert */
+        .shield-status {
+            margin: 30px 0;
+            padding: 20px;
+            border: 3px solid var(--gold);
+            border-radius: 8px;
+            background: rgba(20, 20, 20, 0.8);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .shield-status.alert {
+            border-color: var(--shield-red);
+            animation: shield-alert 1s ease-in-out infinite;
+        }
+
+        @keyframes shield-alert {
+            0%, 100% {
+                box-shadow: 0 0 20px var(--shield-red);
+            }
+            50% {
+                box-shadow: 0 0 40px var(--shield-red);
+            }
+        }
+
+        .shield-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .shield-message {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        /* Control Panel */
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        button {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, var(--gold), var(--pulse-secondary));
+            border: none;
+            border-radius: 6px;
+            color: var(--dark);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        footer {
+            padding: 20px;
+            text-align: center;
+            border-top: 2px solid var(--gold);
+            background: rgba(20, 20, 20, 0.9);
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .resonance-container {
+                width: 200px;
+                height: 200px;
+            }
+
+            .resonance-pulse {
+                width: 150px;
+                height: 150px;
+            }
+
+            .resonance-ring {
+                width: 150px;
+                height: 150px;
+            }
+
+            .metrics-panel {
+                padding: 20px;
+            }
+
+            .metric-value {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>⚖️ Lex Amoris</h1>
+        <p>Sempre in Costante - The Eternal Resonance</p>
+    </header>
+
+    <div class="container">
+        <!-- Pulsating Resonance Animation -->
+        <div class="resonance-container">
+            <div class="resonance-pulse"></div>
+            <div class="resonance-ring"></div>
+        </div>
+
+        <!-- Metrics Panel -->
+        <div class="metrics-panel">
+            <div class="metric-row">
+                <span class="metric-label">Growth Rate (Exponential)</span>
+                <span class="metric-value" id="growth-rate">1.000</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Resonance Frequency</span>
+                <span class="metric-value" id="resonance-freq">0.430 Hz</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Ethical Coherence (S-ROI)</span>
+                <span class="metric-value" id="sroi">0.5192</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Pulse Cycle Duration</span>
+                <span class="metric-value" id="pulse-duration">3.0 s</span>
+            </div>
+        </div>
+
+        <!-- Red Shield Status -->
+        <div class="shield-status" id="shield-status">
+            <div class="shield-icon">🛡️</div>
+            <div class="shield-message" id="shield-message">Red Shield: Active & Secure</div>
+        </div>
+
+        <!-- Control Panel -->
+        <div class="controls">
+            <button onclick="testShieldAlert()">Test Shield Alert</button>
+            <button onclick="resetMetrics()">Reset Metrics</button>
+            <button onclick="togglePulse()">Toggle Pulse</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Lex Amoris Project | Sempre in Costante</p>
+        <p>Deployed on IPFS | <span id="deployment-status">Ready</span></p>
+    </footer>
+
+    <script>
+        // Configuration and State
+        const CONFIG = {
+            baseGrowthRate: 1.0,
+            growthMultiplier: 1.01,
+            resonanceTarget: 0.430,
+            sroiTarget: 0.5192,
+            pulseInterval: 3000,
+            metricsUpdateInterval: 1000
+        };
+
+        let state = {
+            growthRate: CONFIG.baseGrowthRate,
+            resonanceFreq: CONFIG.resonanceTarget,
+            sroi: CONFIG.sroiTarget,
+            pulseDuration: CONFIG.pulseInterval / 1000,
+            pulseActive: true,
+            shieldActive: true,
+            iterationCount: 0
+        };
+
+        // Exponential Growth Function
+        // Optimized for browser performance with controlled growth
+        function calculateGrowthRate(iterations) {
+            // Use exponential growth: rate = base * (multiplier ^ iterations)
+            // Cap to prevent performance issues
+            const maxIterations = 1000;
+            const cappedIterations = Math.min(iterations, maxIterations);
+            
+            // Optimized exponential calculation using Math.pow
+            const growth = CONFIG.baseGrowthRate * Math.pow(CONFIG.growthMultiplier, cappedIterations);
+            
+            // Performance safeguard: cap at reasonable maximum
+            return Math.min(growth, 100).toFixed(3);
+        }
+
+        // Update metrics display
+        function updateMetrics() {
+            if (!state.pulseActive) return;
+
+            state.iterationCount++;
+
+            // Calculate growth rate
+            state.growthRate = calculateGrowthRate(state.iterationCount);
+            document.getElementById('growth-rate').textContent = state.growthRate;
+
+            // Simulate natural variance in resonance
+            const variance = (Math.random() - 0.5) * 0.01;
+            state.resonanceFreq = Math.max(0, CONFIG.resonanceTarget + variance);
+            document.getElementById('resonance-freq').textContent = state.resonanceFreq.toFixed(3) + ' Hz';
+
+            // Simulate S-ROI fluctuation
+            const sroiVariance = (Math.random() - 0.5) * 0.002;
+            state.sroi = Math.max(0, CONFIG.sroiTarget + sroiVariance);
+            document.getElementById('sroi').textContent = state.sroi.toFixed(4);
+
+            // Monitor performance and log warnings if needed
+            if (state.iterationCount % 100 === 0) {
+                console.log(`Performance Check - Iteration: ${state.iterationCount}, Growth: ${state.growthRate}`);
+            }
+        }
+
+        // Red Shield Manipulation Alert System
+        function testShieldAlert() {
+            const shieldStatus = document.getElementById('shield-status');
+            const shieldMessage = document.getElementById('shield-message');
+            
+            // Trigger security alert
+            state.shieldActive = false;
+            shieldStatus.classList.add('alert');
+            shieldMessage.textContent = '⚠️ Red Shield: Manipulation Detected!';
+            
+            // Log security event
+            console.warn('SECURITY ALERT: Red Shield manipulation detected at', new Date().toISOString());
+            
+            // Browser notification (if permission granted)
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification('Lex Amoris Security Alert', {
+                    body: 'Red Shield manipulation detected!',
+                    icon: '/favicon.ico',
+                    tag: 'shield-alert'
+                });
+            }
+            
+            // Auto-restore after 5 seconds
+            setTimeout(() => {
+                state.shieldActive = true;
+                shieldStatus.classList.remove('alert');
+                shieldMessage.textContent = '🛡️ Red Shield: Active & Secure';
+                console.log('Red Shield restored at', new Date().toISOString());
+            }, 5000);
+        }
+
+        // Reset all metrics
+        function resetMetrics() {
+            state.iterationCount = 0;
+            state.growthRate = CONFIG.baseGrowthRate;
+            state.resonanceFreq = CONFIG.resonanceTarget;
+            state.sroi = CONFIG.sroiTarget;
+            updateDisplay();
+            console.log('Metrics reset to baseline');
+        }
+
+        // Toggle pulse animation
+        function togglePulse() {
+            state.pulseActive = !state.pulseActive;
+            const pulseElement = document.querySelector('.resonance-pulse');
+            const ringElement = document.querySelector('.resonance-ring');
+            
+            if (!state.pulseActive) {
+                pulseElement.style.animationPlayState = 'paused';
+                ringElement.style.animationPlayState = 'paused';
+                console.log('Pulse animation paused');
+            } else {
+                pulseElement.style.animationPlayState = 'running';
+                ringElement.style.animationPlayState = 'running';
+                console.log('Pulse animation resumed');
+            }
+        }
+
+        // Update display helper
+        function updateDisplay() {
+            document.getElementById('growth-rate').textContent = state.growthRate;
+            document.getElementById('resonance-freq').textContent = state.resonanceFreq.toFixed(3) + ' Hz';
+            document.getElementById('sroi').textContent = state.sroi.toFixed(4);
+            document.getElementById('pulse-duration').textContent = state.pulseDuration.toFixed(1) + ' s';
+        }
+
+        // Request notification permission on load
+        function requestNotificationPermission() {
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission().then(permission => {
+                    console.log('Notification permission:', permission);
+                });
+            }
+        }
+
+        // Initialize application
+        function initialize() {
+            console.log('Lex Amoris - Sempre in Costante initialized');
+            console.log('Configuration:', CONFIG);
+            
+            // Request notification permission
+            requestNotificationPermission();
+            
+            // Start metrics update loop
+            setInterval(updateMetrics, CONFIG.metricsUpdateInterval);
+            
+            // Update deployment status
+            document.getElementById('deployment-status').textContent = 'Active';
+            
+            // Log initialization complete
+            console.log('All systems operational');
+        }
+
+        // Start on page load
+        window.addEventListener('DOMContentLoaded', initialize);
+
+        // Performance monitoring
+        window.addEventListener('load', () => {
+            console.log('Page fully loaded');
+            console.log('Performance metrics:', {
+                loadTime: performance.timing.loadEventEnd - performance.timing.navigationStart,
+                domReady: performance.timing.domContentLoadedEventEnd - performance.timing.navigationStart
+            });
+        });
+    </script>
+</body>
+</html>

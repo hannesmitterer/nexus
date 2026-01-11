@@ -1,0 +1,101 @@
+{
+  "name": "Lex Amoris - Sempre in Costante",
+  "short_name": "Lex Amoris",
+  "description": "Resonance-based ethical framework and monitoring system - Sempre in Costante",
+  "start_url": "/lexamoris.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#d4af37",
+  "background_color": "#050505",
+  "lang": "it",
+  "dir": "ltr",
+  "categories": ["ethics", "monitoring", "governance"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' fill='%23d4af37'/%3E%3Ctext x='50' y='60' font-size='40' text-anchor='middle' fill='%23050505'%3E⚖️%3C/text%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' fill='%23d4af37'/%3E%3Ctext x='50' y='60' font-size='40' text-anchor='middle' fill='%23050505'%3E⚖️%3C/text%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'%3E%3Crect width='1280' height='720' fill='%23050505'/%3E%3Ccircle cx='640' cy='360' r='100' fill='%23d4af37' opacity='0.8'/%3E%3Ctext x='640' y='500' font-size='36' text-anchor='middle' fill='%23d4af37'%3ELex Amoris%3C/text%3E%3Ctext x='640' y='540' font-size='24' text-anchor='middle' fill='%23f0e68c'%3ESempre in Costante%3C/text%3E%3C/svg%3E",
+      "sizes": "1280x720",
+      "type": "image/svg+xml",
+      "label": "Lex Amoris Main Interface"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Shield Monitor",
+      "short_name": "Shield",
+      "description": "Monitor Red Shield status and security alerts",
+      "url": "/lexamoris.html#shield",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='60' font-size='50' text-anchor='middle'%3E🛡️%3C/text%3E%3C/svg%3E",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Metrics Dashboard",
+      "short_name": "Metrics",
+      "description": "View real-time growth and resonance metrics",
+      "url": "/lexamoris.html#metrics",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='60' font-size='50' text-anchor='middle'%3E📊%3C/text%3E%3C/svg%3E",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Resonance Pulse",
+      "short_name": "Pulse",
+      "description": "View the resonance pulse animation",
+      "url": "/lexamoris.html#pulse",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='30' fill='none' stroke='%23d4af37' stroke-width='3'/%3E%3C/svg%3E",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "web",
+      "url": "https://ipfs.io/ipfs/QmLexAmoris"
+    }
+  ],
+  "prefer_related_applications": false,
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
+  "share_target": {
+    "action": "/lexamoris.html",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+lexamoris",
+      "url": "/lexamoris.html?protocol=%s"
+    }
+  ],
+  "note": "Lex Amoris - Sempre in Costante | Deployed via IPFS for immutable access"
+}
