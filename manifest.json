@@ -77,7 +77,8 @@
   "related_applications": [
     {
       "platform": "web",
-      "url": "https://ipfs.io/ipfs/QmLexAmoris"
+      "url": "https://ipfs.io/ipfs/QmLexAmorisPlaceholder",
+      "note": "Update with actual IPFS CID after deployment"
     }
   ],
   "prefer_related_applications": false,

@@ -368,10 +368,10 @@
             state.sroi = Math.max(0, CONFIG.sroiTarget + sroiVariance);
             document.getElementById('sroi').textContent = state.sroi.toFixed(4);
 
-            // Monitor performance and log warnings if needed
-            if (state.iterationCount % 100 === 0) {
-                console.log(`Performance Check - Iteration: ${state.iterationCount}, Growth: ${state.growthRate}`);
-            }
+            // Monitor performance (production: disabled for performance)
+            // Uncomment for debugging: if (state.iterationCount % 100 === 0) {
+            //     console.log(`Performance Check - Iteration: ${state.iterationCount}, Growth: ${state.growthRate}`);
+            // }
         }
 
         // Red Shield Manipulation Alert System
@@ -391,7 +391,7 @@
             if ('Notification' in window && Notification.permission === 'granted') {
                 new Notification('Lex Amoris Security Alert', {
                     body: 'Red Shield manipulation detected!',
-                    icon: '/favicon.ico',
+                    icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Ccircle cx="50" cy="50" r="40" fill="%23d4af37"/%3E%3Ctext x="50" y="60" font-size="40" text-anchor="middle" fill="%23050505"%3E⚖️%3C/text%3E%3C/svg%3E',
                     tag: 'shield-alert'
                 });
             }

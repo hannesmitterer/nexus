@@ -59,7 +59,7 @@ Max Cap: 100.000
 - Calculation time: <1ms per iteration
 - Memory usage: Constant (no accumulation)
 - CPU impact: Negligible
-- Tested up to 10,000 iterations
+- Tested up to 1,000 iterations (capped for browser performance)
 
 #### Red Shield Manipulation Alerts
 - ✅ Shield status monitoring element implemented
