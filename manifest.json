@@ -1,4 +1,5 @@
 {
+  "_comment": "NOTE: IPFS CIDs are placeholders. Upload actual icons to IPFS before production deployment and update all CID references.",
   "name": "Lex Amoris - Sempre in Costante",
   "short_name": "Lex Amoris",
   "description": "Resonance Interface für das Euystacio Framework - Sempre in Costante",
