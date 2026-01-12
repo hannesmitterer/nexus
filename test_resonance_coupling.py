@@ -216,6 +216,37 @@ class TestResonanceCouplingSimulator(unittest.TestCase):
         for delta_f, expected_status in test_cases:
             result = self.simulator.assess_structural_integrity(delta_f)
             self.assertEqual(result['integrity_status'], expected_status)
+    
+    def test_invalid_phi_lehm_nan(self):
+        """Test that NaN phi_lehm raises ValueError."""
+        with self.assertRaises(ValueError):
+            ResonanceCouplingSimulator(phi_lehm=float('nan'))
+    
+    def test_invalid_phi_lehm_inf(self):
+        """Test that infinite phi_lehm raises ValueError."""
+        with self.assertRaises(ValueError):
+            ResonanceCouplingSimulator(phi_lehm=float('inf'))
+    
+    def test_simulate_range_invalid_steps_zero(self):
+        """Test that simulate_range with steps=0 raises ValueError."""
+        with self.assertRaises(ValueError):
+            self.simulator.simulate_range(0.0, 0.1, steps=0)
+    
+    def test_simulate_range_invalid_steps_negative(self):
+        """Test that simulate_range with negative steps raises ValueError."""
+        with self.assertRaises(ValueError):
+            self.simulator.simulate_range(0.0, 0.1, steps=-5)
+    
+    def test_zero_phi_lehm_integrity_assessment(self):
+        """Test integrity assessment with zero phi_lehm."""
+        sim = ResonanceCouplingSimulator(phi_lehm=0.0)
+        result = sim.assess_structural_integrity(delta_f=0.043)
+        
+        # With phi_lehm=0, both R and integrity should be 0
+        self.assertEqual(result['resonance_amplitude'], 0.0)
+        self.assertEqual(result['integrity_percentage'], 0.0)
+        self.assertEqual(result['integrity_status'], 'Critical')
+
 
 
 class TestMathematicalProperties(unittest.TestCase):

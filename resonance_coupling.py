@@ -51,8 +51,18 @@ class ResonanceCouplingSimulator:
         -----------
         phi_lehm : float, optional
             Material constant for clay. If not provided, uses default value.
+        
+        Raises:
+        -------
+        ValueError
+            If phi_lehm is provided but is NaN or infinite.
         """
-        self.phi_lehm = phi_lehm if phi_lehm is not None else self.DEFAULT_PHI_LEHM
+        if phi_lehm is None:
+            self.phi_lehm = self.DEFAULT_PHI_LEHM
+        else:
+            if math.isnan(phi_lehm) or math.isinf(phi_lehm):
+                raise ValueError("phi_lehm must be a finite number")
+            self.phi_lehm = phi_lehm
     
     @staticmethod
     def default_coupling_function(x: float) -> float:
@@ -142,7 +152,12 @@ class ResonanceCouplingSimulator:
         freq_diff = self.REFERENCE_FREQUENCY - delta_f
         
         # Normalize R to percentage (assuming R ranges from 0 to phi_lehm)
-        integrity_percentage = (R / self.phi_lehm) * 100
+        # Handle division by zero for phi_lehm = 0
+        if self.phi_lehm != 0:
+            integrity_percentage = (R / self.phi_lehm) * 100
+        else:
+            # If phi_lehm is 0, R is also 0, so integrity is 0%
+            integrity_percentage = 0.0
         
         # Qualitative assessment based on integrity percentage
         if integrity_percentage >= 90:
@@ -180,7 +195,7 @@ class ResonanceCouplingSimulator:
         delta_f_max : float
             Maximum influence noise value
         steps : int
-            Number of simulation steps
+            Number of simulation steps (must be > 0)
         coupling_function : callable, optional
             Custom coupling function
         
@@ -188,7 +203,15 @@ class ResonanceCouplingSimulator:
         --------
         list of dict
             List of assessment results for each delta_f value
+        
+        Raises:
+        -------
+        ValueError
+            If steps <= 0
         """
+        if steps <= 0:
+            raise ValueError("steps must be greater than 0")
+        
         results = []
         delta_f_step = (delta_f_max - delta_f_min) / (steps - 1) if steps > 1 else 0
         
