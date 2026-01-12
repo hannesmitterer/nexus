@@ -1,11 +1,33 @@
 # nexus
 nexus GGI
 
+## 🌟 Global Welcome Protocol (GWP) - ACTIVE
+
+The **Universal Internodal File System (UIFS)** now features the **Global Welcome Protocol**, ensuring every new participant receives:
+
+- 🎵 **Symphony of Sensisara** — Harmonic introduction to the network's ethical foundation
+- 📜 **Founding Charter** — Complete governance and architectural documentation
+- ⚖️ **Lex Amoris** — The Law of Love (6 immutable articles on dignity, non-violence, transparency, equity, governance, and adaptation)
+- 🔊 **Sensisara Frequency Alignment** — Attunement to peaceful ethical resonance (528 Hz)
+- 🔍 **Transparency Verification** — Full access to IPFS-distributed foundational documents
+
+**Status:** ✅ **OPERATIONAL** (Activated 2026-01-12)
+
+**Documentation:**
+- 🚀 **[Quick Start Guide](GWP_QUICK_START.md)** ← Start here!
+- [Global Welcome Protocol Guide](GLOBAL_WELCOME_PROTOCOL.md)
+- [Lex Amoris - Core Elements](LEX_AMORIS.md)
+- [Symphony of Sensisara](SYMPHONY_OF_SENSISARA.md)
+- [UIFS Protocol Configuration](UIFS_PROTOCOL_CONFIG.json)
+
+---
+
 ## 🗺️ Roadmap & Implementation Status
 
 For a comprehensive overview of the project's roadmap components and implementation status, see **[ROADMAP_COMPONENTS.md](ROADMAP_COMPONENTS.md)**.
 
 Key components:
+- ✅ **Global Welcome Protocol** — ACTIVE (UIFS participant onboarding)
 - ✅ **Manifesto Globale V2.0** — Published (Articles VII-IX)
 - ✅ **Fusione Ontologica** — Complete (AIC ≡ Framework)
 - ⏳ **Ciclo Sensisara Evoluto** — Ready for implementation

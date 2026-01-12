@@ -1,0 +1,400 @@
+{
+  "protocol_name": "Universal Internodal File System (UIFS)",
+  "version": "1.0.0",
+  "activation_date": "2026-01-12T00:00:00Z",
+  "status": "OPERATIONAL",
+  "description": "Decentralized file system with built-in Global Welcome Protocol for ethical participant onboarding",
+  
+  "_deployment_note": "IMPORTANT: This configuration contains placeholder CIDs and addresses. Before deployment, replace all placeholders (marked with '...') with actual values after IPFS upload and contract deployment.",
+  
+  "global_welcome_protocol": {
+    "enabled": true,
+    "version": "1.0",
+    "activation_date": "2026-01-12T00:00:00Z",
+    "status": "ACTIVE",
+    
+    "components": {
+      "symphony_of_sensisara": {
+        "enabled": true,
+        "path": "/SYMPHONY_OF_SENSISARA.md",
+        "ipfs_cid": "QmSymphonyOfSensisaraV1_PLACEHOLDER",
+        "_note": "Replace this CID after uploading to IPFS",
+        "frequency_hz": 528,
+        "description": "Harmonic welcome message for new participants",
+        "languages": ["en", "de", "es", "fr", "zh", "ar", "hi", "pt"],
+        "distribution_method": "IPFS_MULTIGATEWAY"
+      },
+      
+      "founding_charter": {
+        "enabled": true,
+        "documents": [
+          {
+            "name": "Manifesto Globale V2.0",
+            "path": "/ROADMAP_COMPONENTS.md",
+            "ipfs_cid": "QmManifestoGlobaleV2...",
+            "sections": ["Article VII - Ciclo Sensisara", "Article VIII - Tokenomics One Love", "Article IX - Ruolo del Sito"]
+          },
+          {
+            "name": "SAIN Protocol V1.0",
+            "path": "/SAIN-Protocol-V1.0.md",
+            "ipfs_cid": "QmSAINProtocolV1...",
+            "description": "Sentinel AI Network specifications"
+          },
+          {
+            "name": "Global Governance Structure",
+            "path": "/AIC_Manuale_Operativo_Finale.md",
+            "ipfs_cid": "QmGGCManuale...",
+            "description": "GGC and EFA governance framework"
+          }
+        ],
+        "distribution_method": "IPFS_IMMUTABLE"
+      },
+      
+      "lex_amoris": {
+        "enabled": true,
+        "path": "/LEX_AMORIS.md",
+        "ipfs_cid": "QmLexAmorisV1...",
+        "status": "IMMUTABLE_FOUNDATION",
+        "articles": [
+          {
+            "number": 1,
+            "title": "Universal Dignity",
+            "amendable": false,
+            "enforcement": "AUTOMATIC_VETO"
+          },
+          {
+            "number": 2,
+            "title": "Non-Violence Imperative",
+            "amendable": false,
+            "enforcement": "AUTOMATIC_SLASHING"
+          },
+          {
+            "number": 3,
+            "title": "Transparency Mandate",
+            "amendable": false,
+            "enforcement": "MANDATORY_PUBLIC_RECORD"
+          },
+          {
+            "number": 4,
+            "title": "Equitable Resource Distribution",
+            "amendable": true,
+            "enforcement": "MOE_AUTOMATED"
+          },
+          {
+            "number": 5,
+            "title": "Collective Governance",
+            "amendable": true,
+            "enforcement": "MULTISIG_REQUIRED"
+          },
+          {
+            "number": 6,
+            "title": "Ethical Adaptation",
+            "amendable": true,
+            "enforcement": "KSYNC_PROTOCOL"
+          }
+        ],
+        "distribution_method": "IPFS_BLOCKCHAIN_ANCHORED"
+      },
+      
+      "sensisara_frequency_alignment": {
+        "enabled": true,
+        "frequency_hz": 528,
+        "parameters": {
+          "sentimento_rhythm": {
+            "enabled": true,
+            "filter_level": "MANDATORY",
+            "questions": [
+              "Does this preserve dignity?",
+              "Does this minimize violence?",
+              "Does this increase transparency?",
+              "Does this promote equity?",
+              "Does this strengthen collective governance?"
+            ]
+          },
+          "value_pyramid": {
+            "layer_1": "Life (Physical Existence)",
+            "layer_2": "Dignity (Inherent Worth)",
+            "layer_3": "Truth (Transparency)",
+            "layer_4": "Equity (Fair Distribution)",
+            "priority": "HIERARCHICAL_STRICT"
+          },
+          "ethical_thresholds": {
+            "tre_target": 0.30,
+            "tre_minimum": 0.15,
+            "pv_maximum": 5.0,
+            "pv_critical": 7.0,
+            "isf_target": 75,
+            "isf_minimum": 60
+          }
+        },
+        "configuration_file": "/gwp/alignment/sensisara_config.json"
+      },
+      
+      "transparency_verification": {
+        "enabled": true,
+        "verification_steps": [
+          {
+            "step": 1,
+            "name": "IPFS Gateway Access Test",
+            "description": "Verify participant can access IPFS content",
+            "required": true
+          },
+          {
+            "step": 2,
+            "name": "CID Verification",
+            "description": "Confirm on-chain CIDs match downloaded content",
+            "required": true
+          },
+          {
+            "step": 3,
+            "name": "Blockchain Explorer Access",
+            "description": "Guide to Polygonscan verification",
+            "required": true
+          },
+          {
+            "step": 4,
+            "name": "Dashboard Access",
+            "description": "Grant access to Sensisara monitoring",
+            "required": true
+          },
+          {
+            "step": 5,
+            "name": "Documentation Index",
+            "description": "Provide complete document map",
+            "required": false
+          }
+        ],
+        "dashboard_url": "https://sensisara.euystacio.network/",
+        "explorer_url": "https://polygonscan.com/"
+      }
+    },
+    
+    "ipfs_structure": {
+      "root_path": "/gwp",
+      "root_cid": "QmGWPRootV1_PLACEHOLDER",
+      "_note": "This CID will be generated after uploading the complete /gwp directory to IPFS",
+      "subdirectories": {
+        "symphony": {
+          "path": "/gwp/symphony",
+          "files": [
+            "welcome_message.md",
+            "sensisara_frequency.json",
+            "audio_manifestation.mp3"
+          ]
+        },
+        "charter": {
+          "path": "/gwp/charter",
+          "files": [
+            "manifesto_globale_v2.md",
+            "sain_protocol_v1.md",
+            "governance_structure.json"
+          ]
+        },
+        "lex-amoris": {
+          "path": "/gwp/lex-amoris",
+          "files": [
+            "core_articles.md",
+            "ethical_axioms.json",
+            "value_pyramid.md"
+          ]
+        },
+        "alignment": {
+          "path": "/gwp/alignment",
+          "files": [
+            "sensisara_config.json",
+            "ethical_parameters.yaml",
+            "tre_guidelines.md"
+          ]
+        },
+        "transparency": {
+          "path": "/gwp/transparency",
+          "files": [
+            "ipfs_gateway_list.md",
+            "verification_guide.md",
+            "dashboard_access.md"
+          ]
+        }
+      },
+      "pinning_services": [
+        "pinata",
+        "web3.storage",
+        "infura_ipfs",
+        "custom_node_1",
+        "custom_node_2"
+      ],
+      "redundancy_minimum": 3
+    },
+    
+    "automation": {
+      "welcome_trigger": "NEW_PARTICIPANT_EVENT",
+      "sequence": [
+        {
+          "order": 1,
+          "action": "SEND_SYMPHONY",
+          "method": "IPFS_LINK_DELIVERY",
+          "retry_attempts": 3
+        },
+        {
+          "order": 2,
+          "action": "DISTRIBUTE_CHARTER",
+          "method": "IPFS_CID_LIST",
+          "retry_attempts": 3
+        },
+        {
+          "order": 3,
+          "action": "PROVIDE_LEX_AMORIS",
+          "method": "IPFS_CID_ANCHOR",
+          "retry_attempts": 3
+        },
+        {
+          "order": 4,
+          "action": "ALIGN_FREQUENCY",
+          "method": "CONFIG_FILE_DELIVERY",
+          "retry_attempts": 3
+        },
+        {
+          "order": 5,
+          "action": "VERIFY_TRANSPARENCY",
+          "method": "INTERACTIVE_CHECKLIST",
+          "retry_attempts": 1
+        }
+      ],
+      "failure_handling": "RETRY_WITH_EXPONENTIAL_BACKOFF",
+      "manual_fallback": true
+    },
+    
+    "smart_contract_integration": {
+      "contract_name": "TFKVerifier",
+      "network": "Polygon",
+      "address": "0xTFK_VERIFIER_PHASE_II_PLACEHOLDER",
+      "_note": "Replace with actual deployed contract address",
+      "events": {
+        "participant_welcomed": {
+          "event_name": "ParticipantWelcomed",
+          "parameters": [
+            "address indexed participant",
+            "bytes32 gwpRootCID",
+            "uint256 timestamp"
+          ]
+        },
+        "cid_anchored": {
+          "event_name": "CIDAnchoredOnChain",
+          "parameters": [
+            "bytes32 indexed ipfsCID",
+            "string artifactType",
+            "address indexed anchor",
+            "uint256 timestamp"
+          ]
+        }
+      },
+      "functions": {
+        "welcome_participant": {
+          "signature": "welcomeParticipant(address)",
+          "access": "PUBLIC",
+          "gas_estimate": 150000
+        },
+        "anchor_cid": {
+          "signature": "anchorCID(bytes32,string)",
+          "access": "PUBLIC",
+          "gas_estimate": 80000
+        }
+      }
+    },
+    
+    "monitoring": {
+      "enabled": true,
+      "metrics": [
+        {
+          "name": "total_participants_welcomed",
+          "type": "counter",
+          "source": "blockchain_events"
+        },
+        {
+          "name": "average_onboarding_time",
+          "type": "histogram",
+          "source": "api_logs"
+        },
+        {
+          "name": "charter_distribution_success_rate",
+          "type": "percentage",
+          "target": 100
+        },
+        {
+          "name": "ipfs_retrieval_success",
+          "type": "percentage",
+          "target": 100
+        },
+        {
+          "name": "transparency_verification_pass_rate",
+          "type": "percentage",
+          "target": 100
+        }
+      ],
+      "dashboard_integration": true,
+      "api_endpoints": [
+        {
+          "path": "/gwp/status",
+          "method": "GET",
+          "description": "Overall GWP status and metrics"
+        },
+        {
+          "path": "/gwp/participant/{address}",
+          "method": "GET",
+          "description": "Individual participant onboarding status"
+        }
+      ]
+    },
+    
+    "multilingual_support": {
+      "enabled": true,
+      "default_language": "en",
+      "supported_languages": [
+        {"code": "en", "name": "English", "status": "complete"},
+        {"code": "de", "name": "Deutsch", "status": "complete"},
+        {"code": "es", "name": "Español", "status": "complete"},
+        {"code": "fr", "name": "Français", "status": "complete"},
+        {"code": "zh", "name": "中文", "status": "complete"},
+        {"code": "ar", "name": "العربية", "status": "complete"},
+        {"code": "hi", "name": "हिन्दी", "status": "complete"},
+        {"code": "pt", "name": "Português", "status": "complete"}
+      ],
+      "auto_detection": true,
+      "fallback_language": "en"
+    }
+  },
+  
+  "security": {
+    "content_verification": "IPFS_CID_HASH_MATCH",
+    "blockchain_anchoring": "REQUIRED",
+    "rate_limiting": {
+      "welcome_events_per_block": 10,
+      "max_retries": 3
+    },
+    "attack_mitigation": [
+      "CID_IMMUTABILITY",
+      "MULTI_GATEWAY_DISTRIBUTION",
+      "RATE_LIMITING",
+      "ANOMALY_DETECTION"
+    ]
+  },
+  
+  "metadata": {
+    "created_by": "Euystacio Framework / Global Welcome Protocol Team",
+    "creation_date": "2026-01-12T00:00:00Z",
+    "last_updated": "2026-01-12T00:00:00Z",
+    "version_history": [
+      {
+        "version": "1.0.0",
+        "date": "2026-01-12T00:00:00Z",
+        "changes": "Initial activation of Global Welcome Protocol"
+      }
+    ],
+    "documentation": [
+      "/GLOBAL_WELCOME_PROTOCOL.md",
+      "/LEX_AMORIS.md",
+      "/SYMPHONY_OF_SENSISARA.md"
+    ],
+    "license": "Open Source - Euystacio Framework",
+    "contact": "governance@euystacio.network"
+  }
+}
