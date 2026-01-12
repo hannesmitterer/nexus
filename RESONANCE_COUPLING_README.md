@@ -363,3 +363,4 @@ For questions, suggestions, or collaboration:
 **Version**: 1.0.0  
 **Erstellt / Created**: 2026-01-12  
 **Autor / Author**: Hannes Mitterer (via Euystacio Framework)
+
