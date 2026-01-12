@@ -26,8 +26,12 @@ mkdir -p /tmp/gwp/{symphony,charter,lex-amoris,alignment,transparency}
 cd /tmp/gwp/symphony
 
 # Copy welcome message (supports multiple languages)
-# Note: Replace $REPO_ROOT with your actual repository path
-REPO_ROOT="${REPO_ROOT:-$(git rev-parse --show-toplevel)}"
+# Note: Set REPO_ROOT to your repository path, or it will be auto-detected
+REPO_ROOT="${REPO_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null || echo ".")}"
+if [ ! -f "$REPO_ROOT/SYMPHONY_OF_SENSISARA.md" ]; then
+  echo "Error: Cannot find SYMPHONY_OF_SENSISARA.md. Please set REPO_ROOT environment variable."
+  exit 1
+fi
 cp "$REPO_ROOT/SYMPHONY_OF_SENSISARA.md" welcome_message.md
 
 # Create frequency configuration

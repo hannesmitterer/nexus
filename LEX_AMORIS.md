@@ -327,14 +327,14 @@ ethical_adaptation:
 
 ### IPFS Storage
 
-**Root CID:** `[PLACEHOLDER - To be generated after IPFS upload]`  
+**Root CID:** `QmLexAmorisV1_PLACEHOLDER` *(To be generated after IPFS upload)*  
 **Redundancy:** 5x minimum (Pinata, Web3.Storage, Infura, 2x custom nodes)  
 **Accessibility:** All public IPFS gateways  
 
 ### Blockchain Anchoring
 
 **Smart Contract:** TFKVerifier (Polygon mainnet)  
-**Contract Address:** `[PLACEHOLDER - To be updated after deployment]`  
+**Contract Address:** `0xTFK_VERIFIER_PHASE_II_PLACEHOLDER` *(To be updated after deployment)*  
 **Anchoring Event:** `CIDAnchoredOnChain(lexAmorisCID, "LEX_AMORIS", timestamp)`  
 **Verification:** Anyone can verify CID matches downloaded content  
 
@@ -393,8 +393,8 @@ Every participant who joins the UIFS through the Global Welcome Protocol receive
 ```
 Document: Lex Amoris - Core Elements v1.0
 Date: 2026-01-12
-Hash: [PLACEHOLDER - To be computed after finalization]
-IPFS CID: [PLACEHOLDER - To be anchored on TFKVerifier after upload]
+Hash: 0xLEXAMORIS_HASH_PLACEHOLDER (To be computed after finalization)
+IPFS CID: QmLexAmorisV1_PLACEHOLDER (To be anchored on TFKVerifier after upload)
 Signatories: GGC Multisig (7-of-9)
 Status: IMMUTABLE FOUNDATION
 ```
