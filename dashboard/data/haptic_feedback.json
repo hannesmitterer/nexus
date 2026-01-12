@@ -1,0 +1,73 @@
+{
+  "system_info": {
+    "version": "1.0.0",
+    "protocol": "NEXUS-UIFS-v1",
+    "reference_standard": "G-CSI-1.000",
+    "last_updated": "2026-01-12T19:11:57Z"
+  },
+  "bolzano_workshop": {
+    "location": "Bolzano/Bozen, Südtirol",
+    "coordinates": {
+      "lat": 46.4983,
+      "lon": 11.3548
+    },
+    "team": "Handwerker_Team_Bolzano",
+    "certification": "G-CSI-Certified"
+  },
+  "current_measurements": {
+    "timestamp": "2026-01-12T19:11:57Z",
+    "g_csi_reference": 1.000,
+    "pressure_resistance": {
+      "value": 2.0001,
+      "unit": "N/mm²",
+      "optimal_range": [1.8, 2.2],
+      "status": "OPTIMAL"
+    },
+    "moisture_content": {
+      "value": 13.5,
+      "unit": "%",
+      "optimal_range": [12, 15],
+      "status": "OPTIMAL"
+    },
+    "temperature": {
+      "value": 20.8,
+      "unit": "°C",
+      "optimal_range": [18, 22],
+      "status": "OPTIMAL"
+    },
+    "cohesion_index": {
+      "value": 0.9999,
+      "optimal": 1.0,
+      "status": "EXCELLENT"
+    }
+  },
+  "deviation_analysis": {
+    "deviation_from_standard": 0.00001,
+    "threshold": 0.0001,
+    "status": "PASSED",
+    "correction_required": false
+  },
+  "historical_data": [
+    {
+      "timestamp": "2026-01-12T08:00:00Z",
+      "deviation": 0.00002,
+      "status": "PASSED"
+    },
+    {
+      "timestamp": "2026-01-12T12:00:00Z",
+      "deviation": 0.00001,
+      "status": "PASSED"
+    },
+    {
+      "timestamp": "2026-01-12T16:00:00Z",
+      "deviation": 0.00003,
+      "status": "PASSED"
+    }
+  ],
+  "nexus_sync": {
+    "enabled": true,
+    "last_sync": "2026-01-12T19:11:57Z",
+    "sync_status": "ACTIVE",
+    "node_id": "BOLZANO_NODE_001"
+  }
+}
