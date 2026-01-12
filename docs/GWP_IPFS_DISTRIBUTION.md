@@ -27,9 +27,20 @@ cd /tmp/gwp/symphony
 
 # Copy welcome message (supports multiple languages)
 # Note: Set REPO_ROOT to your repository path, or it will be auto-detected
-REPO_ROOT="${REPO_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null || echo ".")}"
+if [ -n "${REPO_ROOT}" ]; then
+  # User provided REPO_ROOT
+  :
+elif git rev-parse --show-toplevel >/dev/null 2>&1; then
+  # Auto-detect from git
+  REPO_ROOT="$(git rev-parse --show-toplevel)"
+else
+  echo "Error: Cannot detect repository root. Please set REPO_ROOT environment variable."
+  echo "Example: export REPO_ROOT=/path/to/nexus"
+  exit 1
+fi
+
 if [ ! -f "$REPO_ROOT/SYMPHONY_OF_SENSISARA.md" ]; then
-  echo "Error: Cannot find SYMPHONY_OF_SENSISARA.md. Please set REPO_ROOT environment variable."
+  echo "Error: Cannot find SYMPHONY_OF_SENSISARA.md at $REPO_ROOT"
   exit 1
 fi
 cp "$REPO_ROOT/SYMPHONY_OF_SENSISARA.md" welcome_message.md
@@ -500,7 +511,7 @@ fi
 
 # Check gateway accessibility
 for gateway in "https://ipfs.io/ipfs" "https://cloudflare-ipfs.com/ipfs" "https://gateway.pinata.cloud/ipfs"; do
-  if curl -s -o /dev/null -w "%{http_code}" $gateway/$GWP_CID | grep -q "200"; then
+  if curl -s -o /dev/null -w "%{http_code}" "$gateway/$GWP_CID" | grep -q "200"; then
     echo "✅ Gateway $gateway: OK"
   else
     echo "❌ Gateway $gateway: FAILED"
@@ -508,7 +519,10 @@ for gateway in "https://ipfs.io/ipfs" "https://cloudflare-ipfs.com/ipfs" "https:
 done
 
 # Check provider count
-PROVIDERS=$(ipfs dht findprovs $GWP_CID 2>/dev/null | wc -l)
+PROVIDERS=$(ipfs dht findprovs $GWP_CID 2>/dev/null | wc -l || echo "0")
+if [ "$?" -ne 0 ] || [ -z "$PROVIDERS" ]; then
+  PROVIDERS=0
+fi
 echo "Providers: $PROVIDERS"
 
 if [ $PROVIDERS -lt 3 ]; then
