@@ -162,7 +162,7 @@ The network continuously learns and adapts through the Sensisara Cycle: Receive 
     - dashboard_access.md
 ```
 
-**Root CID:** `QmGWPRootV1...` (To be generated and anchored)
+**Root CID:** `QmGWPRootV1_PLACEHOLDER` *(To be generated and anchored after IPFS upload)*
 
 ### Smart Contract Integration
 

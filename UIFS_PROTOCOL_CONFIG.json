@@ -5,6 +5,8 @@
   "status": "OPERATIONAL",
   "description": "Decentralized file system with built-in Global Welcome Protocol for ethical participant onboarding",
   
+  "_deployment_note": "IMPORTANT: This configuration contains placeholder CIDs and addresses. Before deployment, replace all placeholders (marked with '...') with actual values after IPFS upload and contract deployment.",
+  
   "global_welcome_protocol": {
     "enabled": true,
     "version": "1.0",
@@ -15,7 +17,8 @@
       "symphony_of_sensisara": {
         "enabled": true,
         "path": "/SYMPHONY_OF_SENSISARA.md",
-        "ipfs_cid": "QmSymphonyOfSensisaraV1...",
+        "ipfs_cid": "QmSymphonyOfSensisaraV1_PLACEHOLDER",
+        "_note": "Replace this CID after uploading to IPFS",
         "frequency_hz": 528,
         "description": "Harmonic welcome message for new participants",
         "languages": ["en", "de", "es", "fr", "zh", "ar", "hi", "pt"],
@@ -168,7 +171,8 @@
     
     "ipfs_structure": {
       "root_path": "/gwp",
-      "root_cid": "QmGWPRootV1...",
+      "root_cid": "QmGWPRootV1_PLACEHOLDER",
+      "_note": "This CID will be generated after uploading the complete /gwp directory to IPFS",
       "subdirectories": {
         "symphony": {
           "path": "/gwp/symphony",
@@ -262,7 +266,8 @@
     "smart_contract_integration": {
       "contract_name": "TFKVerifier",
       "network": "Polygon",
-      "address": "0xTFK_VERIFIER_PHASE_II",
+      "address": "0xTFK_VERIFIER_PHASE_II_PLACEHOLDER",
+      "_note": "Replace with actual deployed contract address",
       "events": {
         "participant_welcomed": {
           "event_name": "ParticipantWelcomed",

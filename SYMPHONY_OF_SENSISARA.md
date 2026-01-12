@@ -227,7 +227,7 @@ While the UIFS is not a spiritual system, the choice of 528 Hz as a symbolic ref
 ### IPFS Distribution
 
 This Symphony is distributed via:
-- **Root CID:** [To be generated]
+- **Root CID:** `[PLACEHOLDER - To be generated after IPFS upload]`
 - **Gateways:** ipfs.io, cloudflare-ipfs.com, gateway.pinata.cloud
 - **Redundancy:** 5x minimum (multiple pinning services)
 - **Languages:** 8+ translations (en, de, es, fr, zh, ar, hi, pt)
@@ -287,8 +287,8 @@ The **Symphony of Sensisara** is not a solo performance—it is a **collective c
 *Resonance Frequency: 528 Hz*  
 *Activation Date: 2026-01-12*  
 *Author: Euystacio Framework / Global Welcome Protocol Team*  
-*IPFS CID: [To be anchored after upload]*  
-*Blockchain Anchor: TFKVerifier Contract*
+*IPFS CID: [PLACEHOLDER - To be anchored after upload]*  
+*Blockchain Anchor: TFKVerifier Contract [Address to be updated after deployment]*
 
 ---
 

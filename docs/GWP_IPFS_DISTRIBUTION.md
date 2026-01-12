@@ -26,7 +26,9 @@ mkdir -p /tmp/gwp/{symphony,charter,lex-amoris,alignment,transparency}
 cd /tmp/gwp/symphony
 
 # Copy welcome message (supports multiple languages)
-cp /home/runner/work/nexus/nexus/SYMPHONY_OF_SENSISARA.md welcome_message.md
+# Note: Replace $REPO_ROOT with your actual repository path
+REPO_ROOT="${REPO_ROOT:-$(git rev-parse --show-toplevel)}"
+cp "$REPO_ROOT/SYMPHONY_OF_SENSISARA.md" welcome_message.md
 
 # Create frequency configuration
 cat > sensisara_frequency.json << 'EOF'
@@ -53,8 +55,9 @@ EOF
 cd /tmp/gwp/charter
 
 # Copy foundational documents
-cp /home/runner/work/nexus/nexus/ROADMAP_COMPONENTS.md manifesto_globale_v2.md
-cp /home/runner/work/nexus/nexus/SAIN-Protocol-V1.0.md sain_protocol_v1.md
+# Note: Use REPO_ROOT variable set earlier
+cp "$REPO_ROOT/ROADMAP_COMPONENTS.md" manifesto_globale_v2.md
+cp "$REPO_ROOT/SAIN-Protocol-V1.0.md" sain_protocol_v1.md
 
 # Create governance structure summary
 cat > governance_structure.json << 'EOF'
@@ -91,7 +94,7 @@ EOF
 cd /tmp/gwp/lex-amoris
 
 # Copy core articles
-cp /home/runner/work/nexus/nexus/LEX_AMORIS.md core_articles.md
+cp "$REPO_ROOT/LEX_AMORIS.md" core_articles.md
 
 # Create ethical axioms
 cat > ethical_axioms.json << 'EOF'
@@ -161,7 +164,7 @@ EOF
 cd /tmp/gwp/alignment
 
 # Copy protocol configuration
-cp /home/runner/work/nexus/nexus/UIFS_PROTOCOL_CONFIG.json sensisara_config.json
+cp "$REPO_ROOT/UIFS_PROTOCOL_CONFIG.json" sensisara_config.json
 
 # Create TRE guidelines
 cat > tre_guidelines.md << 'EOF'
