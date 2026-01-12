@@ -14,6 +14,7 @@ The **Universal Internodal File System (UIFS)** now features the **Global Welcom
 **Status:** ✅ **OPERATIONAL** (Activated 2026-01-12)
 
 **Documentation:**
+- 🚀 **[Quick Start Guide](GWP_QUICK_START.md)** ← Start here!
 - [Global Welcome Protocol Guide](GLOBAL_WELCOME_PROTOCOL.md)
 - [Lex Amoris - Core Elements](LEX_AMORIS.md)
 - [Symphony of Sensisara](SYMPHONY_OF_SENSISARA.md)
