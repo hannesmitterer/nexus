@@ -462,14 +462,13 @@ async function main() {
     console.log(`✓ Node started at ${data.timestamp}\n`);
   });
   
-  node.on('pll-update', (state) => {
-    // Periodic status updates (every 30 seconds)
-    if (Date.now() % 30000 < 1000) {
-      console.log(`📊 Frequency: ${state.frequency.toFixed(6)} Hz | ` +
-                  `Deviation: ${state.deviation.toFixed(6)} Hz | ` +
-                  `Locked: ${state.locked ? '✓' : '✗'}`);
-    }
-  });
+  // Periodic status updates (every 30 seconds)
+  setInterval(() => {
+    const stats = node.getStats();
+    console.log(`📊 Frequency: ${stats.frequency.toFixed(6)} Hz | ` +
+                `Deviation: ${stats.deviation.toFixed(6)} Hz | ` +
+                `Locked: ${stats.locked ? '✓' : '✗'}`);
+  }, 30000);
   
   node.on('heartbeat', (heartbeat) => {
     // Could broadcast to network here

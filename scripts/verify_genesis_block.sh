@@ -97,6 +97,7 @@ if command -v jq &> /dev/null; then
     fi
 else
     warning "jq not installed, skipping JSON validation"
+    info "Install jq with: apt install jq (Ubuntu/Debian), yum install jq (RHEL/CentOS), or brew install jq (macOS)"
 fi
 echo ""
 

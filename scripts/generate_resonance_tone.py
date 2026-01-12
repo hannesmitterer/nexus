@@ -11,19 +11,18 @@ Note: This script requires numpy. Install with: pip3 install numpy
       Or use the JavaScript version: node scripts/seedbringer-node.js
 """
 
+import wave
+import json
+import sys
+from datetime import datetime
+
 try:
     import numpy as np
 except ImportError:
     print("Error: numpy is required but not installed.")
     print("Install with: pip3 install numpy")
     print("Or use the JavaScript version: node scripts/seedbringer-node.js")
-    import sys
     sys.exit(1)
-
-import wave
-import json
-import sys
-from datetime import datetime
 
 class ResonanceToneGenerator:
     """
