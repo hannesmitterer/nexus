@@ -1,0 +1,197 @@
+name: Track Ecosystem Updates
+
+on:
+  schedule:
+    # Run every day at 00:00 UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      check_repos:
+        description: 'Comma-separated list of repos to check (format: owner/repo)'
+        required: false
+        default: ''
+
+jobs:
+  check-shared-modules:
+    name: Check Shared Module Updates
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Identify shared modules
+        id: identify_modules
+        run: |
+          echo "Scanning for shared module references..."
+          
+          # Check for package.json dependencies
+          if [ -f "package.json" ]; then
+            echo "✓ Found package.json"
+            if command -v jq &> /dev/null; then
+              echo "Dependencies:"
+              cat package.json | jq -r '.dependencies // {} | keys[]' || echo "No dependencies"
+            fi
+          fi
+          
+          # Check for git submodules
+          if [ -f ".gitmodules" ]; then
+            echo "✓ Found git submodules"
+            cat .gitmodules
+          else
+            echo "ℹ️ No git submodules configured"
+          fi
+          
+          # Check for explicit module references in documentation
+          if [ -f "README_PARTNERS.md" ]; then
+            echo "Checking README_PARTNERS.md for module references..."
+            grep -i "module\|dependency\|shared" README_PARTNERS.md || echo "No module references found"
+          fi
+      
+      - name: Check ecosystem coordination file
+        id: check_coordination
+        run: |
+          # Look for ecosystem coordination configuration
+          if [ -f ".github/ecosystem.json" ]; then
+            echo "✓ Found ecosystem coordination config"
+            cat .github/ecosystem.json
+            echo "has_config=true" >> $GITHUB_OUTPUT
+          else
+            echo "ℹ️ No ecosystem.json found (create at .github/ecosystem.json)"
+            echo "has_config=false" >> $GITHUB_OUTPUT
+            echo "See .github/ecosystem.json for configuration example"
+          fi
+      
+      - name: Generate ecosystem status report
+        run: |
+          echo "# Ecosystem Status Report" > ecosystem_report.md
+          echo "" >> ecosystem_report.md
+          echo "Generated: $(date -u +%Y-%m-%d\ %H:%M:%S\ UTC)" >> ecosystem_report.md
+          echo "" >> ecosystem_report.md
+          
+          echo "## Repository Information" >> ecosystem_report.md
+          echo "- Repository: ${{ github.repository }}" >> ecosystem_report.md
+          echo "- Branch: ${{ github.ref_name }}" >> ecosystem_report.md
+          echo "- Last Commit: ${{ github.sha }}" >> ecosystem_report.md
+          echo "" >> ecosystem_report.md
+          
+          echo "## Shared Modules Status" >> ecosystem_report.md
+          if [ -f ".github/ecosystem.json" ]; then
+            echo "Ecosystem configuration found and active." >> ecosystem_report.md
+          else
+            echo "⚠️ No ecosystem configuration found. Create .github/ecosystem.json to enable tracking." >> ecosystem_report.md
+          fi
+          echo "" >> ecosystem_report.md
+          
+          echo "## Recent Activity" >> ecosystem_report.md
+          echo "Last 5 commits:" >> ecosystem_report.md
+          git log --oneline -5 >> ecosystem_report.md || echo "Unable to fetch git log" >> ecosystem_report.md
+          
+          cat ecosystem_report.md
+      
+      - name: Upload ecosystem report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ecosystem-status-report
+          path: ecosystem_report.md
+          retention-days: 30
+      
+      - name: Check for outdated references
+        run: |
+          echo "Checking for outdated module references..."
+          
+          # Search for version pins or references in code
+          if grep -r "version.*:" . --include="*.json" --include="*.yml" --exclude-dir=node_modules --exclude-dir=.git | head -20; then
+            echo "Found version references (review for updates)"
+          else
+            echo "No version references found"
+          fi
+
+  dependency-update-check:
+    name: Check Dependency Updates
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Check for dependency updates
+        run: |
+          echo "Checking for available dependency updates..."
+          
+          if [ -f "package.json" ]; then
+            npm install -g npm-check-updates
+            ncu || echo "npm-check-updates check completed"
+          else
+            echo "No package.json found, skipping npm dependency check"
+          fi
+      
+      - name: Check Solidity dependencies
+        run: |
+          echo "Checking Solidity contract dependencies..."
+          
+          if find . -name "*.sol" | grep -q .; then
+            echo "Solidity files found:"
+            find . -name "*.sol" -not -path "*/node_modules/*"
+            
+            # Check for import statements
+            echo ""
+            echo "Import statements:"
+            find . -name "*.sol" -not -path "*/node_modules/*" -exec grep -H "^import" {} \; || echo "No imports found"
+          else
+            echo "No Solidity files found"
+          fi
+
+  create-update-notification:
+    name: Create Update Notification
+    runs-on: ubuntu-latest
+    needs: [check-shared-modules, dependency-update-check]
+    if: always()
+    
+    steps:
+      - name: Download reports
+        uses: actions/download-artifact@v4
+        with:
+          pattern: '*-report'
+          merge-multiple: true
+        continue-on-error: true
+      
+      - name: Summarize findings
+        run: |
+          echo "# Ecosystem Update Summary" > summary.md
+          echo "" >> summary.md
+          echo "Workflow run completed at: $(date -u +%Y-%m-%d\ %H:%M:%S\ UTC)" >> summary.md
+          echo "" >> summary.md
+          
+          if [ -f "ecosystem_report.md" ]; then
+            echo "## Ecosystem Status" >> summary.md
+            cat ecosystem_report.md >> summary.md
+            echo "" >> summary.md
+          fi
+          
+          echo "## Next Steps" >> summary.md
+          echo "1. Review the generated reports" >> summary.md
+          echo "2. Update any outdated dependencies" >> summary.md
+          echo "3. Sync documentation with partner repositories" >> summary.md
+          echo "4. Create issues for any action items" >> summary.md
+          
+          cat summary.md
+      
+      - name: Upload summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: update-summary
+          path: summary.md
+          retention-days: 90

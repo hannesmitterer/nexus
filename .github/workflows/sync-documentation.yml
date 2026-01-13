@@ -1,0 +1,127 @@
+name: Sync Documentation
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'README_PARTNERS.md'
+      - 'README.md'
+      - 'docs/**'
+  workflow_dispatch:
+    inputs:
+      target_repos:
+        description: 'Comma-separated list of target repositories (format: owner/repo)'
+        required: false
+        default: ''
+
+jobs:
+  sync-partners-readme:
+    name: Sync README_PARTNERS.md
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Check if README_PARTNERS.md exists
+        id: check_file
+        run: |
+          if [ -f "README_PARTNERS.md" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "✓ README_PARTNERS.md found"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "⚠️ README_PARTNERS.md not found, skipping sync"
+          fi
+      
+      - name: Extract sync configuration
+        if: steps.check_file.outputs.exists == 'true'
+        id: sync_config
+        run: |
+          # Check if sync configuration is embedded in README_PARTNERS.md
+          if grep -q "<!-- SYNC_TARGETS:" README_PARTNERS.md; then
+            TARGETS=$(grep "<!-- SYNC_TARGETS:" README_PARTNERS.md | sed 's/<!-- SYNC_TARGETS: //' | sed 's/ -->//')
+            echo "targets=$TARGETS" >> $GITHUB_OUTPUT
+            echo "Found sync targets: $TARGETS"
+          elif [ -n "${{ github.event.inputs.target_repos }}" ]; then
+            echo "targets=${{ github.event.inputs.target_repos }}" >> $GITHUB_OUTPUT
+            echo "Using manually specified targets: ${{ github.event.inputs.target_repos }}"
+          else
+            echo "targets=" >> $GITHUB_OUTPUT
+            echo "No sync targets configured"
+          fi
+      
+      - name: Prepare sync notification
+        if: steps.check_file.outputs.exists == 'true' && steps.sync_config.outputs.targets != ''
+        run: |
+          echo "Documentation sync would be triggered for the following repositories:"
+          echo "${{ steps.sync_config.outputs.targets }}" | tr ',' '\n'
+          echo ""
+          echo "Note: Cross-repository sync requires additional setup with GitHub App or PAT."
+          echo "This workflow is ready for integration once authentication is configured."
+
+  validate-documentation-structure:
+    name: Validate Documentation Structure
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Validate README_PARTNERS.md structure
+        run: |
+          if [ -f "README_PARTNERS.md" ]; then
+            echo "✓ README_PARTNERS.md exists"
+            
+            # Check for required sections
+            if grep -q "# LexAmoris Ecosystem" README_PARTNERS.md; then
+              echo "✓ LexAmoris Ecosystem header found"
+            else
+              echo "⚠️ Missing LexAmoris Ecosystem header"
+            fi
+            
+            if grep -q "## Partner Repositories" README_PARTNERS.md; then
+              echo "✓ Partner Repositories section found"
+            else
+              echo "⚠️ Missing Partner Repositories section"
+            fi
+          else
+            echo "ℹ️ README_PARTNERS.md does not exist yet"
+          fi
+      
+      - name: Check documentation consistency
+        run: |
+          echo "Checking for documentation consistency..."
+          
+          # Check if main README mentions ecosystem
+          if [ -f "README.md" ]; then
+            if grep -q -i "ecosystem\|partner\|lexamoris" README.md; then
+              echo "✓ Main README references ecosystem"
+            else
+              echo "ℹ️ Main README does not reference ecosystem"
+            fi
+          fi
+      
+      - name: Generate documentation report
+        run: |
+          echo "# Documentation Status Report" > doc_report.md
+          echo "" >> doc_report.md
+          echo "Generated: $(date -u +%Y-%m-%d\ %H:%M:%S\ UTC)" >> doc_report.md
+          echo "" >> doc_report.md
+          
+          echo "## Documentation Files" >> doc_report.md
+          find . -name "*.md" -not -path "*/node_modules/*" -not -path "*/.git/*" | sort | while read file; do
+            echo "- $file" >> doc_report.md
+          done
+          
+          cat doc_report.md
+      
+      - name: Upload documentation report
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation-report
+          path: doc_report.md
+          retention-days: 30

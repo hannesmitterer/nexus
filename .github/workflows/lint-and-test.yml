@@ -1,0 +1,161 @@
+name: Lint and Test
+
+on:
+  push:
+    branches: [ main, develop, copilot/** ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  lint-javascript:
+    name: Lint JavaScript Files
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: |
+          npm install -g eslint
+          npm install -g prettier
+      
+      - name: Run ESLint on JavaScript files
+        run: |
+          if find . -name "*.js" -not -path "*/node_modules/*" | grep -q .; then
+            eslint . --ext .js --ignore-pattern "node_modules/" --max-warnings 0 || echo "ESLint found issues (non-blocking)"
+          else
+            echo "No JavaScript files found to lint"
+          fi
+        continue-on-error: true
+      
+      - name: Check JavaScript formatting with Prettier
+        run: |
+          if find . -name "*.js" -not -path "*/node_modules/*" | grep -q .; then
+            prettier --check "**/*.js" --ignore-path .gitignore || echo "Prettier found formatting issues (non-blocking)"
+          else
+            echo "No JavaScript files found to format check"
+          fi
+        continue-on-error: true
+
+  lint-solidity:
+    name: Lint Solidity Files
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Install Solhint
+        run: npm install -g solhint
+      
+      - name: Run Solhint on Solidity files
+        run: |
+          if find . -name "*.sol" -not -path "*/node_modules/*" | grep -q .; then
+            solhint --version
+            find . -name "*.sol" -not -path "*/node_modules/*" -exec solhint {} \; || echo "Solhint found issues (non-blocking)"
+          else
+            echo "No Solidity files found to lint"
+          fi
+        continue-on-error: true
+
+  lint-shell:
+    name: Lint Shell Scripts
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Install ShellCheck
+        run: sudo apt-get install -y shellcheck
+      
+      - name: Run ShellCheck on shell scripts
+        run: |
+          if find . -name "*.sh" -not -path "*/node_modules/*" | grep -q .; then
+            find . -name "*.sh" -not -path "*/node_modules/*" -exec shellcheck {} \; || echo "ShellCheck found issues (non-blocking)"
+          else
+            echo "No shell scripts found to lint"
+          fi
+        continue-on-error: true
+
+  test-scripts:
+    name: Test Repository Scripts
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Validate script structure
+        run: |
+          echo "Checking for executable scripts..."
+          find scripts/ -name "*.sh" -type f 2>/dev/null | while read script; do
+            echo "Validating: $script"
+            bash -n "$script" && echo "✓ Syntax OK" || echo "✗ Syntax error"
+          done || echo "No shell scripts in scripts/ directory"
+      
+      - name: Check JavaScript syntax
+        run: |
+          echo "Checking JavaScript files syntax..."
+          find . -name "*.js" -not -path "*/node_modules/*" -type f 2>/dev/null | while read jsfile; do
+            echo "Validating: $jsfile"
+            node --check "$jsfile" && echo "✓ Syntax OK" || echo "✗ Syntax error"
+          done || echo "No JavaScript files found"
+
+  validate-documentation:
+    name: Validate Documentation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Check for README files
+        run: |
+          echo "Checking for required documentation files..."
+          test -f README.md && echo "✓ README.md exists" || echo "✗ README.md missing"
+          test -f README_PARTNERS.md && echo "✓ README_PARTNERS.md exists" || echo "✗ README_PARTNERS.md missing (will be created)"
+      
+      - name: Validate markdown links
+        run: |
+          echo "Checking markdown files for broken links (basic check)..."
+          find . -name "*.md" -not -path "*/node_modules/*" | while read mdfile; do
+            echo "Checking: $mdfile"
+            grep -oP '\[.*?\]\(.*?\)' "$mdfile" | grep -v '^#' || true
+          done
+        continue-on-error: true
+
+  security-scan:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Check for secrets in code
+        run: |
+          echo "Scanning for potential secrets..."
+          if grep -r -i -E "(password|secret|api_key|private_key).*=.*['\"]" . --include="*.js" --include="*.json" --exclude-dir=node_modules; then
+            echo "⚠️ Warning: Potential secrets found in code"
+          else
+            echo "✓ No obvious secrets detected"
+          fi
+        continue-on-error: true
