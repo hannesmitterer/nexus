@@ -36,7 +36,7 @@ The LexAmoris ecosystem consists of interconnected repositories that work togeth
 
 ### Core Infrastructure
 - **nexus** (this repository) - Central coordination and governance hub
-  - Primary contact: governance@euystacio.example
+  - Primary contact: governance@euystacio.example (placeholder)
   - Key components: GGI implementation, AI Collectivs coordination
 
 ### Shared Modules
@@ -166,7 +166,7 @@ The nexus repository provides three main CI/CD workflows:
 
 - **Issues**: Report bugs and request features via GitHub Issues
 - **Discussions**: Join ecosystem-wide discussions in GitHub Discussions
-- **Governance**: Contact governance@euystacio.example for governance matters
+- **Governance**: Contact governance@euystacio.example (placeholder) for governance matters
 
 ### Staying Updated
 

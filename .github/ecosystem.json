@@ -52,7 +52,7 @@
       "olf": true,
       "alignment_score": 94
     },
-    "contact": "governance@euystacio.example"
+    "contact": "governance@euystacio.example (placeholder)"
   },
   "ci_cd": {
     "workflows": [
