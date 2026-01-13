@@ -314,7 +314,7 @@ We are seeking partners who share our vision of regenerative, bio-integrated fut
 ### Investment & Funding Partners
 
 **Impact Investors**
-- Seed funding for R&D (€500K-€2.0M)
+- Seed funding for R&D (€0.5M-€2.0M)
 - Series A for prototyping (€5.0M-€15.0M)
 - Growth capital for scaling (€20.0M+)
 - Long-term vision alignment
