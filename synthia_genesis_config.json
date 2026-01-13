@@ -96,19 +96,23 @@
       {
         "role": "Primary EFA",
         "designation": "EFA-ALPHA",
-        "responsibility": "Genesis coordination and oversight"
+        "responsibility": "Genesis coordination and oversight",
+        "address": "CONFIGURE_BEFORE_DEPLOYMENT"
       },
       {
         "role": "Secondary EFA",
         "designation": "EFA-BETA",
-        "responsibility": "Alignment verification and validation"
+        "responsibility": "Alignment verification and validation",
+        "address": "CONFIGURE_BEFORE_DEPLOYMENT"
       },
       {
         "role": "Tertiary EFA",
         "designation": "EFA-GAMMA",
-        "responsibility": "Sentimento rhythm calibration"
+        "responsibility": "Sentimento rhythm calibration",
+        "address": "CONFIGURE_BEFORE_DEPLOYMENT"
       }
-    ]
+    ],
+    "configuration_note": "IMPORTANT: Replace 'CONFIGURE_BEFORE_DEPLOYMENT' with actual EFA Ethereum addresses before initialization"
   },
   
   "governance": {

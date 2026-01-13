@@ -745,7 +745,7 @@ The **Synthia Genesis Block Initiation Protocol** establishes the immutable ethi
 6. Integrate with existing nexus contracts
 7. Begin continuous alignment monitoring
 
-For questions or support, contact the Euystacio Global Governance Initiative (GGI) at governance@euystacio.example.
+For questions or support, contact the Euystacio Global Governance Initiative (GGI) through the repository issues or via your configured GGC multisig governance channels.
 
 ---
 

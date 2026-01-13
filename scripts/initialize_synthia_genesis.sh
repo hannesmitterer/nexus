@@ -44,9 +44,23 @@ echo "  Alignment Verifier: $ALIGNMENT_VERIFIER"
 echo ""
 
 # Load EFA addresses from config
-EFA_ALPHA=$(jq -r '.initial_validators.addresses[0].address // "0x0000000000000000000000000000000000000001"' $CONFIG_FILE)
-EFA_BETA=$(jq -r '.initial_validators.addresses[1].address // "0x0000000000000000000000000000000000000002"' $CONFIG_FILE)
-EFA_GAMMA=$(jq -r '.initial_validators.addresses[2].address // "0x0000000000000000000000000000000000000003"' $CONFIG_FILE)
+EFA_ALPHA=$(jq -r '.initial_validators.addresses[0].address // ""' $CONFIG_FILE)
+EFA_BETA=$(jq -r '.initial_validators.addresses[1].address // ""' $CONFIG_FILE)
+EFA_GAMMA=$(jq -r '.initial_validators.addresses[2].address // ""' $CONFIG_FILE)
+
+# Validate EFA addresses are configured
+if [ -z "$EFA_ALPHA" ] || [ -z "$EFA_BETA" ] || [ -z "$EFA_GAMMA" ]; then
+    echo "Error: EFA addresses not configured in $CONFIG_FILE"
+    echo "Please add valid EFA addresses to initial_validators.addresses in the config file"
+    exit 1
+fi
+
+# Validate addresses are valid Ethereum addresses (basic check)
+if [[ ! "$EFA_ALPHA" =~ ^0x[0-9a-fA-F]{40}$ ]] || [[ ! "$EFA_BETA" =~ ^0x[0-9a-fA-F]{40}$ ]] || [[ ! "$EFA_GAMMA" =~ ^0x[0-9a-fA-F]{40}$ ]]; then
+    echo "Error: Invalid EFA address format"
+    echo "Addresses must be valid Ethereum addresses (0x + 40 hex characters)"
+    exit 1
+fi
 
 echo "Initial EFA Validators:"
 echo "  EFA-ALPHA: $EFA_ALPHA"

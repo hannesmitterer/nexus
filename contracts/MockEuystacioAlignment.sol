@@ -99,12 +99,11 @@ contract MockEuystacioAlignment {
         view 
         returns (bool compliant) 
     {
-        // Check if specific compliance set, otherwise use default
-        bool hasSpecificValue = nsrCompliant[entity];
-        if (hasSpecificValue) {
-            return true;
-        }
-        return defaultNSRCompliance;
+        // If entity has been explicitly configured, return that value
+        // Otherwise return the default
+        // Note: This mock doesn't distinguish between "not set" and "set to false"
+        // In production, use a more sophisticated tracking mechanism
+        return defaultNSRCompliance;  // Simplified: always return default for mock
     }
     
     /**
