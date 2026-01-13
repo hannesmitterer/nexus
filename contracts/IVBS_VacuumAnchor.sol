@@ -49,7 +49,7 @@ contract IVBS_VacuumAnchor {
     }
     
     // Anchor storage
-    uint256 public anchorCount;
+    uint256 public anchorCount = 1; // Start from 1 to avoid zero-value mapping issues
     mapping(uint256 => VacuumAnchor) public anchors;
     mapping(bytes32 => uint256) public cidToAnchorId;
     mapping(AnchorType => uint256[]) public anchorsByType;
@@ -157,7 +157,7 @@ contract IVBS_VacuumAnchor {
         require(ipfsCID != bytes32(0), "Invalid IPFS CID");
         require(contentHash != bytes32(0), "Invalid content hash");
         require(
-            cidToAnchorId[ipfsCID] == 0,
+            cidToAnchorId[ipfsCID] == 0 || (cidToAnchorId[ipfsCID] == 1 && anchors[1].ipfsCID != ipfsCID),
             "Anchor already exists for this CID"
         );
         
@@ -300,7 +300,7 @@ contract IVBS_VacuumAnchor {
         returns (uint256 anchorId)
     {
         anchorId = cidToAnchorId[ipfsCID];
-        require(anchorId != 0 || ipfsCID == anchors[0].ipfsCID, "No anchor for this CID");
+        require(anchorId != 0, "No anchor for this CID");
         return anchorId;
     }
     

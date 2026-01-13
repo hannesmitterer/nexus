@@ -47,7 +47,7 @@ contract IVBS_TripleSignValidation {
     }
     
     // Request storage
-    uint256 public requestCount;
+    uint256 public requestCount = 1; // Start from 1 to avoid zero-value mapping issues
     mapping(uint256 => TripleSignRequest) public requests;
     mapping(bytes32 => uint256) public dataHashToRequestId;
     
@@ -157,7 +157,7 @@ contract IVBS_TripleSignValidation {
     ) external returns (uint256) {
         require(dataHash != bytes32(0), "Invalid data hash");
         require(
-            dataHashToRequestId[dataHash] == 0,
+            dataHashToRequestId[dataHash] == 0 || (dataHashToRequestId[dataHash] == 1 && requests[1].dataHash != dataHash),
             "Request already exists for this data"
         );
         
@@ -351,7 +351,7 @@ contract IVBS_TripleSignValidation {
         returns (bool) 
     {
         uint256 requestId = dataHashToRequestId[dataHash];
-        require(requestId != 0 || dataHash == requests[0].dataHash, "No request for this hash");
+        require(requestId != 0, "No request for this hash");
         
         TripleSignRequest storage request = requests[requestId];
         

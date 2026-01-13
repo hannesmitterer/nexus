@@ -68,8 +68,8 @@ create_vacuum_anchor() {
     local content_hash=$(sha256sum "$file_path" | awk '{print $1}')
     log_info "Content SHA-256: $content_hash"
     
-    # Get file size
-    local file_size=$(stat -f%z "$file_path" 2>/dev/null || stat -c%s "$file_path" 2>/dev/null)
+    # Get file size (portable across macOS and Linux)
+    local file_size=$(wc -c < "$file_path" | tr -d ' ')
     log_info "File size: $file_size bytes"
     
     # Upload to IPFS
