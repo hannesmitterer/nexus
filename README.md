@@ -12,6 +12,38 @@ Key components:
 - ⏳ **Tokenomics (EUS)** — Defined, One Love logic active
 - ✅ **Crisi IDEATO** — Neutralized via RARE protocol
 - ✅ **Law of Equals** — Immutable foundation
+- ✅ **Nodal Communication Protocols** — Kafka and gRPC infrastructure deployed
+
+---
+
+## 🔗 Nodal Communication Protocols
+
+The Nexus repository now includes a comprehensive nodal communication system enabling streaming and distributed system interactions.
+
+### Features
+
+- **Kafka Streaming**: Real-time message streaming for node state synchronization and event propagation
+- **gRPC Services**: High-performance RPC calls for inter-node communication
+- **REST API**: HTTP endpoints for easy integration and real-time data exchange
+- **LexAmoris Integration**: Dedicated channels for inter-repository communication
+
+### Quick Start
+
+```bash
+cd nodal-comms
+npm install
+npm start
+```
+
+For detailed documentation, see **[nodal-comms/README.md](nodal-comms/README.md)**.
+
+### Key Capabilities
+
+- Node state sharing and synchronization
+- Real-time event streaming
+- EAL update broadcasting
+- Bidirectional data exchange with LexAmoris
+- Health monitoring and metrics
 
 ---
 
