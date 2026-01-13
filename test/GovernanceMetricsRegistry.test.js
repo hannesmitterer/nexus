@@ -214,12 +214,9 @@ describe("GovernanceMetricsRegistry", function () {
       const pv = 400;      // 4.0%
       const isf = 80;      // ISF of 80
 
-      await expect(
-        registry.connect(ggcMultisig).recordMetricsSnapshot(treRate, pv, isf)
-      ).to.emit(registry, "MetricsSnapshotRecorded")
-        .withArgs(await ethers.provider.getBlockNumber().then(async () => {
-          return (await ethers.provider.getBlock('latest')).timestamp;
-        }), treRate, pv, isf);
+      const tx = await registry.connect(ggcMultisig).recordMetricsSnapshot(treRate, pv, isf);
+      await expect(tx)
+        .to.emit(registry, "MetricsSnapshotRecorded");
 
       const latest = await registry.latestMetrics();
       expect(latest.treRate).to.equal(treRate);

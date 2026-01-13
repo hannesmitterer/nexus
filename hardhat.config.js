@@ -47,7 +47,12 @@ module.exports = {
     },
     ggcMultisig: {
       default: 1,
-      137: process.env.GGC_MULTISIG_ADDRESS || "0x0000000000000000000000000000000000000001",
+      137: process.env.GGC_MULTISIG_ADDRESS || (() => {
+        if (process.env.NODE_ENV === "production") {
+          throw new Error("GGC_MULTISIG_ADDRESS must be set for production deployment");
+        }
+        return "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"; // Obvious test placeholder
+      })(),
     }
   },
   mocha: {

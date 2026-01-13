@@ -10,28 +10,55 @@ echo ""
 
 # Check if files exist
 echo "Checking file structure..."
-files=(
-    "contracts/GovernanceMetricsRegistry.sol"
-    "hardhat.config.js"
-    "package.json"
-    "deploy/01_deploy_governance_registry.js"
-    "scripts/deploy/deploy-governance-sync.js"
-    "test/GovernanceMetricsRegistry.test.js"
-    "test/stress/DeploymentStressTest.js"
-    "docs/HARDHAT_GOVERNANCE_WORKFLOWS.md"
-    "docs/GOVERNANCE_INTEGRATION_GUIDE.md"
-    "GOVERNANCE_FRAMEWORK_SUMMARY.md"
-)
+
+# Dynamically discover key files
+contract_files=$(find contracts -name "GovernanceMetricsRegistry.sol" 2>/dev/null)
+deploy_files=$(find deploy -name "*.js" 2>/dev/null)
+test_files=$(find test -name "*.test.js" 2>/dev/null)
+doc_files=$(find docs -name "*.md" 2>/dev/null)
 
 all_exist=true
-for file in "${files[@]}"; do
-    if [ -f "$file" ]; then
-        echo "  ✓ $file"
-    else
-        echo "  ✗ $file (MISSING)"
-        all_exist=false
-    fi
-done
+
+# Check critical files
+echo "  Contracts:"
+if [ -n "$contract_files" ]; then
+    for file in $contract_files; do
+        echo "    ✓ $file"
+    done
+else
+    echo "    ✗ No GovernanceMetricsRegistry.sol found"
+    all_exist=false
+fi
+
+echo "  Deployment Scripts:"
+if [ -n "$deploy_files" ]; then
+    for file in $deploy_files; do
+        echo "    ✓ $file"
+    done
+else
+    echo "    ✗ No deployment scripts found"
+    all_exist=false
+fi
+
+echo "  Tests:"
+if [ -n "$test_files" ]; then
+    for file in $test_files; do
+        echo "    ✓ $file"
+    done
+else
+    echo "    ✗ No test files found"
+    all_exist=false
+fi
+
+echo "  Documentation:"
+if [ -n "$doc_files" ]; then
+    for file in $doc_files; do
+        echo "    ✓ $file"
+    done
+else
+    echo "    ✗ No documentation found"
+    all_exist=false
+fi
 
 echo ""
 

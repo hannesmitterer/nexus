@@ -82,7 +82,12 @@ async function main() {
   const fs = require("fs");
   const path = require("path");
   
-  const deploymentsDir = path.join(__dirname, "../deployments", network.name);
+  // Use configurable deployments directory with fallback
+  const projectRoot = path.resolve(__dirname, "../..");
+  const deploymentsDir = process.env.DEPLOYMENTS_DIR 
+    ? path.resolve(process.env.DEPLOYMENTS_DIR, network.name)
+    : path.join(projectRoot, "deployments", network.name);
+  
   if (!fs.existsSync(deploymentsDir)) {
     fs.mkdirSync(deploymentsDir, { recursive: true });
   }

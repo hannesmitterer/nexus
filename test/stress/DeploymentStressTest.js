@@ -13,6 +13,11 @@ describe("Synchronous Deployment Stress Test", function () {
     [deployer, ggcMultisig] = await ethers.getSigners();
   });
 
+  afterEach(async function () {
+    // Clean up registries array to prevent memory accumulation
+    registries = [];
+  });
+
   describe("Rapid Sequential Deployments", function () {
     it("Should handle 10 rapid sequential deployments", async function () {
       console.log("\n=== Starting Rapid Deployment Test ===");
