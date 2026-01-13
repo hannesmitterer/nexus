@@ -12,6 +12,7 @@ class NexusKafkaConsumer {
     });
     this.isConnected = false;
     this.handlers = new Map();
+    this.subscribedTopics = new Set();
   }
 
   async connect() {
@@ -43,8 +44,11 @@ class NexusKafkaConsumer {
     }
 
     for (const topic of topicsList) {
-      await this.consumer.subscribe({ topic, fromBeginning: false });
-      console.log(`Subscribed to topic: ${topic}`);
+      if (!this.subscribedTopics.has(topic)) {
+        await this.consumer.subscribe({ topic, fromBeginning: false });
+        this.subscribedTopics.add(topic);
+        console.log(`Subscribed to topic: ${topic}`);
+      }
     }
   }
 

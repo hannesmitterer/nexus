@@ -164,8 +164,12 @@ class NodalCommunicationClient {
 
   // Close the client connection
   close() {
-    this.client.close();
-    console.log(`gRPC client disconnected from ${this.serverAddress}`);
+    try {
+      this.client.close();
+      console.log(`gRPC client disconnected from ${this.serverAddress}`);
+    } catch (error) {
+      console.warn('Error closing gRPC client (may already be closed):', error.message);
+    }
   }
 }
 
