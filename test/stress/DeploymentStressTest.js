@@ -15,7 +15,8 @@ describe("Synchronous Deployment Stress Test", function () {
 
   afterEach(async function () {
     // Clean up registries array to prevent memory accumulation
-    registries = [];
+    // Note: Contract instances will be garbage collected when references are cleared
+    registries.length = 0;
   });
 
   describe("Rapid Sequential Deployments", function () {

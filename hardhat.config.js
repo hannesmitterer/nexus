@@ -47,12 +47,17 @@ module.exports = {
     },
     ggcMultisig: {
       default: 1,
-      137: process.env.GGC_MULTISIG_ADDRESS || (() => {
-        if (process.env.NODE_ENV === "production") {
-          throw new Error("GGC_MULTISIG_ADDRESS must be set for production deployment");
+      137: (() => {
+        // Polygon mainnet requires explicit GGC multisig address
+        if (!process.env.GGC_MULTISIG_ADDRESS) {
+          throw new Error(
+            "GGC_MULTISIG_ADDRESS environment variable must be set for Polygon mainnet deployment"
+          );
         }
-        return "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"; // Obvious test placeholder
+        return process.env.GGC_MULTISIG_ADDRESS;
       })(),
+      // For other networks, use env var or fallback to obvious test placeholder
+      default: process.env.GGC_MULTISIG_ADDRESS || "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
     }
   },
   mocha: {

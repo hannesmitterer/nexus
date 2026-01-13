@@ -93,6 +93,10 @@ async function main() {
   }
 
   const deploymentFile = path.join(deploymentsDir, "GovernanceMetricsRegistry.json");
+  
+  // Get contract ABI - using format() for ethers v6 compatibility
+  const contractABI = GovernanceMetricsRegistry.interface.format('json');
+  
   fs.writeFileSync(
     deploymentFile,
     JSON.stringify(
@@ -100,7 +104,7 @@ async function main() {
         address: registryAddress,
         deploymentData: deploymentData,
         recordHash: recordHash,
-        abi: GovernanceMetricsRegistry.interface.formatJson()
+        abi: typeof contractABI === 'string' ? JSON.parse(contractABI) : contractABI
       },
       null,
       2
