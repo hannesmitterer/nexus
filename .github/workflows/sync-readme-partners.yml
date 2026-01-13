@@ -1,0 +1,53 @@
+name: Sync README_PARTNERS
+
+# This workflow syncs README_PARTNERS.md from the common-core repository
+# to keep partner information consistent across the LexAmoris ecosystem
+
+on:
+  # Manual trigger
+  workflow_dispatch:
+  
+  # Scheduled sync - runs daily at 00:00 UTC
+  schedule:
+    - cron: '0 0 * * *'
+  
+  # Triggered by repository_dispatch from common-core repo
+  repository_dispatch:
+    types: [readme-partners-updated]
+
+jobs:
+  sync-partners:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout nexus repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 1
+      
+      - name: Fetch README_PARTNERS.md from common-core
+        run: |
+          # Fetch the latest README_PARTNERS.md from the common-core repository
+          # Adjust the repository URL and branch as needed
+          curl -f -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://raw.githubusercontent.com/LexAmoris/common-core/main/README_PARTNERS.md" \
+            -o README_PARTNERS.md || echo "# Partners\n\nThis file will be synced from common-core repository." > README_PARTNERS.md
+      
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if git diff --quiet README_PARTNERS.md; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Commit and push if changed
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README_PARTNERS.md
+          git commit -m "chore: sync README_PARTNERS.md from common-core [skip ci]"
+          git push

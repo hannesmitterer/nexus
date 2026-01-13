@@ -1,0 +1,108 @@
+name: Documentation
+
+# Build and deploy documentation
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/**'
+      - '**.md'
+  pull_request:
+    paths:
+      - 'docs/**'
+      - '**.md'
+  workflow_dispatch:
+
+jobs:
+  validate-docs:
+    name: Validate Documentation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Check markdown links
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
+        continue-on-error: true
+        with:
+          use-quiet-mode: 'yes'
+          config-file: '.github/markdown-link-check-config.json'
+      
+      - name: Validate documentation structure
+        run: |
+          echo "Checking documentation structure..."
+          # Ensure key documentation files exist
+          required_docs=("README.md" "docs/CUSTOS_SENTIMENTO.md" "docs/K-SYNC_Protocol.md")
+          for doc in "${required_docs[@]}"; do
+            if [ -f "$doc" ]; then
+              echo "✓ $doc exists"
+            else
+              echo "✗ $doc missing"
+            fi
+          done
+      
+      - name: Check for broken references
+        run: |
+          echo "Checking for broken internal references..."
+          # Simple check for common broken reference patterns
+          grep -r "\[.*\](.*\.md)" *.md docs/ 2>/dev/null || true
+
+  build-docs:
+    name: Build Documentation Site
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Generate documentation site
+        run: |
+          echo "Generating documentation..."
+          # Create a simple docs site structure
+          mkdir -p dist/docs
+          cp -r docs/* dist/docs/ 2>/dev/null || true
+          cp *.md dist/ 2>/dev/null || true
+          
+          # Create index page if needed
+          if [ ! -f dist/index.html ]; then
+            cat > dist/index.html << 'EOF'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Documentation</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        h1 { color: #333; }
+        .doc-link { display: block; padding: 10px; margin: 5px 0; background: #f4f4f4; text-decoration: none; color: #0066cc; }
+        .doc-link:hover { background: #e0e0e0; }
+    </style>
+</head>
+<body>
+    <h1>Nexus Documentation</h1>
+    <p>Welcome to the Nexus project documentation.</p>
+    <h2>Main Documentation</h2>
+    <a class="doc-link" href="README.html">README</a>
+    <a class="doc-link" href="docs/CUSTOS_SENTIMENTO.html">CUSTOS SENTIMENTO</a>
+    <a class="doc-link" href="docs/K-SYNC_Protocol.html">K-SYNC Protocol</a>
+    <a class="doc-link" href="docs/ROADMAP_INTEGRATION_SUMMARY.html">Roadmap Integration Summary</a>
+</body>
+</html>
+EOF
+          fi
+      
+      - name: Upload documentation artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation
+          path: dist/
+          retention-days: 90

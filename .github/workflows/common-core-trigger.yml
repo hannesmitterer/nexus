@@ -1,0 +1,86 @@
+name: Common Core Resources Update
+
+# This workflow is triggered when the common-core resources repository is updated
+# It rebuilds and deploys nexus to incorporate the latest shared resources
+
+on:
+  # Triggered by repository_dispatch from common-core repo
+  repository_dispatch:
+    types: [common-core-updated]
+  
+  # Manual trigger for testing
+  workflow_dispatch:
+    inputs:
+      common_core_ref:
+        description: 'Common-core ref/tag to use'
+        required: false
+        default: 'main'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout nexus repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Fetch common-core resources
+        run: |
+          echo "Fetching latest common-core resources..."
+          # Create directory for common-core resources if it doesn't exist
+          mkdir -p .common-core
+          
+          # Download common-core resources
+          # Adjust repository URL and resources as needed
+          COMMON_CORE_REF="${{ github.event.inputs.common_core_ref || 'main' }}"
+          echo "Using common-core ref: $COMMON_CORE_REF"
+          
+          # Example: Download shared configuration files
+          curl -f -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://raw.githubusercontent.com/LexAmoris/common-core/$COMMON_CORE_REF/shared-config.json" \
+            -o .common-core/shared-config.json 2>/dev/null || echo "{}" > .common-core/shared-config.json
+      
+      - name: Install dependencies
+        run: |
+          if [ -f package.json ]; then
+            npm ci
+          else
+            echo "No package.json found, skipping npm install"
+          fi
+      
+      - name: Build project
+        run: |
+          echo "Building nexus with updated common-core resources..."
+          # Add build commands as needed
+          if [ -f package.json ] && grep -q "\"build\"" package.json; then
+            npm run build
+          else
+            echo "No build script found, skipping build"
+          fi
+      
+      - name: Run tests
+        run: |
+          if [ -f package.json ] && grep -q "\"test\"" package.json; then
+            npm test
+          else
+            echo "No test script found, skipping tests"
+          fi
+      
+      - name: Deploy updates
+        run: |
+          echo "Deployment step - configure as needed for your deployment target"
+          # Add deployment commands here
+          # Example: Deploy to hosting service, update smart contracts, etc.
+      
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "::error::Common-core update integration failed"

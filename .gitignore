@@ -21,3 +21,12 @@ build/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Workflow artifacts
+.common-core/
+coverage/
+*.log
+
+# Test outputs
+test-results/
+*.test.js.snap
