@@ -71,34 +71,32 @@ jobs:
           cp -r docs/* dist/docs/ 2>/dev/null || true
           cp *.md dist/ 2>/dev/null || true
           
-          # Create index page if needed
-          if [ ! -f dist/index.html ]; then
-            cat > dist/index.html << 'EOF'
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus Documentation</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
-        h1 { color: #333; }
-        .doc-link { display: block; padding: 10px; margin: 5px 0; background: #f4f4f4; text-decoration: none; color: #0066cc; }
-        .doc-link:hover { background: #e0e0e0; }
-    </style>
-</head>
-<body>
-    <h1>Nexus Documentation</h1>
-    <p>Welcome to the Nexus project documentation.</p>
-    <h2>Main Documentation</h2>
-    <a class="doc-link" href="README.html">README</a>
-    <a class="doc-link" href="docs/CUSTOS_SENTIMENTO.html">CUSTOS SENTIMENTO</a>
-    <a class="doc-link" href="docs/K-SYNC_Protocol.html">K-SYNC Protocol</a>
-    <a class="doc-link" href="docs/ROADMAP_INTEGRATION_SUMMARY.html">Roadmap Integration Summary</a>
-</body>
-</html>
-EOF
-          fi
+          # Create index page
+          cat > dist/index.html << 'DOCEOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Nexus Documentation</title>
+              <style>
+                  body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
+                  h1 { color: #333; }
+                  .doc-link { display: block; padding: 10px; margin: 5px 0; background: #f4f4f4; text-decoration: none; color: #0066cc; }
+                  .doc-link:hover { background: #e0e0e0; }
+              </style>
+          </head>
+          <body>
+              <h1>Nexus Documentation</h1>
+              <p>Welcome to the Nexus project documentation.</p>
+              <h2>Main Documentation</h2>
+              <a class="doc-link" href="README.html">README</a>
+              <a class="doc-link" href="docs/CUSTOS_SENTIMENTO.html">CUSTOS SENTIMENTO</a>
+              <a class="doc-link" href="docs/K-SYNC_Protocol.html">K-SYNC Protocol</a>
+              <a class="doc-link" href="docs/ROADMAP_INTEGRATION_SUMMARY.html">Roadmap Integration Summary</a>
+          </body>
+          </html>
+          DOCEOF
       
       - name: Upload documentation artifacts
         uses: actions/upload-artifact@v4
