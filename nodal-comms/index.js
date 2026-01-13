@@ -31,34 +31,28 @@ async function startNodalSystem() {
   const kafkaConsumer = new NexusKafkaConsumer();
   await kafkaConsumer.connect();
 
-  // Handle node state updates
-  kafkaConsumer.registerHandler('nexus-node-state', async (data, metadata) => {
+  // Subscribe to topics with handlers
+  await kafkaConsumer.subscribeToNodeStates(async (data, metadata) => {
     console.log('Node state update received:', {
       nodeId: data.nodeId,
       timestamp: data.timestamp
     });
   });
 
-  // Handle sync events
-  kafkaConsumer.registerHandler('nexus-sync-events', async (data, metadata) => {
+  await kafkaConsumer.subscribeToSyncEvents(async (data, metadata) => {
     console.log('Sync event received:', {
       eventType: data.eventType,
       timestamp: data.timestamp
     });
   });
 
-  // Handle LexAmoris exchanges
-  kafkaConsumer.registerHandler('lexamoris-data-exchange', async (data, metadata) => {
+  await kafkaConsumer.subscribeToLexAmoris(async (data, metadata) => {
     console.log('LexAmoris data received:', {
       messageType: data.messageType,
       source: data.source
     });
   });
 
-  // Subscribe to topics
-  await kafkaConsumer.subscribeToNodeStates();
-  await kafkaConsumer.subscribeToSyncEvents();
-  await kafkaConsumer.subscribeToLexAmoris();
   await kafkaConsumer.start();
   console.log('✓ Kafka consumer started and subscribed\n');
 
