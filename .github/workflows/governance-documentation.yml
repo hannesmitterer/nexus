@@ -109,12 +109,12 @@ jobs:
             PV=$(jq -r '.ethics.PV' dashboard/data/state.json)
             ISF=$(jq -r '.ethics.ISF' dashboard/data/state.json)
             
-            echo "- **TRE (Tasso di Rigenerazione Etica)**: ${TRE}% (target: 0.3%)" >> reports/governance/weekly-summary-$(date +%Y-W%V).md
-            echo "- **PV (Planetary Violence)**: ${PV}% (threshold: <5.0%)" >> reports/governance/weekly-summary-$(date +%Y-W%V).md
-            echo "- **ISF (Integral Scarcity Factor)**: ${ISF} (target: ≥75)" >> reports/governance/weekly-summary-$(date +%Y-W%V).md
+            echo "- **TRE (Tasso di Rigenerazione Etica)**: ${TRE}% (target: 0.3%)" >> reports/governance/weekly-summary-${WEEK}.md
+            echo "- **PV (Planetary Violence)**: ${PV}% (threshold: <5.0%)" >> reports/governance/weekly-summary-${WEEK}.md
+            echo "- **ISF (Integral Scarcity Factor)**: ${ISF} (target: ≥75)" >> reports/governance/weekly-summary-${WEEK}.md
           fi
           
-          cat >> reports/governance/weekly-summary-$(date +%Y-W%V).md << 'EOF'
+          cat >> reports/governance/weekly-summary-${WEEK}.md << EOF
           
           ## Action Items
           
@@ -128,7 +128,7 @@ jobs:
           *Automated Weekly Summary by Euystacio Framework*
           EOF
           
-          cat reports/governance/weekly-summary-$(date +%Y-W%V).md
+          cat reports/governance/weekly-summary-${WEEK}.md
 
       - name: Upload governance reports
         uses: actions/upload-artifact@v4
@@ -147,12 +147,14 @@ jobs:
       - name: Create audit trail
         run: |
           mkdir -p reports/audit
+          MONTH=$(date +%Y%m)
+          TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
           
-          cat > reports/audit/trail-$(date +%Y%m).md << 'EOF'
+          cat > reports/audit/trail-${MONTH}.md << EOF
           # Governance Audit Trail
           
           **Month**: $(date +%Y-%m)
-          **Generated**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Generated**: ${TIMESTAMP}
           
           ## Purpose
           
@@ -167,10 +169,10 @@ jobs:
           
           # Extract governance events
           if [ -f "dashboard/data/state.json" ]; then
-            jq -r '.governance | to_entries[] | "- **" + .key + "**: " + (.value | tostring)' dashboard/data/state.json >> reports/audit/trail-$(date +%Y%m).md
+            jq -r '.governance | to_entries[] | "- **" + .key + "**: " + (.value | tostring)' dashboard/data/state.json >> reports/audit/trail-${MONTH}.md
           fi
           
-          cat >> reports/audit/trail-$(date +%Y%m).md << 'EOF'
+          cat >> reports/audit/trail-${MONTH}.md << 'EOF'
           
           ## Metrics Evolution
           
@@ -180,34 +182,34 @@ jobs:
           
           # Add current metrics
           if [ -f "dashboard/data/state.json" ]; then
-            echo "- **Current**: $(jq -r '.ethics.TRE_current' dashboard/data/state.json)%" >> reports/audit/trail-$(date +%Y%m).md
-            echo "- **Target**: $(jq -r '.ethics.TRE_target' dashboard/data/state.json)%" >> reports/audit/trail-$(date +%Y%m).md
+            echo "- **Current**: $(jq -r '.ethics.TRE_current' dashboard/data/state.json)%" >> reports/audit/trail-${MONTH}.md
+            echo "- **Target**: $(jq -r '.ethics.TRE_target' dashboard/data/state.json)%" >> reports/audit/trail-${MONTH}.md
           fi
           
-          cat >> reports/audit/trail-$(date +%Y%m).md << 'EOF'
+          cat >> reports/audit/trail-${MONTH}.md << 'EOF'
           
           ### PV (Planetary Violence)
           
           EOF
           
           if [ -f "dashboard/data/state.json" ]; then
-            echo "- **Current**: $(jq -r '.ethics.PV' dashboard/data/state.json)%" >> reports/audit/trail-$(date +%Y%m).md
-            echo "- **Threshold**: <5.0%" >> reports/audit/trail-$(date +%Y%m).md
+            echo "- **Current**: $(jq -r '.ethics.PV' dashboard/data/state.json)%" >> reports/audit/trail-${MONTH}.md
+            echo "- **Threshold**: <5.0%" >> reports/audit/trail-${MONTH}.md
           fi
           
-          cat >> reports/audit/trail-$(date +%Y%m).md << 'EOF'
+          cat >> reports/audit/trail-${MONTH}.md << 'EOF'
           
           ### Financial Metrics
           
           EOF
           
           if [ -f "dashboard/data/state.json" ]; then
-            echo "- **SAIN Price**: \$$(jq -r '.finance.sain_price' dashboard/data/state.json)" >> reports/audit/trail-$(date +%Y%m).md
-            echo "- **Price Floor**: \$$(jq -r '.finance.price_floor' dashboard/data/state.json)" >> reports/audit/trail-$(date +%Y%m).md
-            echo "- **FC Balance**: \$$(jq -r '.finance.fc_balance_usd' dashboard/data/state.json)" >> reports/audit/trail-$(date +%Y%m).md
+            echo "- **SAIN Price**: \$$(jq -r '.finance.sain_price' dashboard/data/state.json)" >> reports/audit/trail-${MONTH}.md
+            echo "- **Price Floor**: \$$(jq -r '.finance.price_floor' dashboard/data/state.json)" >> reports/audit/trail-${MONTH}.md
+            echo "- **FC Balance**: \$$(jq -r '.finance.fc_balance_usd' dashboard/data/state.json)" >> reports/audit/trail-${MONTH}.md
           fi
           
-          cat >> reports/audit/trail-$(date +%Y%m).md << 'EOF'
+          cat >> reports/audit/trail-${MONTH}.md << 'EOF'
           
           ## Cryptographic Verification
           
@@ -230,10 +232,10 @@ jobs:
           EOF
           
           if [ -f "dashboard/data/state.json" ]; then
-            jq -r '.events[] | "- [" + .ts + "] " + .msg' dashboard/data/state.json >> reports/audit/trail-$(date +%Y%m).md
+            jq -r '.events[] | "- [" + .ts + "] " + .msg' dashboard/data/state.json >> reports/audit/trail-${MONTH}.md
           fi
           
-          cat >> reports/audit/trail-$(date +%Y%m).md << 'EOF'
+          cat >> reports/audit/trail-${MONTH}.md << 'EOF'
           
           ## Compliance Summary
           
@@ -247,7 +249,7 @@ jobs:
           *For disputes or verification: Check blockchain anchors and IPFS CIDs*
           EOF
           
-          cat reports/audit/trail-$(date +%Y%m).md
+          cat reports/audit/trail-${MONTH}.md
 
       - name: Upload audit trail
         uses: actions/upload-artifact@v4

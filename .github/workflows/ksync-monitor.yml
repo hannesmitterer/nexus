@@ -128,11 +128,13 @@ jobs:
       - name: Generate K-SYNC status report
         run: |
           mkdir -p reports/ksync
+          REPORT_DATE=$(date +%Y%m%d-%H%M)
+          TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
           
-          cat > reports/ksync/status-$(date +%Y%m%d-%H%M).md << 'EOF'
+          cat > reports/ksync/status-${REPORT_DATE}.md << EOF
           # K-SYNC Protocol Status Report
           
-          **Generated**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Generated**: ${TIMESTAMP}
           
           ## Current EAL Version
           - **Version**: v0

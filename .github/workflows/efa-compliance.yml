@@ -183,11 +183,13 @@ jobs:
       - name: Create EFA compliance report
         run: |
           mkdir -p reports/efa
+          REPORT_DATE=$(date +%Y%m%d)
+          TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
           
-          cat > reports/efa/compliance-$(date +%Y%m%d).md << 'EOF'
+          cat > reports/efa/compliance-${REPORT_DATE}.md << EOF
           # EFA Compliance Report
           
-          **Generated**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Generated**: ${TIMESTAMP}
           
           ## Current EFA Status
           
@@ -251,7 +253,7 @@ jobs:
           *Automated by SAIN Protocol EFA Compliance Monitor*
           EOF
           
-          cat reports/efa/compliance-$(date +%Y%m%d).md
+          cat reports/efa/compliance-${REPORT_DATE}.md
 
       - name: Upload EFA compliance report
         uses: actions/upload-artifact@v4

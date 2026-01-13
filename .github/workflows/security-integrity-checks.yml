@@ -251,11 +251,13 @@ jobs:
       - name: Create security report
         run: |
           mkdir -p reports/security
+          REPORT_DATE=$(date +%Y%m%d)
+          TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
           
-          cat > reports/security/security-report-$(date +%Y%m%d).md << 'EOF'
+          cat > reports/security/security-report-${REPORT_DATE}.md << EOF
           # Security and Integrity Report
           
-          **Generated**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Generated**: ${TIMESTAMP}
           
           ## Cryptographic Integrity
           
@@ -312,7 +314,7 @@ jobs:
           *Automated Security Validation by Euystacio Framework*
           EOF
           
-          cat reports/security/security-report-$(date +%Y%m%d).md
+          cat reports/security/security-report-${REPORT_DATE}.md
 
       - name: Upload security report
         uses: actions/upload-artifact@v4

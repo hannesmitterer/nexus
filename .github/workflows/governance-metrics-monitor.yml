@@ -103,9 +103,11 @@ jobs:
       - name: Generate metrics report
         run: |
           mkdir -p reports
-          cat > reports/governance-metrics-$(date +%Y%m%d).md << EOF
+          REPORT_DATE=$(date +%Y%m%d)
+          TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          cat > reports/governance-metrics-${REPORT_DATE}.md << EOF
           # Governance Metrics Report
-          **Generated**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Generated**: ${TIMESTAMP}
           
           ## Ethical Metrics (Sentimento Rhythm)
           
@@ -120,20 +122,20 @@ jobs:
           EOF
           
           if [ "${{ env.tre_status }}" = "below_target" ]; then
-            echo "- ⚠️ TRE below target - Validator slashing may be triggered" >> reports/governance-metrics-$(date +%Y%m%d).md
+            echo "- ⚠️ TRE below target - Validator slashing may be triggered" >> reports/governance-metrics-${REPORT_DATE}.md
           fi
           
           if [ "${{ env.pv_status }}" = "critical" ]; then
-            echo "- 🚨 PV critical - Regenerative Priority Session required" >> reports/governance-metrics-$(date +%Y%m%d).md
+            echo "- 🚨 PV critical - Regenerative Priority Session required" >> reports/governance-metrics-${REPORT_DATE}.md
           elif [ "${{ env.pv_status }}" = "warning" ]; then
-            echo "- ⚠️ PV approaching threshold - Monitor closely" >> reports/governance-metrics-$(date +%Y%m%d).md
+            echo "- ⚠️ PV approaching threshold - Monitor closely" >> reports/governance-metrics-${REPORT_DATE}.md
           fi
           
           if [ "${{ env.isf_status }}" = "below_target" ]; then
-            echo "- ⚠️ ISF below target - Scarcity reduction needed" >> reports/governance-metrics-$(date +%Y%m%d).md
+            echo "- ⚠️ ISF below target - Scarcity reduction needed" >> reports/governance-metrics-${REPORT_DATE}.md
           fi
           
-          cat reports/governance-metrics-$(date +%Y%m%d).md
+          cat reports/governance-metrics-${REPORT_DATE}.md
 
       - name: Upload metrics report
         uses: actions/upload-artifact@v4
