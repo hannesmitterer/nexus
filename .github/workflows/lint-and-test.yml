@@ -11,6 +11,8 @@ jobs:
   lint-javascript:
     name: Lint JavaScript Files
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     
     steps:
       - name: Checkout repository
@@ -47,6 +49,8 @@ jobs:
   lint-solidity:
     name: Lint Solidity Files
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     
     steps:
       - name: Checkout repository
@@ -73,6 +77,8 @@ jobs:
   lint-shell:
     name: Lint Shell Scripts
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     
     steps:
       - name: Checkout repository
@@ -93,6 +99,8 @@ jobs:
   test-scripts:
     name: Test Repository Scripts
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     
     steps:
       - name: Checkout repository
@@ -122,6 +130,8 @@ jobs:
   validate-documentation:
     name: Validate Documentation
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     
     steps:
       - name: Checkout repository
@@ -145,6 +155,8 @@ jobs:
   security-scan:
     name: Security Scanning
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     
     steps:
       - name: Checkout repository
