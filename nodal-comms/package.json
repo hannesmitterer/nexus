@@ -1,0 +1,28 @@
+{
+  "name": "nexus-nodal-communication",
+  "version": "1.0.0",
+  "description": "Nodal communication protocols for Nexus using Kafka and gRPC",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [
+    "nexus",
+    "nodal",
+    "kafka",
+    "grpc",
+    "distributed-systems",
+    "streaming"
+  ],
+  "dependencies": {
+    "@grpc/grpc-js": "^1.9.0",
+    "@grpc/proto-loader": "^0.7.0",
+    "kafkajs": "^2.2.4",
+    "express": "^4.18.0",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  }
+}

@@ -1,0 +1,108 @@
+syntax = "proto3";
+
+package nexus.nodal;
+
+// Service for inter-node communication and state synchronization
+service NodalCommunication {
+  // Share node state with other nodes
+  rpc ShareNodeState(NodeStateRequest) returns (NodeStateResponse);
+  
+  // Stream node state updates in real-time
+  rpc StreamNodeStates(StreamRequest) returns (stream NodeStateUpdate);
+  
+  // Synchronize data with LexAmoris repository
+  rpc SyncWithLexAmoris(LexAmorisRequest) returns (LexAmorisResponse);
+  
+  // Bi-directional streaming for continuous data exchange
+  rpc ExchangeData(stream DataPacket) returns (stream DataPacket);
+  
+  // Broadcast EAL update to all nodes
+  rpc BroadcastEALUpdate(EALUpdateRequest) returns (EALUpdateResponse);
+  
+  // Health check for node availability
+  rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+}
+
+// Node state request message
+message NodeStateRequest {
+  string node_id = 1;
+  string state_data = 2;
+  int64 timestamp = 3;
+  map<string, string> metadata = 4;
+}
+
+// Node state response message
+message NodeStateResponse {
+  bool success = 1;
+  string message = 2;
+  int64 processed_at = 3;
+}
+
+// Stream request parameters
+message StreamRequest {
+  string node_id = 1;
+  repeated string filter_tags = 2;
+  int32 batch_size = 3;
+}
+
+// Node state update for streaming
+message NodeStateUpdate {
+  string node_id = 1;
+  string state_type = 2;
+  string state_data = 3;
+  int64 timestamp = 4;
+  int32 sequence_number = 5;
+}
+
+// LexAmoris synchronization request
+message LexAmorisRequest {
+  string request_type = 1;
+  string data_payload = 2;
+  string source_repo = 3;
+  int64 timestamp = 4;
+}
+
+// LexAmoris synchronization response
+message LexAmorisResponse {
+  bool success = 1;
+  string response_data = 2;
+  string sync_id = 3;
+  int64 synced_at = 4;
+}
+
+// Data packet for bidirectional streaming
+message DataPacket {
+  string packet_id = 1;
+  string data_type = 2;
+  bytes payload = 3;
+  int64 timestamp = 4;
+  map<string, string> headers = 5;
+}
+
+// EAL update broadcast request
+message EALUpdateRequest {
+  string version = 1;
+  string ipfs_cid = 2;
+  string update_description = 3;
+  int64 timestamp = 4;
+}
+
+// EAL update broadcast response
+message EALUpdateResponse {
+  bool acknowledged = 1;
+  int32 nodes_notified = 2;
+  repeated string node_ids = 3;
+}
+
+// Health check request
+message HealthCheckRequest {
+  string node_id = 1;
+}
+
+// Health check response
+message HealthCheckResponse {
+  bool healthy = 1;
+  string status = 2;
+  int64 uptime_seconds = 3;
+  map<string, string> metrics = 4;
+}
