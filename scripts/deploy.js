@@ -14,7 +14,6 @@
  *   - Verify all contract addresses are correct for target network
  */
 
-const hre = require("hardhat");
 const { ethers } = require("hardhat");
 
 // Color codes for console output
