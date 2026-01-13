@@ -314,9 +314,9 @@ We are seeking partners who share our vision of regenerative, bio-integrated fut
 ### Investment & Funding Partners
 
 **Impact Investors**
-- Seed funding for R&D (€500K-€2M)
-- Series A for prototyping (€5M-€15M)
-- Growth capital for scaling (€20M+)
+- Seed funding for R&D (€500K-€2.0M)
+- Series A for prototyping (€5.0M-€15.0M)
+- Growth capital for scaling (€20.0M+)
 - Long-term vision alignment
 - Regenerative returns model
 
@@ -406,8 +406,8 @@ We stand at the threshold of a new era in human habitat—one where our homes ar
 
 **For inquiries and partnership opportunities:**
 
-- **Email**: partners@ponteustachio.org
-- **Website**: www.ponteustachio.org (coming soon)
+- **Email**: partners@ponte-eustachio.org
+- **Website**: www.ponte-eustachio.org (coming soon)
 - **Repository**: https://github.com/hannesmitterer/nexus
 - **Framework**: Euystacio Global Governance Initiative (GGI)
 
