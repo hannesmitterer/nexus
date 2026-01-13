@@ -124,7 +124,7 @@ jobs:
           cat doc_report.md
       
       - name: Upload documentation report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.4.3
         with:
           name: documentation-report
           path: doc_report.md
