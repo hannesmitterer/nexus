@@ -11,6 +11,21 @@ build/
 *.so
 *.a
 
+# Hardhat
+cache/
+artifacts/
+deployments/*/
+!deployments/README.md
+coverage/
+coverage.json
+typechain/
+typechain-types/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
 # IDE files
 .vscode/
 .idea/
