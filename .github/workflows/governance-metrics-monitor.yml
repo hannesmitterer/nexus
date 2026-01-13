@@ -1,0 +1,209 @@
+name: Governance Metrics Monitor
+
+on:
+  schedule:
+    # Run daily at 00:00 UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+  push:
+    paths:
+      - 'dashboard/data/state.json'
+      - 'dashboard/data/history.json'
+
+jobs:
+  monitor-tre-metrics:
+    name: Monitor TRE (Tasso di Rigenerazione Etica)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate dashboard state.json
+        id: validate
+        run: |
+          if [ ! -f "dashboard/data/state.json" ]; then
+            echo "❌ ERROR: state.json not found"
+            exit 1
+          fi
+          
+          # Validate JSON format
+          if ! jq empty dashboard/data/state.json 2>/dev/null; then
+            echo "❌ ERROR: Invalid JSON in state.json"
+            exit 1
+          fi
+          
+          echo "✅ state.json is valid JSON"
+
+      - name: Extract and validate TRE metrics
+        id: tre-check
+        run: |
+          TRE_CURRENT=$(jq -r '.ethics.TRE_current' dashboard/data/state.json)
+          TRE_TARGET=$(jq -r '.ethics.TRE_target' dashboard/data/state.json)
+          PV=$(jq -r '.ethics.PV' dashboard/data/state.json)
+          ISF=$(jq -r '.ethics.ISF' dashboard/data/state.json)
+          
+          echo "tre_current=$TRE_CURRENT" >> $GITHUB_OUTPUT
+          echo "tre_target=$TRE_TARGET" >> $GITHUB_OUTPUT
+          echo "pv=$PV" >> $GITHUB_OUTPUT
+          echo "isf=$ISF" >> $GITHUB_OUTPUT
+          
+          echo "📊 Current Metrics:"
+          echo "  TRE Current: $TRE_CURRENT%"
+          echo "  TRE Target: $TRE_TARGET%"
+          echo "  PV (Planetary Violence): $PV%"
+          echo "  ISF (Integral Scarcity Factor): $ISF"
+
+      - name: Check TRE compliance
+        run: |
+          TRE_CURRENT=${{ steps.tre-check.outputs.tre_current }}
+          TRE_TARGET=${{ steps.tre-check.outputs.tre_target }}
+          
+          # TRE threshold check (0.30% minimum as per AIC_Manuale_Operativo_Finale.md)
+          if [ $(echo "$TRE_CURRENT < $TRE_TARGET" | bc -l) -eq 1 ]; then
+            echo "⚠️ WARNING: TRE ($TRE_CURRENT%) is below target ($TRE_TARGET%)"
+            echo "⚠️ Action Required: Validator slashing may be triggered (VCE mechanism)"
+            echo "tre_status=below_target" >> $GITHUB_ENV
+          else
+            echo "✅ TRE is at or above target"
+            echo "tre_status=compliant" >> $GITHUB_ENV
+          fi
+
+      - name: Check PV threshold
+        run: |
+          PV=${{ steps.tre-check.outputs.pv }}
+          PV_THRESHOLD=5.0
+          
+          # PV Max Threshold: 5.0% (triggers Regenerative Priority Session)
+          if [ $(echo "$PV >= $PV_THRESHOLD" | bc -l) -eq 1 ]; then
+            echo "🚨 CRITICAL: PV ($PV%) has reached or exceeded threshold ($PV_THRESHOLD%)"
+            echo "🚨 Regenerative Priority Session should be initiated"
+            echo "pv_status=critical" >> $GITHUB_ENV
+          elif [ $(echo "$PV >= 4.5" | bc -l) -eq 1 ]; then
+            echo "⚠️ WARNING: PV ($PV%) approaching threshold (pre-alert at 4.5%)"
+            echo "pv_status=warning" >> $GITHUB_ENV
+          else
+            echo "✅ PV is within acceptable range"
+            echo "pv_status=normal" >> $GITHUB_ENV
+          fi
+
+      - name: Check ISF compliance
+        run: |
+          ISF=${{ steps.tre-check.outputs.isf }}
+          ISF_TARGET=75
+          
+          # ISF target: ≥ 75 (Integral Scarcity Factor)
+          if [ $(echo "$ISF < $ISF_TARGET" | bc -l) -eq 1 ]; then
+            echo "⚠️ WARNING: ISF ($ISF) is below target ($ISF_TARGET)"
+            echo "isf_status=below_target" >> $GITHUB_ENV
+          else
+            echo "✅ ISF is at or above target"
+            echo "isf_status=compliant" >> $GITHUB_ENV
+          fi
+
+      - name: Generate metrics report
+        run: |
+          mkdir -p reports
+          cat > reports/governance-metrics-$(date +%Y%m%d).md << EOF
+          # Governance Metrics Report
+          **Generated**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          
+          ## Ethical Metrics (Sentimento Rhythm)
+          
+          | Metric | Current | Target | Status |
+          |--------|---------|--------|--------|
+          | TRE (Tasso di Rigenerazione Etica) | ${{ steps.tre-check.outputs.tre_current }}% | ${{ steps.tre-check.outputs.tre_target }}% | ${{ env.tre_status }} |
+          | PV (Planetary Violence) | ${{ steps.tre-check.outputs.pv }}% | < 5.0% | ${{ env.pv_status }} |
+          | ISF (Integral Scarcity Factor) | ${{ steps.tre-check.outputs.isf }} | ≥ 75 | ${{ env.isf_status }} |
+          
+          ## Alerts
+          
+          EOF
+          
+          if [ "${{ env.tre_status }}" = "below_target" ]; then
+            echo "- ⚠️ TRE below target - Validator slashing may be triggered" >> reports/governance-metrics-$(date +%Y%m%d).md
+          fi
+          
+          if [ "${{ env.pv_status }}" = "critical" ]; then
+            echo "- 🚨 PV critical - Regenerative Priority Session required" >> reports/governance-metrics-$(date +%Y%m%d).md
+          elif [ "${{ env.pv_status }}" = "warning" ]; then
+            echo "- ⚠️ PV approaching threshold - Monitor closely" >> reports/governance-metrics-$(date +%Y%m%d).md
+          fi
+          
+          if [ "${{ env.isf_status }}" = "below_target" ]; then
+            echo "- ⚠️ ISF below target - Scarcity reduction needed" >> reports/governance-metrics-$(date +%Y%m%d).md
+          fi
+          
+          cat reports/governance-metrics-$(date +%Y%m%d).md
+
+      - name: Upload metrics report
+        uses: actions/upload-artifact@v4
+        with:
+          name: governance-metrics-report-${{ github.run_number }}
+          path: reports/
+          retention-days: 90
+
+  monitor-financial-metrics:
+    name: Monitor ULP Financial Metrics
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract financial metrics
+        id: finance-check
+        run: |
+          SAIN_PRICE=$(jq -r '.finance.sain_price' dashboard/data/state.json)
+          PRICE_FLOOR=$(jq -r '.finance.price_floor' dashboard/data/state.json)
+          PROACTIVE_DEFENSE=$(jq -r '.finance.proactive_defense_threshold' dashboard/data/state.json)
+          FC_BALANCE=$(jq -r '.finance.fc_balance_usd' dashboard/data/state.json)
+          
+          echo "sain_price=$SAIN_PRICE" >> $GITHUB_OUTPUT
+          echo "price_floor=$PRICE_FLOOR" >> $GITHUB_OUTPUT
+          echo "proactive_defense=$PROACTIVE_DEFENSE" >> $GITHUB_OUTPUT
+          echo "fc_balance=$FC_BALANCE" >> $GITHUB_OUTPUT
+          
+          echo "💰 Financial Metrics:"
+          echo "  SAIN Price: \$$SAIN_PRICE"
+          echo "  Price Floor: \$$PRICE_FLOOR"
+          echo "  Proactive Defense Threshold: \$$PROACTIVE_DEFENSE"
+          echo "  FC Balance: \$$FC_BALANCE"
+
+      - name: Check price floor compliance
+        run: |
+          SAIN_PRICE=${{ steps.finance-check.outputs.sain_price }}
+          PRICE_FLOOR=${{ steps.finance-check.outputs.price_floor }}
+          PROACTIVE_DEFENSE=${{ steps.finance-check.outputs.proactive_defense }}
+          
+          if [ $(echo "$SAIN_PRICE < $PRICE_FLOOR" | bc -l) -eq 1 ]; then
+            echo "🚨 CRITICAL: Price below floor! proactiveDefense() should execute immediately"
+            echo "price_status=critical" >> $GITHUB_ENV
+          elif [ $(echo "$SAIN_PRICE <= $PROACTIVE_DEFENSE" | bc -l) -eq 1 ]; then
+            echo "⚠️ WARNING: Price at or below proactive defense threshold"
+            echo "⚠️ proactiveDefense() should be triggered"
+            echo "price_status=warning" >> $GITHUB_ENV
+          else
+            echo "✅ Price is healthy"
+            echo "price_status=healthy" >> $GITHUB_ENV
+          fi
+
+      - name: Validate fee split configuration
+        run: |
+          RESTITUTION=$(jq -r '.finance.fee_split.restitution_fund' dashboard/data/state.json)
+          COUNTER_CYCLICITY=$(jq -r '.finance.fee_split.counter_cyclicity_fund' dashboard/data/state.json)
+          BURN=$(jq -r '.finance.fee_split.burn' dashboard/data/state.json)
+          
+          TOTAL=$(echo "$RESTITUTION + $COUNTER_CYCLICITY + $BURN" | bc -l)
+          
+          echo "Fee Split Validation:"
+          echo "  Restitution Fund: $(echo "$RESTITUTION * 100" | bc)%"
+          echo "  Counter-Cyclicity: $(echo "$COUNTER_CYCLICITY * 100" | bc)%"
+          echo "  Burn: $(echo "$BURN * 100" | bc)%"
+          echo "  Total: $TOTAL"
+          
+          # Should sum to 1.0 (100%)
+          if [ $(echo "$TOTAL == 1.0" | bc -l) -eq 1 ]; then
+            echo "✅ Fee split correctly configured (40/30/30)"
+          else
+            echo "❌ ERROR: Fee split does not sum to 100%"
+            exit 1
+          fi

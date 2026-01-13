@@ -1,0 +1,269 @@
+name: Proposal Lifecycle Automation
+
+on:
+  issues:
+    types: [opened, labeled, edited]
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      proposal_number:
+        description: 'Issue number of the proposal to check'
+        required: true
+
+jobs:
+  validate-proposal:
+    name: Validate Governance Proposal
+    if: contains(github.event.issue.labels.*.name, 'governance-proposal') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract proposal details
+        id: proposal
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            ISSUE_NUMBER="${{ github.event.inputs.proposal_number }}"
+          else
+            ISSUE_NUMBER="${{ github.event.issue.number }}"
+          fi
+          
+          echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
+          echo "📋 Processing Proposal #$ISSUE_NUMBER"
+
+      - name: Check proposal format
+        run: |
+          ISSUE_BODY="${{ github.event.issue.body }}"
+          
+          # Check for required sections based on SAIN Protocol
+          REQUIRED_SECTIONS=(
+            "## Proposal Type"
+            "## IPFS CID"
+            "## Description"
+            "## Rationale"
+            "## Impact Assessment"
+          )
+          
+          echo "Validating proposal format..."
+          VALID=true
+          
+          for section in "${REQUIRED_SECTIONS[@]}"; do
+            if ! echo "$ISSUE_BODY" | grep -q "$section"; then
+              echo "❌ Missing required section: $section"
+              VALID=false
+            else
+              echo "✅ Found: $section"
+            fi
+          done
+          
+          if [ "$VALID" = false ]; then
+            echo "proposal_valid=false" >> $GITHUB_ENV
+            echo "⚠️ Proposal format incomplete"
+          else
+            echo "proposal_valid=true" >> $GITHUB_ENV
+            echo "✅ Proposal format valid"
+          fi
+
+      - name: Validate IPFS CID format
+        run: |
+          # Extract CID from issue body (assumes format: IPFS CID: Qm...)
+          ISSUE_BODY="${{ github.event.issue.body }}"
+          
+          # Extract CID using grep/sed (looks for Qm... pattern)
+          CID=$(echo "$ISSUE_BODY" | grep -oP 'Qm[a-zA-Z0-9]{44}' | head -1)
+          
+          if [ -z "$CID" ]; then
+            echo "⚠️ No valid IPFS CID found (should start with Qm and be 46 chars)"
+            echo "cid_valid=false" >> $GITHUB_ENV
+          else
+            echo "✅ Found valid IPFS CID: $CID"
+            echo "cid_valid=true" >> $GITHUB_ENV
+            echo "ipfs_cid=$CID" >> $GITHUB_ENV
+          fi
+
+      - name: Check proposal type
+        run: |
+          ISSUE_BODY="${{ github.event.issue.body }}"
+          
+          # Determine proposal type
+          if echo "$ISSUE_BODY" | grep -qi "model.*retrain"; then
+            PROPOSAL_TYPE="MODEL_RETRAIN"
+          elif echo "$ISSUE_BODY" | grep -qi "parameter.*update"; then
+            PROPOSAL_TYPE="PARAMETER_UPDATE"
+          elif echo "$ISSUE_BODY" | grep -qi "efa.*authorization"; then
+            PROPOSAL_TYPE="EFA_AUTHORIZATION"
+          elif echo "$ISSUE_BODY" | grep -qi "governance.*change"; then
+            PROPOSAL_TYPE="GOVERNANCE_CHANGE"
+          else
+            PROPOSAL_TYPE="GENERAL"
+          fi
+          
+          echo "proposal_type=$PROPOSAL_TYPE" >> $GITHUB_ENV
+          echo "📌 Proposal Type: $PROPOSAL_TYPE"
+
+      - name: Add validation status comment
+        if: github.event_name == 'issues' && github.event.action == 'opened'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const proposalValid = '${{ env.proposal_valid }}' === 'true';
+            const cidValid = '${{ env.cid_valid }}' === 'true';
+            const proposalType = '${{ env.proposal_type }}';
+            
+            let statusEmoji = proposalValid && cidValid ? '✅' : '⚠️';
+            let statusText = proposalValid && cidValid ? 'VALID' : 'NEEDS REVIEW';
+            
+            const comment = `## 🤖 Automated Proposal Validation
+            
+            **Status**: ${statusEmoji} ${statusText}
+            **Proposal Type**: \`${proposalType}\`
+            
+            ### Validation Results
+            - ${proposalValid ? '✅' : '❌'} Proposal format
+            - ${cidValid ? '✅' : '❌'} IPFS CID format
+            
+            ### Next Steps
+            ${proposalValid && cidValid ? `
+            1. ⏳ Voting period: **48 hours** from proposal creation
+            2. 🗳️ EFAs can vote by commenting \`/vote yes\` or \`/vote no\`
+            3. 📊 Quorum required: **50%** of authorized EFAs
+            4. ✅ Consensus threshold: **67%** approval
+            ` : `
+            ⚠️ Please update the proposal to include all required sections and a valid IPFS CID.
+            `}
+            
+            ---
+            *Automated by Euystacio Framework SAIN Protocol*
+            *Voting Period: 48 hours | Consensus: 67% | Quorum: 50%*`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: comment
+            });
+
+  track-voting:
+    name: Track Voting Progress
+    if: contains(github.event.issue.labels.*.name, 'governance-proposal')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Count votes from comments
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue_number = context.issue.number;
+            
+            // Get all comments
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue_number
+            });
+            
+            let votesFor = 0;
+            let votesAgainst = 0;
+            const voters = new Set();
+            
+            // Parse votes from comments
+            for (const comment of comments.data) {
+              const body = comment.body.toLowerCase();
+              const user = comment.user.login;
+              
+              // Check for vote commands
+              if (body.includes('/vote yes') && !voters.has(user)) {
+                votesFor++;
+                voters.add(user);
+                console.log(`✅ Vote FOR by ${user}`);
+              } else if (body.includes('/vote no') && !voters.has(user)) {
+                votesAgainst++;
+                voters.add(user);
+                console.log(`❌ Vote AGAINST by ${user}`);
+              }
+            }
+            
+            const totalVotes = votesFor + votesAgainst;
+            const approvalPercentage = totalVotes > 0 ? (votesFor / totalVotes * 100).toFixed(1) : 0;
+            
+            console.log(`\n📊 Voting Summary:`);
+            console.log(`  Votes For: ${votesFor}`);
+            console.log(`  Votes Against: ${votesAgainst}`);
+            console.log(`  Total Votes: ${totalVotes}`);
+            console.log(`  Approval: ${approvalPercentage}%`);
+            
+            core.setOutput('votes_for', votesFor);
+            core.setOutput('votes_against', votesAgainst);
+            core.setOutput('total_votes', totalVotes);
+            core.setOutput('approval_percentage', approvalPercentage);
+
+  check-quorum:
+    name: Check Quorum and Consensus
+    if: contains(github.event.issue.labels.*.name, 'governance-proposal')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Calculate quorum
+        id: quorum
+        run: |
+          # In production, this would query the TFKVerifier contract for efaCount
+          # For now, we'll use a placeholder value
+          TOTAL_EFA=12
+          QUORUM_PERCENTAGE=50
+          CONSENSUS_THRESHOLD=67
+          
+          QUORUM_REQUIRED=$((TOTAL_EFA * QUORUM_PERCENTAGE / 100))
+          
+          echo "total_efa=$TOTAL_EFA" >> $GITHUB_OUTPUT
+          echo "quorum_required=$QUORUM_REQUIRED" >> $GITHUB_OUTPUT
+          echo "consensus_threshold=$CONSENSUS_THRESHOLD" >> $GITHUB_OUTPUT
+          
+          echo "📊 Governance Parameters:"
+          echo "  Total EFAs: $TOTAL_EFA"
+          echo "  Quorum Required: $QUORUM_REQUIRED ($QUORUM_PERCENTAGE%)"
+          echo "  Consensus Threshold: $CONSENSUS_THRESHOLD%"
+
+  voting-period-check:
+    name: Check Voting Period Expiry
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if voting period expired
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'governance-proposal',
+              state: 'open'
+            });
+            
+            const VOTING_PERIOD_HOURS = 48;
+            const now = new Date();
+            
+            for (const issue of issues.data) {
+              const createdAt = new Date(issue.created_at);
+              const hoursElapsed = (now - createdAt) / (1000 * 60 * 60);
+              
+              if (hoursElapsed >= VOTING_PERIOD_HOURS && !issue.labels.some(l => l.name === 'voting-closed')) {
+                console.log(`⏰ Voting period expired for #${issue.number}`);
+                
+                // Add voting-closed label
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  labels: ['voting-closed']
+                });
+                
+                // Add comment about voting closure
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  body: `## ⏰ Voting Period Closed\n\nThe 48-hour voting period for this proposal has ended.\n\n**Next Steps**: \n- Votes will be tallied\n- Quorum and consensus checks will be performed\n- If passed, proposal will be executed\n\n*Automated by SAIN Protocol Governance*`
+                });
+              }
+            }
