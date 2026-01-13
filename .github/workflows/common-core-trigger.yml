@@ -44,9 +44,11 @@ jobs:
           echo "Using common-core ref: $COMMON_CORE_REF"
           
           # Example: Download shared configuration files
-          curl -f -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          if ! curl -f -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             "https://raw.githubusercontent.com/LexAmoris/common-core/$COMMON_CORE_REF/shared-config.json" \
-            -o .common-core/shared-config.json 2>/dev/null || echo "{}" > .common-core/shared-config.json
+            -o .common-core/shared-config.json 2>/dev/null; then
+            printf '{}' > .common-core/shared-config.json
+          fi
       
       - name: Install dependencies
         run: |

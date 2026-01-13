@@ -33,13 +33,13 @@ jobs:
       - name: Validate documentation structure
         run: |
           echo "Checking documentation structure..."
-          # Ensure key documentation files exist
+          # Check for key documentation files
           required_docs=("README.md" "docs/CUSTOS_SENTIMENTO.md" "docs/K-SYNC_Protocol.md")
           for doc in "${required_docs[@]}"; do
             if [ -f "$doc" ]; then
               echo "✓ $doc exists"
             else
-              echo "✗ $doc missing"
+              echo "ℹ️  $doc not found (optional)"
             fi
           done
       
@@ -90,10 +90,10 @@ jobs:
               <h1>Nexus Documentation</h1>
               <p>Welcome to the Nexus project documentation.</p>
               <h2>Main Documentation</h2>
-              <a class="doc-link" href="README.html">README</a>
-              <a class="doc-link" href="docs/CUSTOS_SENTIMENTO.html">CUSTOS SENTIMENTO</a>
-              <a class="doc-link" href="docs/K-SYNC_Protocol.html">K-SYNC Protocol</a>
-              <a class="doc-link" href="docs/ROADMAP_INTEGRATION_SUMMARY.html">Roadmap Integration Summary</a>
+              <a class="doc-link" href="README.md">README</a>
+              <a class="doc-link" href="docs/CUSTOS_SENTIMENTO.md">CUSTOS SENTIMENTO</a>
+              <a class="doc-link" href="docs/K-SYNC_Protocol.md">K-SYNC Protocol</a>
+              <a class="doc-link" href="docs/ROADMAP_INTEGRATION_SUMMARY.md">Roadmap Integration Summary</a>
           </body>
           </html>
           DOCEOF

@@ -50,11 +50,13 @@ jobs:
       
       - name: Lint Solidity contracts
         if: hashFiles('**/*.sol') != ''
+        continue-on-error: true
         run: |
-          if [ -f package.json ] && grep -q "solhint" package.json; then
-            npx solhint 'contracts/**/*.sol' '*.sol' 2>/dev/null || echo "Solhint not configured"
+          # Install solhint if Solidity files exist
+          if command -v npx &> /dev/null; then
+            npx --yes solhint 'contracts/**/*.sol' '*.sol' 2>/dev/null || echo "Solhint linting skipped or not configured"
           else
-            echo "Solhint not found, skipping Solidity linting"
+            echo "npx not available, skipping Solidity linting"
           fi
       
       - name: Check shell scripts

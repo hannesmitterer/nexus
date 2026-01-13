@@ -30,9 +30,15 @@ jobs:
         run: |
           # Fetch the latest README_PARTNERS.md from the common-core repository
           # Adjust the repository URL and branch as needed
-          curl -f -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          if ! curl -f -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             "https://raw.githubusercontent.com/LexAmoris/common-core/main/README_PARTNERS.md" \
-            -o README_PARTNERS.md || echo "# Partners\n\nThis file will be synced from common-core repository." > README_PARTNERS.md
+            -o README_PARTNERS.md; then
+            cat > README_PARTNERS.md << 'FALLBACK'
+          # Partners
+          
+          This file will be synced from common-core repository.
+          FALLBACK
+          fi
       
       - name: Check for changes
         id: check_changes

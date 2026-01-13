@@ -71,13 +71,13 @@ jobs:
           if [ -d dashboard/dist ]; then
             cp -r dashboard/dist dist/dashboard
           fi
-          if [ -d build ]; then
-            cp -r build/* dist/ 2>/dev/null || true
+          if [ -d build ] && [ -n "$(ls -A build 2>/dev/null)" ]; then
+            cp -r build/* dist/
           fi
           # Include essential files
-          cp *.md dist/ 2>/dev/null || true
-          cp -r contracts dist/ 2>/dev/null || true
-          cp -r docs dist/ 2>/dev/null || true
+          find . -maxdepth 1 -name "*.md" -exec cp {} dist/ \; 2>/dev/null || true
+          [ -d contracts ] && cp -r contracts dist/ || true
+          [ -d docs ] && cp -r docs dist/ || true
       
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
