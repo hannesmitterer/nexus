@@ -285,7 +285,11 @@ class NodalAPIServer {
     }
     
     if (this.grpcClient) {
-      this.grpcClient.close();
+      try {
+        this.grpcClient.close();
+      } catch (error) {
+        console.warn('Error closing gRPC client during shutdown:', error.message);
+      }
     }
     
     console.log('Shutdown complete');

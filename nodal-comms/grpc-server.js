@@ -90,7 +90,7 @@ class NodalCommunicationServer {
     console.log(`LexAmoris sync request: ${request_type} from ${source_repo}`);
 
     // Process sync request
-    const syncId = `sync-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const syncId = `sync-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
     
     callback(null, {
       success: true,
