@@ -29,7 +29,9 @@ const firebaseConfig = {
 // Configuration validation
 function validateConfig(config) {
   const requiredFields = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'];
-  const missingFields = requiredFields.filter(field => !config[field] || config[field].startsWith('DEIN'));
+  const missingFields = requiredFields.filter(field => 
+    !config[field] || config[field].startsWith('DEIN')
+  );
   
   if (missingFields.length > 0) {
     console.warn(`Nexus: Configuration incomplete. Missing or placeholder values for: ${missingFields.join(', ')}`);

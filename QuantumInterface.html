@@ -57,7 +57,7 @@
 
     // Inter-Node Simulation State
     const nodeState = {
-        id: 'NODE-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+        id: 'NODE-' + Math.random().toString(36).substring(2, 11).toUpperCase(),
         peers: [],
         syncStatus: 'SYNCING',
         lastSync: Date.now(),
@@ -86,7 +86,7 @@
             
             // Simulate peer discovery
             if (nodeState.peers.length < 3 && Math.random() > 0.7) {
-                const newPeer = 'PEER-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+                const newPeer = 'PEER-' + Math.random().toString(36).substring(2, 8).toUpperCase();
                 nodeState.peers.push(newPeer);
                 nodeState.messageQueue.push(`Peer ${newPeer} joined network`);
             }
@@ -141,7 +141,7 @@
         // Update node status display
         const nodeStatusEl = document.getElementById('node-status');
         if (nodeStatusEl) {
-            nodeStatusEl.innerText = `NODE: ${nodeState.id.substr(0, 12)} | PEERS: ${nodeState.peers.length} | ${nodeState.syncStatus}`;
+            nodeStatusEl.innerText = `NODE: ${nodeState.id.substring(0, 12)} | PEERS: ${nodeState.peers.length} | ${nodeState.syncStatus}`;
         }
     }, 3000);
 
