@@ -1,0 +1,16 @@
+{
+  "monitoring_interval": 60,
+  "alert_threshold": 0.7,
+  "history_retention": 1000,
+  "enable_auto_response": true,
+  "threat_levels": {
+    "minimal": 0.3,
+    "low": 0.5,
+    "medium": 0.7,
+    "high": 0.9,
+    "critical": 1.0
+  },
+  "sentimento_alignment_threshold": 75.0,
+  "planetary_violence_threshold": 5.0,
+  "vce_alert_count": 3
+}

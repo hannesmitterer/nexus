@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rhythm Interface - Euystacio Framework</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-align: center;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+        
+        .auth-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .auth-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #dc3545;
+        }
+        
+        .status-indicator.authenticated {
+            background: #28a745;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        input[type="text"],
+        input[type="password"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: monospace;
+        }
+        
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-right: 10px;
+        }
+        
+        .btn:hover {
+            background: #5568d3;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .packet-list {
+            margin-top: 20px;
+        }
+        
+        .packet-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .packet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .packet-id {
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .packet-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-encrypted {
+            background: #ffc107;
+            color: #856404;
+        }
+        
+        .status-decrypted {
+            background: #28a745;
+            color: white;
+        }
+        
+        .status-released {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .packet-details {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .result-box {
+            background: #e7f3ff;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .result-box.show {
+            display: block;
+        }
+        
+        .result-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .result-content {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .rhythm-visualization {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .rhythm-wave {
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .wave-animation {
+            position: absolute;
+            width: 200%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.1) 10px,
+                rgba(255,255,255,0.1) 20px
+            );
+            animation: wave 3s linear infinite;
+        }
+        
+        @keyframes wave {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        
+        .info-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .info-box strong {
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 Rhythm Interface</h1>
+        <p class="subtitle">Partner-Controlled Packet Decryption & Release System</p>
+        
+        <!-- Authentication Section -->
+        <div class="auth-section">
+            <div class="auth-status">
+                <div class="status-indicator" id="authIndicator"></div>
+                <span id="authStatus">Not Authenticated</span>
+            </div>
+            
+            <div id="loginForm">
+                <div class="input-group">
+                    <label for="partnerId">Partner ID:</label>
+                    <input type="text" id="partnerId" placeholder="Enter your Partner ID">
+                </div>
+                
+                <div class="input-group">
+                    <label for="rhythmKey">Rhythm Key:</label>
+                    <input type="password" id="rhythmKey" placeholder="Enter your Rhythm Key">
+                </div>
+                
+                <button class="btn" onclick="authenticate()">Authenticate</button>
+            </div>
+            
+            <div id="authenticatedView" style="display: none;">
+                <p>Welcome, Partner <strong id="displayPartnerId"></strong></p>
+                <button class="btn btn-secondary" onclick="logout()">Logout</button>
+            </div>
+        </div>
+        
+        <!-- Packet Management Section -->
+        <div id="packetSection" style="display: none;">
+            <h2>Your Encrypted Packets</h2>
+            
+            <div class="packet-list" id="packetList">
+                <!-- Packets will be loaded here -->
+            </div>
+            
+            <!-- Decryption Interface -->
+            <div class="input-group">
+                <label for="packetIdInput">Packet ID to Decrypt:</label>
+                <input type="text" id="packetIdInput" placeholder="Enter Packet ID">
+            </div>
+            
+            <div class="input-group">
+                <label for="decryptionKey">Decryption Key:</label>
+                <input type="password" id="decryptionKey" placeholder="Enter decryption key">
+            </div>
+            
+            <button class="btn" onclick="decryptPacket()">Decrypt Packet</button>
+            <button class="btn btn-secondary" onclick="releasePacket()">Release to Network</button>
+            
+            <!-- Result Display -->
+            <div class="result-box" id="resultBox">
+                <h3>Decrypted Content</h3>
+                <div class="result-content" id="resultContent"></div>
+            </div>
+            
+            <!-- Rhythm Visualization -->
+            <div class="rhythm-visualization">
+                <h3>Sentimento Rhythm Status</h3>
+                <div class="rhythm-wave">
+                    <div class="wave-animation"></div>
+                </div>
+                <p style="margin-top: 10px; color: #666;">
+                    Current Alignment: <strong id="rhythmAlignment">88%</strong>
+                </p>
+            </div>
+            
+            <!-- Information Box -->
+            <div class="info-box">
+                <strong>ℹ️ About Rhythm Interface</strong>
+                <p>This interface allows authorized partners to decrypt and release encrypted packets within the Euystacio Framework. All operations are logged and verified through the Sentimento Rhythm protocol.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Simulated backend data
+        let authenticated = false;
+        let currentPartnerId = null;
+        let packets = [
+            {
+                id: 'PKT-2026-001',
+                status: 'encrypted',
+                timestamp: '2026-01-15T01:00:00Z',
+                size: '2.4 MB',
+                description: 'Climate Analysis Data Package'
+            },
+            {
+                id: 'PKT-2026-002',
+                status: 'encrypted',
+                timestamp: '2026-01-14T18:30:00Z',
+                size: '1.8 MB',
+                description: 'Bio-Sync Rhythm Validation'
+            },
+            {
+                id: 'PKT-2026-003',
+                status: 'decrypted',
+                timestamp: '2026-01-14T12:00:00Z',
+                size: '3.1 MB',
+                description: 'Threat Assessment Report'
+            }
+        ];
+        
+        function authenticate() {
+            const partnerId = document.getElementById('partnerId').value;
+            const rhythmKey = document.getElementById('rhythmKey').value;
+            
+            if (!partnerId || !rhythmKey) {
+                alert('Please enter both Partner ID and Rhythm Key');
+                return;
+            }
+            
+            // Simulated authentication - in production, verify against backend
+            if (rhythmKey.length >= 8) {
+                authenticated = true;
+                currentPartnerId = partnerId;
+                
+                // Update UI
+                document.getElementById('authIndicator').classList.add('authenticated');
+                document.getElementById('authStatus').textContent = 'Authenticated';
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('authenticatedView').style.display = 'block';
+                document.getElementById('displayPartnerId').textContent = partnerId;
+                document.getElementById('packetSection').style.display = 'block';
+                
+                // Load packets
+                loadPackets();
+            } else {
+                alert('Authentication failed. Please check your credentials.');
+            }
+        }
+        
+        function logout() {
+            authenticated = false;
+            currentPartnerId = null;
+            
+            // Reset UI
+            document.getElementById('authIndicator').classList.remove('authenticated');
+            document.getElementById('authStatus').textContent = 'Not Authenticated';
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('authenticatedView').style.display = 'none';
+            document.getElementById('packetSection').style.display = 'none';
+            document.getElementById('partnerId').value = '';
+            document.getElementById('rhythmKey').value = '';
+            document.getElementById('resultBox').classList.remove('show');
+        }
+        
+        function loadPackets() {
+            const packetList = document.getElementById('packetList');
+            packetList.innerHTML = '';
+            
+            packets.forEach(packet => {
+                const packetDiv = document.createElement('div');
+                packetDiv.className = 'packet-item';
+                packetDiv.innerHTML = `
+                    <div class="packet-header">
+                        <span class="packet-id">${packet.id}</span>
+                        <span class="packet-status status-${packet.status}">${packet.status.toUpperCase()}</span>
+                    </div>
+                    <div class="packet-details">
+                        <div><strong>Description:</strong> ${packet.description}</div>
+                        <div><strong>Size:</strong> ${packet.size} | <strong>Timestamp:</strong> ${new Date(packet.timestamp).toLocaleString()}</div>
+                    </div>
+                `;
+                packetList.appendChild(packetDiv);
+            });
+        }
+        
+        function decryptPacket() {
+            const packetId = document.getElementById('packetIdInput').value;
+            const decryptionKey = document.getElementById('decryptionKey').value;
+            
+            if (!authenticated) {
+                alert('Please authenticate first');
+                return;
+            }
+            
+            if (!packetId || !decryptionKey) {
+                alert('Please enter both Packet ID and Decryption Key');
+                return;
+            }
+            
+            const packet = packets.find(p => p.id === packetId);
+            
+            if (!packet) {
+                alert('Packet not found');
+                return;
+            }
+            
+            if (packet.status === 'released') {
+                alert('This packet has already been released to the network');
+                return;
+            }
+            
+            // Simulated decryption - in production, call backend API
+            if (decryptionKey.length >= 8) {
+                packet.status = 'decrypted';
+                
+                // Display decrypted content
+                const resultBox = document.getElementById('resultBox');
+                const resultContent = document.getElementById('resultContent');
+                
+                resultContent.textContent = `{
+  "packet_id": "${packetId}",
+  "decrypted_at": "${new Date().toISOString()}",
+  "partner_id": "${currentPartnerId}",
+  "content": {
+    "type": "${packet.description}",
+    "data": "Decrypted content would appear here",
+    "sentimento_alignment": 92.5,
+    "rhythm_validation": "PASSED"
+  },
+  "signature": "0x${Math.random().toString(16).substring(2, 18)}..."
+}`;
+                
+                resultBox.classList.add('show');
+                
+                // Reload packet list
+                loadPackets();
+                
+                // Update rhythm alignment animation
+                document.getElementById('rhythmAlignment').textContent = '92%';
+            } else {
+                alert('Decryption failed. Invalid key.');
+            }
+        }
+        
+        function releasePacket() {
+            const packetId = document.getElementById('packetIdInput').value;
+            
+            if (!authenticated) {
+                alert('Please authenticate first');
+                return;
+            }
+            
+            if (!packetId) {
+                alert('Please enter a Packet ID');
+                return;
+            }
+            
+            const packet = packets.find(p => p.id === packetId);
+            
+            if (!packet) {
+                alert('Packet not found');
+                return;
+            }
+            
+            if (packet.status !== 'decrypted') {
+                alert('Please decrypt the packet before releasing it');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to release packet ${packetId} to the network?`)) {
+                packet.status = 'released';
+                loadPackets();
+                alert(`Packet ${packetId} has been released to the Risonanza network`);
+                
+                // Clear inputs
+                document.getElementById('packetIdInput').value = '';
+                document.getElementById('decryptionKey').value = '';
+            }
+        }
+    </script>
+</body>
+</html>
