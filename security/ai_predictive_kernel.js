@@ -118,7 +118,20 @@ class ThreatDetection {
 
 /**
  * Mock TensorFlow Neural Network Model
- * In production, replace with actual TensorFlow.js implementation
+ * 
+ * IMPORTANT: This is a simplified mock implementation for demonstration.
+ * In production, replace with actual TensorFlow.js implementation:
+ * 
+ * 1. Import TensorFlow.js: npm install @tensorflow/tfjs
+ * 2. Implement proper neural network architecture (CNN or LSTM)
+ * 3. Train on real EM signal data from your environment
+ * 4. Implement proper feature extraction and normalization
+ * 5. Use model checkpointing and versioning
+ * 6. Add continuous learning pipeline
+ * 
+ * The current mock uses statistical heuristics and may not detect
+ * sophisticated attack patterns. Do not rely on this for production
+ * threat detection without replacing with a real ML model.
  */
 class MockTensorFlowModel {
     constructor(modelName) {

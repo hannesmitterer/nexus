@@ -414,6 +414,15 @@ class MeshNetworkManager {
 
     /**
      * Discover new peers
+     * 
+     * PRODUCTION NOTE: This is a simplified mock implementation.
+     * In production, implement actual IPFS peer discovery:
+     * 
+     * 1. Connect to IPFS daemon via HTTP API or js-ipfs
+     * 2. Use IPFS DHT for peer discovery: ipfs.swarm.peers()
+     * 3. Subscribe to IPFS pubsub topics for peer announcements
+     * 4. Implement proper peer scoring and reputation
+     * 5. Add NAT traversal and relay support
      */
     async discoverPeers() {
         console.log('[Mesh-Network] Discovering peers...');
@@ -429,8 +438,7 @@ class MeshNetworkManager {
         const activePeers = this.peers.size;
         console.log(`[Mesh-Network] Active peers: ${activePeers}/${MESH_CONFIG.MAX_PEERS}`);
         
-        // In production, implement actual IPFS peer discovery
-        // For now, simulate discovery
+        // TODO: Replace with actual IPFS peer discovery
         if (activePeers < MESH_CONFIG.MIN_PEERS) {
             console.warn(`[Mesh-Network] Below minimum peer count (${activePeers} < ${MESH_CONFIG.MIN_PEERS})`);
         }

@@ -196,7 +196,11 @@ class RhythmMemberRegistry {
         // Issue token
         const token = new RhythmToken(memberId, member.publicKey, ['read', 'write', 'admin']);
         
-        // Sign token (in production, use system private key)
+        // PRODUCTION NOTE: This generates a new key pair for each token signing.
+        // In production deployment, use a pre-generated system private key stored
+        // securely in a Hardware Security Module (HSM) or encrypted vault.
+        // The system private key should be loaded once at startup, not generated
+        // on each authentication request.
         const systemPrivateKey = crypto.generateKeyPairSync('rsa', {
             modulusLength: 2048,
         }).privateKey;

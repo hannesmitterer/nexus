@@ -91,12 +91,19 @@ class Polynomial {
 
     /**
      * Compute modular inverse using extended Euclidean algorithm
+     * 
+     * IMPORTANT: This is a simplified mock implementation for demonstration.
+     * In production, use a proper NTRU polynomial inverse algorithm from
+     * an audited cryptographic library such as liboqs (Open Quantum Safe).
+     * 
+     * The full implementation requires:
+     * - Extended Euclidean algorithm for polynomials
+     * - Proper handling of modular arithmetic in polynomial rings
+     * - Verification that the polynomial is invertible
      */
     inverse(q) {
-        // Simplified inverse computation for demonstration
-        // In production, use proper polynomial inverse algorithm
+        // Mock implementation - REPLACE IN PRODUCTION
         const result = new Polynomial(null, this.N);
-        // Mock implementation - would need full NTRU inverse algorithm
         result.coeffs[0] = 1;
         return result;
     }
