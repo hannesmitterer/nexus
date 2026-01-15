@@ -90,7 +90,7 @@ class ThreatPredictionModel:
                 - failed_authentications: int
                 - veto_consensus_events: int
                 - planetary_violence_index: float (0-100)
-                - scarcity_factor: float (0-100)
+                - scarcity_factor: float (0-100, default 100 for optimal)
                 - ethical_alignment_score: float (0-100)
         
         Returns:
@@ -143,11 +143,14 @@ class ThreatPredictionModel:
         # Reshape for LSTM input (batch_size, time_steps, features)
         # Use recent history or repeat current features
         if len(self.history) >= 10:
-            # Use last 10 time steps
-            sequence = np.array([h['features'] for h in self.history[-10:]])
+            # Use last 10 time steps - extract features from stored metrics
+            sequence = np.array([self._extract_features(h['metrics']) for h in self.history[-10:]])
         else:
             # Repeat current features for time steps
-            sequence = np.repeat(features.reshape(1, -1), 10, axis=0)
+            if NUMPY_AVAILABLE:
+                sequence = np.repeat(features.reshape(1, -1), 10, axis=0)
+            else:
+                sequence = [features] * 10
         
         # Add batch dimension
         sequence = sequence.reshape(1, 10, 8)

@@ -140,6 +140,12 @@ class RhythmValidator:
     Implements Sentimento Rhythm alignment with ecological cycles
     """
     
+    # Alignment calculation weights
+    WEIGHT_RHYTHM_QUALITY = 0.4
+    WEIGHT_AIR_QUALITY = 0.2
+    WEIGHT_BIODIVERSITY = 0.2
+    WEIGHT_CLIMATE_STABILITY = 0.2
+    
     def __init__(self):
         self.env_collector = EnvironmentalDataCollector()
         self.validation_history = []
@@ -280,10 +286,10 @@ class RhythmValidator:
         
         # Calculate weighted alignment
         alignment = (
-            rhythm_quality * 0.4 +
-            air_quality_factor * 100 * 0.2 +
-            biodiversity_factor * 100 * 0.2 +
-            tipping_distance * 100 * 0.2
+            rhythm_quality * self.WEIGHT_RHYTHM_QUALITY +
+            air_quality_factor * 100 * self.WEIGHT_AIR_QUALITY +
+            biodiversity_factor * 100 * self.WEIGHT_BIODIVERSITY +
+            tipping_distance * 100 * self.WEIGHT_CLIMATE_STABILITY
         )
         
         return min(alignment, 100.0)
