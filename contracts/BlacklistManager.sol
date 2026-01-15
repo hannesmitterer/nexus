@@ -281,7 +281,7 @@ contract BlacklistManager {
         bytes32 threatHash,
         address entityToBlacklist
     ) external onlyAuthorizedReporter {
-        require(severityLevel >= 1 && severityLevel <= 5, "Invalid severity");
+        require(severityLevel >= 1 && severityLevel <= 5, "Severity must be between 1 and 5");
         require(threatHash != bytes32(0), "Invalid threat hash");
         
         bytes32 triggerKey = keccak256(
@@ -309,9 +309,12 @@ contract BlacklistManager {
         // Auto-blacklist if address provided and severity is high (4-5)
         if (entityToBlacklist != address(0) && severityLevel >= 4) {
             if (blacklistedAddresses[entityToBlacklist].timestamp == 0) {
+                // Construct reason string once for efficiency
+                string memory blacklistReason = string(abi.encodePacked("MISP Trigger: ", indicatorType));
+                
                 blacklistedAddresses[entityToBlacklist] = BlacklistEntry({
                     timestamp: block.timestamp,
-                    reason: string(abi.encodePacked("MISP Trigger: ", indicatorType)),
+                    reason: blacklistReason,
                     evidenceHash: threatHash,
                     isPermanent: true,
                     reporter: msg.sender
@@ -321,7 +324,7 @@ contract BlacklistManager {
                 
                 emit AddressBlacklisted(
                     entityToBlacklist,
-                    string(abi.encodePacked("MISP Trigger: ", indicatorType)),
+                    blacklistReason,
                     threatHash,
                     true,
                     msg.sender,

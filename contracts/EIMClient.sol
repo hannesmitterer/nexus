@@ -68,6 +68,7 @@ contract EIMClient is IFinalizable {
     // VCE (Veto Consensus Event) tracking
     mapping(bytes32 => VCETrigger) public vceTriggers;
     mapping(bytes32 => mapping(address => bool)) public vceReported; // Track reporters efficiently
+    mapping(bytes32 => address) public sepToSAN; // Map SEP ID to SAN node for VCE blacklisting
     uint256 public vceCount;
     
     // Authorized entities
@@ -177,7 +178,8 @@ contract EIMClient is IFinalizable {
     constructor(address _ggcMultisig, address _tfkVerifier, address _blacklistManager) {
         require(_ggcMultisig != address(0), "Invalid GGC address");
         require(_tfkVerifier != address(0), "Invalid TFKVerifier address");
-        require(_blacklistManager != address(0), "Invalid BlacklistManager address");
+        // Note: _blacklistManager can be address(0) for backward compatibility
+        // It can be set later via updateBlacklistManager()
         
         ggcMultisig = _ggcMultisig;
         tfkVerifier = _tfkVerifier;
@@ -241,6 +243,7 @@ contract EIMClient is IFinalizable {
         });
         
         processedSEPs[sepId] = true;
+        sepToSAN[sepId] = msg.sender; // Track SAN for this SEP (for VCE blacklisting)
         totalValidations++;
         
         emit SEPSubmitted(sepId, msg.sender, artifactType, block.timestamp);
@@ -448,19 +451,19 @@ contract EIMClient is IFinalizable {
             
             // Trigger MISP policy if VCE threshold is met and blacklist manager is available
             if (blacklistManager != address(0)) {
-                // Find the SAN node that submitted this SEP
-                address violatingSAN = address(0);
+                // Find the SAN node that submitted this SEP using our mapping
+                address violatingSAN = sepToSAN[sepId];
                 
-                // Search through validations to find the SAN for this SEP
-                // Note: In production, consider adding a sepId -> sanNode mapping for efficiency
-                bytes32 searchHash = keccak256(abi.encodePacked(sepId, "VCE"));
+                // Create evidence hash for VCE consensus
+                bytes32 vceEvidenceHash = keccak256(abi.encodePacked(sepId, violationType, "VCE"));
                 
-                // Trigger MISP with high severity (5) for VCE violations
+                // Trigger MISP with critical severity (5) for VCE violations
+                // This will auto-blacklist the violating SAN if address is not zero
                 try IBlacklistManager(blacklistManager).activateMISPTrigger(
                     violationType,
                     5,  // Critical severity
-                    searchHash,
-                    violatingSAN  // Will be blacklisted if not address(0)
+                    vceEvidenceHash,
+                    violatingSAN
                 ) {
                     // MISP trigger activated successfully
                 } catch {
@@ -646,10 +649,9 @@ contract EIMClient is IFinalizable {
     
     /**
      * @notice Update BlacklistManager contract address
-     * @param newBlacklistManager New BlacklistManager address
+     * @param newBlacklistManager New BlacklistManager address (can be address(0) to disable)
      */
     function updateBlacklistManager(address newBlacklistManager) external onlyGGC {
-        require(newBlacklistManager != address(0), "Invalid address");
         blacklistManager = newBlacklistManager;
     }
     
