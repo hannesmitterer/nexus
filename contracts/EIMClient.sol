@@ -454,20 +454,24 @@ contract EIMClient is IFinalizable {
                 // Find the SAN node that submitted this SEP using our mapping
                 address violatingSAN = sepToSAN[sepId];
                 
-                // Create evidence hash for VCE consensus
-                bytes32 vceEvidenceHash = keccak256(abi.encodePacked(sepId, violationType, "VCE"));
-                
-                // Trigger MISP with critical severity (5) for VCE violations
-                // This will auto-blacklist the violating SAN if address is not zero
-                try IBlacklistManager(blacklistManager).activateMISPTrigger(
-                    violationType,
-                    5,  // Critical severity
-                    vceEvidenceHash,
-                    violatingSAN
-                ) {
-                    // MISP trigger activated successfully
-                } catch {
-                    // Continue even if MISP trigger fails
+                // Only trigger MISP if we have a valid SAN address
+                // (sepId might not be in mapping if it predates this feature)
+                if (violatingSAN != address(0)) {
+                    // Create evidence hash for VCE consensus
+                    bytes32 vceEvidenceHash = keccak256(abi.encodePacked(sepId, violationType, "VCE"));
+                    
+                    // Trigger MISP with critical severity (5) for VCE violations
+                    // This will auto-blacklist the violating SAN
+                    try IBlacklistManager(blacklistManager).activateMISPTrigger(
+                        violationType,
+                        5,  // Critical severity
+                        vceEvidenceHash,
+                        violatingSAN
+                    ) {
+                        // MISP trigger activated successfully
+                    } catch {
+                        // Continue even if MISP trigger fails
+                    }
                 }
             }
         }
