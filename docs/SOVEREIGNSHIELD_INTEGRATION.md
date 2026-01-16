@@ -480,8 +480,10 @@ sovereignShield.setFilterActive(filterId, true);
 
 ## Resources
 
-- NTRU Algorithm: [NTRU Wikipedia](https://en.wikipedia.org/wiki/NTRU)
-- Post-Quantum Cryptography: [NIST PQC](https://csrc.nist.gov/projects/post-quantum-cryptography)
+- NTRU Algorithm: [NIST Post-Quantum Cryptography - NTRU](https://csrc.nist.gov/projects/post-quantum-cryptography)
+- NTRU Specification: [IEEE 1363.1 Standard](https://www.onboardsecurity.com/products/ntru-crypto)
+- Post-Quantum Cryptography: [NIST PQC Standardization](https://csrc.nist.gov/projects/post-quantum-cryptography)
+- Lattice-Based Cryptography: [NTRU Original Paper](https://www.ntru.org/)
 - SovereignShield Contract: `/contracts/SovereignShield.sol`
 - NTRUVerifier Contract: `/contracts/NTRUVerifier.sol`
 - AWS Deployment: `/aws/README.md`

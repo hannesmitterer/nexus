@@ -210,12 +210,12 @@ contract SovereignShield {
         ValidationFilter storage filter = filters[filterId];
         require(filter.isActive, "No active filter");
         
-        // Rate limiting check
-        if (!_checkRateLimit(tx.origin, filter)) {
+        // Rate limiting check (use msg.sender to prevent bypass via intermediate contracts)
+        if (!_checkRateLimit(msg.sender, filter)) {
             rejectedOperations++;
             emit OperationRejected(
                 operationId,
-                tx.origin,
+                msg.sender,
                 "Rate limit exceeded",
                 block.timestamp
             );
@@ -227,7 +227,7 @@ contract SovereignShield {
             rejectedOperations++;
             emit OperationRejected(
                 operationId,
-                tx.origin,
+                msg.sender,
                 "Input size out of range",
                 block.timestamp
             );
@@ -241,7 +241,7 @@ contract SovereignShield {
                 rejectedOperations++;
                 emit OperationRejected(
                     operationId,
-                    tx.origin,
+                    msg.sender,
                     "Quantum-safe verification required",
                     block.timestamp
                 );
@@ -259,7 +259,7 @@ contract SovereignShield {
                 rejectedOperations++;
                 emit OperationRejected(
                     operationId,
-                    tx.origin,
+                    msg.sender,
                     "Quantum signature verification failed",
                     block.timestamp
                 );
@@ -272,7 +272,7 @@ contract SovereignShield {
         // Record the operation
         operations[operationId] = OperationRecord({
             operationHash: operationId,
-            initiator: tx.origin,
+            initiator: msg.sender,
             timestamp: block.timestamp,
             validated: true,
             quantumSafeVerified: quantumVerified,
@@ -284,7 +284,7 @@ contract SovereignShield {
         
         emit OperationValidated(
             operationId,
-            tx.origin,
+            msg.sender,
             quantumVerified,
             block.timestamp
         );
@@ -316,8 +316,8 @@ contract SovereignShield {
         require(filter.isActive, "No active filter");
         require(!filter.requireQuantumSafe, "Quantum-safe required");
         
-        // Rate limiting check
-        if (!_checkRateLimit(tx.origin, filter)) {
+        // Rate limiting check (use msg.sender to prevent bypass via intermediate contracts)
+        if (!_checkRateLimit(msg.sender, filter)) {
             rejectedOperations++;
             return false;
         }
@@ -331,7 +331,7 @@ contract SovereignShield {
         // Record the operation
         operations[operationId] = OperationRecord({
             operationHash: operationId,
-            initiator: tx.origin,
+            initiator: msg.sender,
             timestamp: block.timestamp,
             validated: true,
             quantumSafeVerified: false,
@@ -383,6 +383,11 @@ contract SovereignShield {
     
     /**
      * @dev Check rate limit for an address
+     * @param user The address to check (use msg.sender for contract calls)
+     * @param filter The validation filter with rate limit settings
+     * 
+     * NOTE: Calling contracts should pass msg.sender, not tx.origin, to prevent
+     * rate limit bypass through intermediate contracts.
      */
     function _checkRateLimit(address user, ValidationFilter storage filter) 
         internal 

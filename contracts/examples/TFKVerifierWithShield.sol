@@ -5,6 +5,29 @@ pragma solidity ^0.8.20;
  * @title TFKVerifierWithShield - Example integration with SovereignShield
  * @notice This example shows how to integrate SovereignShield with TFKVerifier
  * @dev Reference implementation for quantum-safe model proposal validation
+ * 
+ * BACKWARD COMPATIBILITY NOTE:
+ * This example modifies the propose_model_retrain function signature by adding
+ * modelData, signature, and publicKey parameters. This breaks compatibility with
+ * existing clients.
+ * 
+ * For production, consider one of these approaches:
+ * 1. Function overloading - Keep old propose_model_retrain and add new version
+ * 2. Separate function - Create propose_model_retrain_quantum_safe
+ * 3. Optional parameters - Make new parameters optional with defaults
+ * 
+ * Example with separate function:
+ * ```
+ * function propose_model_retrain_quantum_safe(
+ *     bytes32 ipfsCID,
+ *     string calldata description,
+ *     bytes calldata modelData,
+ *     bytes calldata signature,
+ *     bytes calldata publicKey
+ * ) external returns (uint256) {
+ *     // Quantum-safe validation logic
+ * }
+ * ```
  */
 
 interface ISovereignShield {

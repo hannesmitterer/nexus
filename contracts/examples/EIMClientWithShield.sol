@@ -6,11 +6,21 @@ pragma solidity ^0.8.20;
  * @notice This is an example showing how to integrate SovereignShield with EIMClient
  * @dev This is a reference implementation demonstrating the integration pattern
  * 
+ * BACKWARD COMPATIBILITY NOTE:
+ * This example modifies the submitSEP function signature by adding signature and publicKey
+ * parameters. This breaks compatibility with existing clients.
+ * 
+ * For production, consider one of these approaches:
+ * 1. Function overloading - Keep old submitSEP and add submitSEPWithShield
+ * 2. Optional parameters - Make signature/publicKey optional with default values
+ * 3. Gradual migration - Deploy new version alongside old, migrate clients gradually
+ * 
  * To use this in production:
  * 1. Deploy SovereignShield and NTRUVerifier
  * 2. Configure appropriate validation filters
- * 3. Update EIMClient constructor to accept SovereignShield address
- * 4. Modify submitSEP to use SovereignShield validation
+ * 3. Choose backward compatibility strategy
+ * 4. Update EIMClient based on chosen strategy
+ * 5. Migrate clients to new signature
  */
 
 interface ISovereignShield {

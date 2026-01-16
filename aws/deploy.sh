@@ -107,8 +107,9 @@ else
         CHECKPOINT_ID=$(cat .last_checkpoint)
         print_step "Initiating automatic rollback to checkpoint: ${CHECKPOINT_ID}"
         
-        # Trigger rollback
-        ./aws/rollback.sh ${CHECKPOINT_ID}
+        # Trigger rollback using absolute path
+        SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+        "${SCRIPT_DIR}/rollback.sh" ${CHECKPOINT_ID}
     fi
     
     exit 1

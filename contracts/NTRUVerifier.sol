@@ -237,9 +237,22 @@ contract NTRUVerifier {
         return true;
     }
     
+    // Constants for verification (placeholder values)
+    uint256 private constant VERIFICATION_MODULUS = 65537;
+    uint256 private constant VERIFICATION_THRESHOLD = 32768;
+    
     /**
      * @dev Verify the cryptographic binding between message, signature, and public key
      * This is a simplified reference. Production would use actual NTRU polynomial operations.
+     * 
+     * WARNING: This is a reference implementation for demonstration purposes.
+     * In production, this MUST be replaced with proper NTRU polynomial verification:
+     * 1. Parse signature polynomial s and public key polynomial h
+     * 2. Compute t = s*h (mod q) in polynomial ring
+     * 3. Verify that t encodes the message hash correctly
+     * 4. Verify that s has appropriate coefficient bounds
+     * 
+     * Consider using established NTRU libraries or formal cryptographic implementations.
      */
     function _verifySignatureBinding(
         bytes32 messageHash,
@@ -263,7 +276,7 @@ contract NTRUVerifier {
         
         // Accept if the verification hash meets certain criteria
         // In production: verify polynomial equation s*h ≡ encode(m) (mod q)
-        return uint256(verificationHash) % 65537 < 32768; // Simplified check
+        return uint256(verificationHash) % VERIFICATION_MODULUS < VERIFICATION_THRESHOLD;
     }
     
     /**
