@@ -1,0 +1,70 @@
+{
+  "monitoring": {
+    "interval_seconds": 300,
+    "data_retention_days": 30,
+    "alert_thresholds": {
+      "climate_risk": 75,
+      "anomaly_probability": 0.8,
+      "nsr_compliance": 80
+    },
+    "predictive_window_hours": 24
+  },
+  "optimization": {
+    "weights": {
+      "equity": 0.4,
+      "efficiency": 0.3,
+      "climate": 0.3
+    },
+    "constraints": {
+      "min_equity_threshold": 0.7,
+      "max_allocation_ratio": 3.0,
+      "vulnerable_priority_multiplier": 1.5
+    },
+    "rebalance_interval_hours": 6
+  },
+  "nsr_compliance": {
+    "audit_frequency_days": 30,
+    "critical_violation_threshold": 1,
+    "compliance_minimum_score": 80,
+    "auto_remediation": true
+  },
+  "sain_integration": {
+    "enabled": true,
+    "sep_generation": true,
+    "efa_did_verification": true,
+    "vce_threshold": 3
+  },
+  "resources": {
+    "default_allocation": {
+      "energy": 100,
+      "water": 100,
+      "cooling": 100
+    },
+    "emergency_reserves": {
+      "energy": 20,
+      "water": 20,
+      "cooling": 20
+    }
+  },
+  "alerts": {
+    "notification_channels": ["log", "api", "dashboard"],
+    "severity_levels": {
+      "critical": {
+        "immediate_action": true,
+        "escalation_minutes": 15
+      },
+      "high": {
+        "immediate_action": false,
+        "escalation_minutes": 60
+      },
+      "medium": {
+        "immediate_action": false,
+        "escalation_minutes": 240
+      },
+      "low": {
+        "immediate_action": false,
+        "escalation_minutes": 1440
+      }
+    }
+  }
+}
