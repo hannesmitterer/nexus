@@ -112,7 +112,8 @@ try {
   monitor.registerNode(nodeConfig);
   
   // Add multiple readings to build history
-  for (let i = 0; i < 25; i++) {
+  const MIN_READINGS_FOR_ANALYSIS = 25;
+  for (let i = 0; i < MIN_READINGS_FOR_ANALYSIS; i++) {
     monitor.collectData('KB-TEST-000003', {
       temperature: 30 + Math.random() * 10,
       air_quality_index: 80 + Math.random() * 40

@@ -8,6 +8,7 @@
 const KlimabaumMonitor = require('./monitoring/intelligent_monitor');
 const NSRResourceOptimizer = require('./algorithms/nsr_optimizer');
 const fs = require('fs');
+const crypto = require('crypto');
 
 // Load configuration
 const config = JSON.parse(fs.readFileSync('./config/default.json', 'utf8'));
@@ -199,7 +200,6 @@ try {
 
 // Helper function to generate SEP ID
 function generateSEPID(data) {
-  const crypto = require('crypto');
   const hash = crypto.createHash('sha256');
   hash.update(JSON.stringify(data));
   return hash.digest('hex');

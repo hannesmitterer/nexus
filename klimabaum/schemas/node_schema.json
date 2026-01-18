@@ -13,8 +13,8 @@
   "properties": {
     "node_id": {
       "type": "string",
-      "description": "Unique identifier for the Klimabaum node",
-      "pattern": "^KB-[A-Z]{2}-[0-9]{6}$"
+      "description": "Unique identifier for the Klimabaum node (format: KB-[COUNTRY_CODE]-[NUMBER], e.g., KB-IT-000001, KB-USA-000042)",
+      "pattern": "^KB-[A-Z]{2,3}-[0-9]{6}$"
     },
     "location": {
       "type": "object",

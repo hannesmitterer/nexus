@@ -239,6 +239,11 @@ class KlimabaumMonitor {
     if (!node.nsr_compliance) {
       complianceScore -= 20;
     } else {
+      // Use explicit compliance score if available, otherwise calculate
+      if (node.nsr_compliance.compliance_score !== undefined) {
+        complianceScore = node.nsr_compliance.compliance_score;
+      }
+      
       // Deduct points for violations
       const violations = node.nsr_compliance.violations || [];
       const unresolvedViolations = violations.filter(v => !v.resolved);

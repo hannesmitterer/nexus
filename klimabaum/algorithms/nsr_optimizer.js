@@ -322,7 +322,11 @@ class NSRResourceOptimizer {
     let efficiency = 1.0;
     
     if (node.nsr_compliance) {
-      efficiency *= (node.nsr_compliance.compliance_score || 100) / 100;
+      // Use 80 as conservative default if compliance_score is missing
+      const complianceScore = node.nsr_compliance.compliance_score !== undefined 
+        ? node.nsr_compliance.compliance_score 
+        : 80;
+      efficiency *= complianceScore / 100;
     }
     
     const daysSinceMaintenance = node.last_maintenance 
