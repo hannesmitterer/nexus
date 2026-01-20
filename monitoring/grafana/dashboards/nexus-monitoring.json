@@ -216,10 +216,10 @@
         {
           "expr": "rate(node_network_receive_bytes_total[5m]) * 8 / 1000000",
           "refId": "A",
-          "legendFormat": "Network Latency"
+          "legendFormat": "Network Throughput (Mbps)"
         }
       ],
-      "title": "Network Latency",
+      "title": "Network Throughput",
       "type": "gauge"
     },
     {

@@ -33,8 +33,8 @@ check_prerequisites() {
     
     # Check for required tools
     for tool in openssl jq; do
-        if ! command -v $tool > /dev/null; then
-            missing_tools+=($tool)
+        if ! command -v "$tool" > /dev/null; then
+            missing_tools+=("$tool")
         fi
     done
     

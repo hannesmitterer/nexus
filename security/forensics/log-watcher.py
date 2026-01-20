@@ -13,7 +13,7 @@ import json
 import logging
 import subprocess
 import glob
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Dict, Set
 from collections import defaultdict
@@ -100,7 +100,7 @@ class ForensicResponder:
             if match:
                 detection = {
                     'type': pattern_name,
-                    'timestamp': datetime.now().isoformat(),
+                    'timestamp': datetime.now(timezone.utc).isoformat(),
                     'line': line.strip(),
                     'ip': match.group(1) if match.groups() else None
                 }
@@ -210,7 +210,7 @@ class ForensicResponder:
             try:
                 payload = {
                     'text': f"🔔 Nexus Security Alert: {message}",
-                    'timestamp': datetime.now().isoformat()
+                    'timestamp': datetime.now(timezone.utc).isoformat()
                 }
                 requests.post(webhook_url, json=payload, timeout=5)
             except Exception as e:
