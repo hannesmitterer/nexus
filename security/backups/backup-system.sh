@@ -221,8 +221,15 @@ perform_backup() {
         return 1
     fi
     
-    # Get file size
-    local file_size=$(stat -f%z "${encrypted_path}" 2>/dev/null || stat -c%s "${encrypted_path}")
+    # Get file size (portable across BSD and GNU stat)
+    local file_size
+    if stat -f%z "${encrypted_path}" 2>/dev/null; then
+        # BSD stat (macOS)
+        file_size=$(stat -f%z "${encrypted_path}")
+    else
+        # GNU stat (Linux)
+        file_size=$(stat -c%s "${encrypted_path}")
+    fi
     
     # Upload to IPFS
     local ipfs_hash=$(upload_to_ipfs "${encrypted_path}")

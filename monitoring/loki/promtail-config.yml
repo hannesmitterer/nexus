@@ -46,7 +46,7 @@ scrape_configs:
                 hostname:
             - timestamp:
                 source: timestamp
-                format: 'Jan 02 15:04:05'
+                format: 'Jan _2 15:04:05'
 
   # Docker container logs
   - job_name: docker-logs

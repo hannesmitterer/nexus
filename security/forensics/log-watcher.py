@@ -12,10 +12,16 @@ import time
 import json
 import logging
 import subprocess
+import glob
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Set
 from collections import defaultdict
+
+try:
+    import requests
+except ImportError:
+    requests = None
 
 # Configuration
 CONFIG_FILE = os.environ.get('FORENSICS_CONFIG', '/etc/nexus/forensics-config.json')
@@ -200,9 +206,8 @@ class ForensicResponder:
             return
         
         webhook_url = self.config.get('notification_webhook')
-        if webhook_url:
+        if webhook_url and requests:
             try:
-                import requests
                 payload = {
                     'text': f"🔔 Nexus Security Alert: {message}",
                     'timestamp': datetime.now().isoformat()
@@ -241,7 +246,6 @@ class ForensicResponder:
         # Use tail -F to follow log files
         log_files = []
         for pattern in LOG_PATHS:
-            import glob
             log_files.extend(glob.glob(pattern))
         
         if not log_files:
