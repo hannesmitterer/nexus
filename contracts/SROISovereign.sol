@@ -104,6 +104,9 @@ contract SROISovereign {
     address public governance;
     mapping(address => bool) public authorizedOperators;
     
+    // Threshold tracking
+    mapping(string => bool) public thresholdExists;
+    
     // Metrics tracking
     uint256 public totalOperations;
     uint256 public failedValidations;
@@ -246,13 +249,7 @@ contract SROISovereign {
         // Initialize valid state transitions
         _initializeValidTransitions();
         
-        // Log initial state
-        _logStateTransition(
-            ProtocolState.INITIALIZED,
-            ProtocolState.INITIALIZED,
-            "Contract deployed"
-        );
-        
+        // Emit deployment event (no state transition yet)
         emit OperationExecuted("DEPLOYMENT", msg.sender, true, block.timestamp);
     }
     
@@ -409,9 +406,10 @@ contract SROISovereign {
         uint256 value,
         bool enabled
     ) external onlyGovernance {
-        if (thresholds[key].value == 0) {
+        if (!thresholdExists[key]) {
             // New threshold
             thresholdKeys.push(key);
+            thresholdExists[key] = true;
         }
         
         thresholds[key] = Threshold({
@@ -624,7 +622,8 @@ contract SROISovereign {
         string memory message,
         uint256 severity
     ) internal {
-        uint256 notificationId = notificationCount++;
+        uint256 notificationId = notificationCount;
+        notificationCount++;
         
         Notification memory notification = Notification({
             id: notificationId,
