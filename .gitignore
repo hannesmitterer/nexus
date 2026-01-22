@@ -11,6 +11,13 @@ build/
 *.so
 *.a
 
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+
 # IDE files
 .vscode/
 .idea/

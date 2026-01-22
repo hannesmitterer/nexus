@@ -1,0 +1,52 @@
+"""
+Configuration module for the S-ROI Sovereign Protocol
+"""
+
+
+class ProtocolConfig:
+    """Configuration class for S-ROI protocol parameters"""
+    
+    # Resonance thresholds
+    STEALTH_THRESHOLD = 0.3  # Stealth if resonance <= 0.3
+    WARNING_THRESHOLD = 0.35  # Warning if 0.3 < resonance < 0.35
+    # Note: NORMAL state is for resonance >= 0.35
+    
+    # Cooldown settings
+    STEALTH_COOLDOWN_SECONDS = 300  # 5 minutes cooldown for stealth activation
+    
+    # Logging settings
+    LOG_STATE_CHANGES = True
+    LOG_RESONANCE_VALUES = True
+    
+    def __init__(self, **kwargs):
+        """
+        Initialize configuration with optional overrides
+        
+        Args:
+            **kwargs: Configuration parameters to override
+            
+        Raises:
+            ValueError: If unknown parameter or invalid value provided
+        """
+        for key, value in kwargs.items():
+            if not hasattr(self, key):
+                raise ValueError(f"Unknown configuration parameter: {key}")
+            
+            # Validate threshold parameters
+            if key in ('STEALTH_THRESHOLD', 'WARNING_THRESHOLD'):
+                if not isinstance(value, (int, float)) or value < 0:
+                    raise ValueError(f"{key} must be a non-negative number")
+                    
+            # Validate cooldown parameter
+            if key == 'STEALTH_COOLDOWN_SECONDS':
+                if not isinstance(value, (int, float)) or value < 0:
+                    raise ValueError(f"{key} must be a non-negative number")
+            
+            setattr(self, key, value)
+        
+        # Validate threshold ordering
+        if hasattr(self, 'STEALTH_THRESHOLD') and hasattr(self, 'WARNING_THRESHOLD'):
+            if self.STEALTH_THRESHOLD >= self.WARNING_THRESHOLD:
+                raise ValueError(
+                    "STEALTH_THRESHOLD must be less than WARNING_THRESHOLD"
+                )
