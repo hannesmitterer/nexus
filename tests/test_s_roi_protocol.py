@@ -232,6 +232,24 @@ class TestCustomConfiguration(unittest.TestCase):
         """Test that invalid config parameters raise error"""
         with self.assertRaises(ValueError):
             ProtocolConfig(INVALID_PARAM=123)
+    
+    def test_negative_threshold_raises_error(self):
+        """Test that negative thresholds raise error"""
+        with self.assertRaises(ValueError):
+            ProtocolConfig(STEALTH_THRESHOLD=-0.1)
+    
+    def test_negative_cooldown_raises_error(self):
+        """Test that negative cooldown raises error"""
+        with self.assertRaises(ValueError):
+            ProtocolConfig(STEALTH_COOLDOWN_SECONDS=-10)
+    
+    def test_invalid_threshold_order_raises_error(self):
+        """Test that stealth >= warning threshold raises error"""
+        with self.assertRaises(ValueError):
+            ProtocolConfig(
+                STEALTH_THRESHOLD=0.4,
+                WARNING_THRESHOLD=0.3
+            )
 
 
 if __name__ == '__main__':

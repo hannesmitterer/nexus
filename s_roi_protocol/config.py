@@ -24,9 +24,29 @@ class ProtocolConfig:
         
         Args:
             **kwargs: Configuration parameters to override
+            
+        Raises:
+            ValueError: If unknown parameter or invalid value provided
         """
         for key, value in kwargs.items():
-            if hasattr(self, key):
-                setattr(self, key, value)
-            else:
+            if not hasattr(self, key):
                 raise ValueError(f"Unknown configuration parameter: {key}")
+            
+            # Validate threshold parameters
+            if key in ('STEALTH_THRESHOLD', 'WARNING_THRESHOLD'):
+                if not isinstance(value, (int, float)) or value < 0:
+                    raise ValueError(f"{key} must be a non-negative number")
+                    
+            # Validate cooldown parameter
+            if key == 'STEALTH_COOLDOWN_SECONDS':
+                if not isinstance(value, (int, float)) or value < 0:
+                    raise ValueError(f"{key} must be a non-negative number")
+            
+            setattr(self, key, value)
+        
+        # Validate threshold ordering
+        if hasattr(self, 'STEALTH_THRESHOLD') and hasattr(self, 'WARNING_THRESHOLD'):
+            if self.STEALTH_THRESHOLD >= self.WARNING_THRESHOLD:
+                raise ValueError(
+                    "STEALTH_THRESHOLD must be less than WARNING_THRESHOLD"
+                )

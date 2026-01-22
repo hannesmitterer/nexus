@@ -10,8 +10,8 @@ The S-ROI (Sovereign Return on Investment) Sovereign Protocol is a modular state
 The protocol supports three distinct states:
 
 - **NORMAL**: Default state for resonance values at or above the warning threshold (≥ 0.35 by default)
-- **WARNING**: Intermediate state for resonance values near the critical threshold (0.30 < resonance < 0.35 by default)
-- **STEALTH**: Critical state for low resonance values (≤ 0.30 by default)
+- **WARNING**: Intermediate state for resonance values above stealth threshold but below warning threshold (0.3 < resonance < 0.35 by default)
+- **STEALTH**: Critical state for low resonance values (≤ 0.3 by default)
 
 ### 2. Logging System
 Comprehensive logging functionality tracks:
