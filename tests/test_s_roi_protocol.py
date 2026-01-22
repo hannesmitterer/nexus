@@ -135,7 +135,12 @@ class TestWarningState(unittest.TestCase):
     
     def test_warning_threshold_upper_bound(self):
         """Test WARNING state at upper threshold boundary"""
+        # 0.35 is the boundary - should be NORMAL (>= 0.35)
         self.protocol.update_resonance(0.35)
+        self.assertEqual(self.protocol.state, ProtocolState.NORMAL)
+        
+        # Just below 0.35 should be WARNING
+        self.protocol.update_resonance(0.349)
         self.assertEqual(self.protocol.state, ProtocolState.WARNING)
     
     def test_warning_to_normal_transition(self):

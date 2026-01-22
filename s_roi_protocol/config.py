@@ -7,9 +7,9 @@ class ProtocolConfig:
     """Configuration class for S-ROI protocol parameters"""
     
     # Resonance thresholds
-    STEALTH_THRESHOLD = 0.3
-    WARNING_THRESHOLD = 0.35  # Warning zone: 0.35-0.30
-    NORMAL_MIN_THRESHOLD = 0.35
+    STEALTH_THRESHOLD = 0.3  # Stealth if resonance <= 0.3
+    WARNING_THRESHOLD = 0.35  # Warning if 0.3 < resonance < 0.35
+    # Note: NORMAL state is for resonance >= 0.35
     
     # Cooldown settings
     STEALTH_COOLDOWN_SECONDS = 300  # 5 minutes cooldown for stealth activation

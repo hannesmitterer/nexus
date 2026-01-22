@@ -9,8 +9,8 @@ The S-ROI (Sovereign Return on Investment) Sovereign Protocol is a modular state
 ### 1. State Management
 The protocol supports three distinct states:
 
-- **NORMAL**: Default state for resonance values above the warning threshold (> 0.35 by default)
-- **WARNING**: Intermediate state for resonance values near the critical threshold (0.30 - 0.35 by default)
+- **NORMAL**: Default state for resonance values at or above the warning threshold (≥ 0.35 by default)
+- **WARNING**: Intermediate state for resonance values near the critical threshold (0.30 < resonance < 0.35 by default)
 - **STEALTH**: Critical state for low resonance values (≤ 0.30 by default)
 
 ### 2. Logging System
@@ -100,9 +100,8 @@ protocol.force_state(ProtocolState.STEALTH, reason="Emergency override")
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `STEALTH_THRESHOLD` | 0.3 | Maximum resonance for STEALTH state |
-| `WARNING_THRESHOLD` | 0.35 | Maximum resonance for WARNING state |
-| `NORMAL_MIN_THRESHOLD` | 0.35 | Minimum resonance for NORMAL state |
+| `STEALTH_THRESHOLD` | 0.3 | Maximum resonance for STEALTH state (≤ 0.3) |
+| `WARNING_THRESHOLD` | 0.35 | Threshold for WARNING state (0.3 < resonance < 0.35) |
 | `STEALTH_COOLDOWN_SECONDS` | 300 | Cooldown period for stealth reactivation |
 | `LOG_STATE_CHANGES` | True | Enable state change logging |
 | `LOG_RESONANCE_VALUES` | True | Enable resonance value logging |
@@ -110,9 +109,9 @@ protocol.force_state(ProtocolState.STEALTH, reason="Emergency override")
 ## State Transitions
 
 ```
-NORMAL (> 0.35) ←→ WARNING (0.30-0.35) ←→ STEALTH (≤ 0.30)
-                                              ↓
-                                        [Cooldown: 300s]
+NORMAL (≥ 0.35) ←→ WARNING (0.3 < resonance < 0.35) ←→ STEALTH (≤ 0.3)
+                                                          ↓
+                                                    [Cooldown: 300s]
 ```
 
 ### Cooldown Behavior

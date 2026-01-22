@@ -84,7 +84,7 @@ class SROISovereignProtocol:
         """
         if resonance <= self.config.STEALTH_THRESHOLD:
             return ProtocolState.STEALTH
-        elif resonance <= self.config.WARNING_THRESHOLD:
+        elif resonance < self.config.WARNING_THRESHOLD:
             return ProtocolState.WARNING
         else:
             return ProtocolState.NORMAL
