@@ -11,6 +11,14 @@ build/
 *.so
 *.a
 
+# Hardhat files
+cache/
+artifacts/
+
+# Environment variables (contains sensitive data)
+.env
+.env.local
+
 # IDE files
 .vscode/
 .idea/

@@ -1,0 +1,32 @@
+{
+  "name": "nexus-ulp-deployment",
+  "version": "1.0.0",
+  "description": "Universal Liquidity Pool deployment infrastructure for Protocol SAIN",
+  "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "deploy:testnet": "hardhat run scripts/deploy.js --network mumbai",
+    "deploy:mainnet": "hardhat run scripts/deploy.js --network polygon",
+    "verify": "hardhat verify --network polygon",
+    "test": "hardhat test",
+    "validate": "node scripts/validate-env.js"
+  },
+  "keywords": [
+    "ethereum",
+    "polygon",
+    "defi",
+    "liquidity-pool",
+    "smart-contracts"
+  ],
+  "author": "Protocol SAIN",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.0.3",
+    "hardhat": "^2.19.4"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.1",
+    "dotenv": "^16.3.1"
+  }
+}
