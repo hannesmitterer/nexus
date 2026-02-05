@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Lex Amoris - Sempre in Costante | Resonance Interface">
+    <meta name="theme-color" content="#d4af37">
+    <title>Lex Amoris | Sempre in Costante</title>
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        :root {
+            --gold: #d4af37;
+            --dark: #0a0a0a;
+            --bg: #050505;
+            --cyan: #00ffff;
+            --red: #ff4d4d;
+            --pulse-duration: 2.33s;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--gold);
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Resonance Pulse Animation - 0.43 Hz (2.33s period) */
+        @keyframes resonance-pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+                box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7);
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 1;
+                box-shadow: 0 0 30px 10px rgba(212, 175, 55, 0.4);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0.8;
+                box-shadow: 0 0 0 0 rgba(212, 175, 55, 0);
+            }
+        }
+
+        header {
+            padding: 20px;
+            border-bottom: 2px solid var(--gold);
+            text-align: center;
+            background: rgba(20, 20, 20, 0.9);
+        }
+
+        h1 {
+            font-size: 2rem;
+            letter-spacing: 8px;
+            text-shadow: 0 0 20px var(--gold);
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            opacity: 0.8;
+            margin-top: 10px;
+        }
+
+        .main-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .panel {
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid var(--gold);
+            padding: 25px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .panel:hover {
+            border-color: var(--cyan);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+
+        .panel h2 {
+            font-size: 1.2rem;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+        }
+
+        /* Resonance Core with Pulsating Animation */
+        .resonance-core {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .pulse-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--gold) 0%, transparent 70%);
+            animation: resonance-pulse var(--pulse-duration) ease-in-out infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .frequency-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-shadow: 0 0 15px var(--gold);
+        }
+
+        .frequency-label {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        /* Growth Rate Display */
+        .growth-display {
+            background: rgba(0, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .growth-value {
+            font-size: 2rem;
+            color: var(--cyan);
+            text-shadow: 0 0 10px var(--cyan);
+            margin: 10px 0;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .metric-label {
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        .metric-value {
+            font-weight: bold;
+            color: var(--cyan);
+        }
+
+        /* Red Shield Warning System */
+        .red-shield {
+            background: rgba(255, 77, 77, 0.1);
+            border: 2px solid var(--red);
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .red-shield.active {
+            animation: shield-pulse 1s ease-in-out infinite;
+            background: rgba(255, 77, 77, 0.3);
+        }
+
+        @keyframes shield-pulse {
+            0%, 100% { border-color: var(--red); }
+            50% { border-color: #ff8888; }
+        }
+
+        .shield-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+        }
+
+        .shield-indicator {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #00ff00;
+        }
+
+        .shield-indicator.warning {
+            background: var(--red);
+            box-shadow: 0 0 10px var(--red);
+        }
+
+        .warning-log {
+            margin-top: 15px;
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 0.8rem;
+            color: #ff8888;
+        }
+
+        .warning-entry {
+            padding: 5px;
+            border-left: 2px solid var(--red);
+            margin: 5px 0;
+            padding-left: 10px;
+        }
+
+        /* Control Panel */
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: linear-gradient(45deg, var(--gold), #e5c158);
+            border: none;
+            color: var(--dark);
+            padding: 12px 24px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .status-bar {
+            background: rgba(0, 0, 0, 0.95);
+            border-top: 2px solid var(--gold);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 0.8rem;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+                letter-spacing: 4px;
+            }
+            
+            .pulse-circle {
+                width: 150px;
+                height: 150px;
+            }
+        }
+
+        /* Accessibility */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+    <header role="banner">
+        <h1>LEX AMORIS</h1>
+        <div class="subtitle">SEMPRE IN COSTANTE</div>
+    </header>
+
+    <main class="main-container" role="main">
+        <!-- Resonance Panel -->
+        <section class="panel" aria-label="Resonanz Harmonie">
+            <h2>RESONANZ HARMONIE</h2>
+            <div class="resonance-core">
+                <div class="pulse-circle" role="img" aria-label="Pulsierender Resonanzkern">
+                    <div class="frequency-display" id="freq-display">0.430</div>
+                    <div class="frequency-label">Hz</div>
+                </div>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Schumann Resonanz:</span>
+                <span class="metric-value" id="schumann-val">7.83 Hz</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Kohärenz Index:</span>
+                <span class="metric-value" id="coherence-val">0.5192</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Puls-Periode:</span>
+                <span class="metric-value">2.33s</span>
+            </div>
+        </section>
+
+        <!-- Exponential Growth Panel -->
+        <section class="panel" aria-label="Wachstumsdynamik">
+            <h2>WACHSTUMSDYNAMIK</h2>
+            <div class="growth-display">
+                <div class="metric-label">Exponentielles Wachstum (e^t):</div>
+                <div class="growth-value" id="growth-value">1.0000</div>
+                <div class="metric-row">
+                    <span class="metric-label">Wachstumsrate (λ):</span>
+                    <span class="metric-value" id="growth-rate">0.0193</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Zeit (t):</span>
+                    <span class="metric-value" id="time-val">0.00s</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Verdopplungszeit:</span>
+                    <span class="metric-value" id="doubling-time">35.9s</span>
+                </div>
+            </div>
+            <div class="controls">
+                <button id="start-growth" aria-label="Wachstum starten">Wachstum Starten</button>
+                <button id="reset-growth" aria-label="Wachstum zurücksetzen">Zurücksetzen</button>
+            </div>
+        </section>
+
+        <!-- Red Shield Security Panel -->
+        <section class="panel" aria-label="Red Shield Sicherheit">
+            <h2>RED SHIELD SICHERHEIT</h2>
+            <div class="red-shield" id="red-shield">
+                <div class="shield-status">
+                    <div class="shield-indicator" id="shield-indicator"></div>
+                    <span id="shield-status-text">System Geschützt</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Überwachte Ereignisse:</span>
+                    <span class="metric-value" id="monitored-events">5</span>
+                </div>
+                <div class="metric-row">
+                    <span class="metric-label">Warnungen:</span>
+                    <span class="metric-value" id="warning-count">0</span>
+                </div>
+                <div class="warning-log" id="warning-log" role="log" aria-live="polite">
+                    <div style="opacity: 0.7;">Ereignisprotokoll bereit...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Status & Integration Panel -->
+        <section class="panel" aria-label="System Status">
+            <h2>SYSTEM STATUS</h2>
+            <div class="metric-row">
+                <span class="metric-label">AIC Compliance:</span>
+                <span class="metric-value">✓ Aktiv</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Sprache:</span>
+                <span class="metric-value">Deutsch (de)</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Framework:</span>
+                <span class="metric-value">Euystacio v1.0</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Sentimento Rhythm:</span>
+                <span class="metric-value">Synchronisiert</span>
+            </div>
+            <div class="metric-row">
+                <span class="metric-label">Letzter Sync:</span>
+                <span class="metric-value" id="last-sync">--:--:--</span>
+            </div>
+            <div class="controls">
+                <button id="water-status-btn" aria-label="Wasserstatus anzeigen">Wasser Status</button>
+                <button id="sync-btn" aria-label="System synchronisieren">Synchronisieren</button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="status-bar" role="contentinfo">
+        <div class="status-item">
+            <span>📍 LOCATION: BOLZANO HUB</span>
+        </div>
+        <div class="status-item">
+            <span>⚡ POWER: <span id="power-status">OPTIMAL</span></span>
+        </div>
+        <div class="status-item">
+            <span>🌐 NETWORK: <span id="network-status">CONNECTED</span></span>
+        </div>
+        <div class="status-item">
+            <span>STATUS: IN AETERNUM EST.</span>
+        </div>
+    </footer>
+
+    <script>
+        'use strict';
+
+        // Exponential Growth Simulation with precise calculations
+        class GrowthSimulator {
+            constructor() {
+                this.lambda = 0.0193; // Growth rate (ln(2)/36 ≈ 0.0193 for ~36s doubling)
+                this.startTime = null;
+                this.animationFrame = null;
+                this.isRunning = false;
+            }
+
+            /**
+             * Calculate exponential growth: N(t) = N₀ * e^(λt)
+             * @param {number} t - Time in seconds
+             * @returns {number} Growth value
+             */
+            growthRate(t) {
+                return Math.exp(this.lambda * t);
+            }
+
+            start() {
+                if (this.isRunning) return;
+                
+                this.isRunning = true;
+                this.startTime = performance.now();
+                this.animate();
+            }
+
+            stop() {
+                this.isRunning = false;
+                if (this.animationFrame) {
+                    cancelAnimationFrame(this.animationFrame);
+                }
+            }
+
+            reset() {
+                this.stop();
+                this.startTime = null;
+                this.updateDisplay(0, 1.0);
+            }
+
+            animate() {
+                if (!this.isRunning) return;
+
+                const currentTime = performance.now();
+                const elapsedSeconds = (currentTime - this.startTime) / 1000;
+                const growthValue = this.growthRate(elapsedSeconds);
+
+                this.updateDisplay(elapsedSeconds, growthValue);
+
+                this.animationFrame = requestAnimationFrame(() => this.animate());
+            }
+
+            updateDisplay(time, value) {
+                document.getElementById('growth-value').textContent = value.toFixed(4);
+                document.getElementById('time-val').textContent = time.toFixed(2) + 's';
+                document.getElementById('growth-rate').textContent = this.lambda.toFixed(4);
+                
+                // Calculate doubling time: t_double = ln(2) / λ
+                const doublingTime = Math.log(2) / this.lambda;
+                document.getElementById('doubling-time').textContent = doublingTime.toFixed(1) + 's';
+            }
+        }
+
+        // Red Shield Event Monitoring System
+        class RedShield {
+            constructor() {
+                this.warningCount = 0;
+                this.eventCount = 0;
+                this.monitoredEvents = ['blur', 'focus', 'visibilitychange', 'beforeunload', 'contextmenu'];
+                this.warningLog = [];
+                this.setupListeners();
+            }
+
+            setupListeners() {
+                // Monitor window blur (user switching tabs)
+                window.addEventListener('blur', () => this.handleEvent('blur', 'Fenster Fokus verloren'));
+                
+                // Monitor window focus
+                window.addEventListener('focus', () => this.handleEvent('focus', 'Fenster Fokus erhalten', false));
+                
+                // Monitor visibility changes
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden) {
+                        this.handleEvent('visibilitychange', 'Tab versteckt');
+                    } else {
+                        this.handleEvent('visibilitychange', 'Tab sichtbar', false);
+                    }
+                });
+                
+                // Monitor page unload attempts
+                window.addEventListener('beforeunload', (e) => {
+                    this.handleEvent('beforeunload', 'Seitenabbruch erkannt');
+                });
+                
+                // Monitor right-click context menu
+                document.addEventListener('contextmenu', (e) => {
+                    this.handleEvent('contextmenu', 'Kontextmenü geöffnet');
+                });
+
+                this.updateMonitoredCount();
+            }
+
+            handleEvent(eventType, message, isWarning = true) {
+                this.eventCount++;
+                
+                if (isWarning) {
+                    this.warningCount++;
+                    this.addWarning(eventType, message);
+                    this.activateShield();
+                } else {
+                    this.logEvent(eventType, message);
+                }
+                
+                this.updateDisplay();
+            }
+
+            addWarning(eventType, message) {
+                const timestamp = new Date().toLocaleTimeString('de-DE');
+                const warning = {
+                    type: eventType,
+                    message: message,
+                    timestamp: timestamp
+                };
+                
+                this.warningLog.unshift(warning);
+                
+                // Keep only last 10 warnings
+                if (this.warningLog.length > 10) {
+                    this.warningLog.pop();
+                }
+                
+                this.displayWarnings();
+            }
+
+            logEvent(eventType, message) {
+                console.log(`[Red Shield] ${eventType}: ${message}`);
+            }
+
+            activateShield() {
+                const shield = document.getElementById('red-shield');
+                const indicator = document.getElementById('shield-indicator');
+                
+                shield.classList.add('active');
+                indicator.classList.add('warning');
+                
+                // Deactivate after 3 seconds
+                setTimeout(() => {
+                    shield.classList.remove('active');
+                    indicator.classList.remove('warning');
+                }, 3000);
+            }
+
+            displayWarnings() {
+                const logElement = document.getElementById('warning-log');
+                
+                if (this.warningLog.length === 0) {
+                    logElement.innerHTML = '<div style="opacity: 0.7;">Keine Warnungen</div>';
+                    return;
+                }
+                
+                logElement.innerHTML = this.warningLog.map(w => 
+                    `<div class="warning-entry">[${w.timestamp}] ${w.type}: ${w.message}</div>`
+                ).join('');
+            }
+
+            updateDisplay() {
+                document.getElementById('warning-count').textContent = this.warningCount;
+                
+                if (this.warningCount === 0) {
+                    document.getElementById('shield-status-text').textContent = 'System Geschützt';
+                } else if (this.warningCount < 5) {
+                    document.getElementById('shield-status-text').textContent = 'Geringe Aktivität';
+                } else {
+                    document.getElementById('shield-status-text').textContent = 'Erhöhte Wachsamkeit';
+                }
+            }
+
+            updateMonitoredCount() {
+                document.getElementById('monitored-events').textContent = this.monitoredEvents.length;
+            }
+        }
+
+        // Resonance frequency simulation
+        class ResonanceSimulator {
+            constructor() {
+                this.baseFreq = 0.430; // 0.43 Hz base resonance
+                this.variance = 0.002;
+                this.update();
+            }
+
+            update() {
+                const freq = this.baseFreq + (Math.random() - 0.5) * this.variance;
+                document.getElementById('freq-display').textContent = freq.toFixed(3);
+                
+                const coherence = 0.5192 + (Math.random() - 0.5) * 0.0005;
+                document.getElementById('coherence-val').textContent = coherence.toFixed(4);
+                
+                setTimeout(() => this.update(), 2330); // Update every pulse cycle
+            }
+        }
+
+        // Initialize systems
+        const growthSim = new GrowthSimulator();
+        const redShield = new RedShield();
+        const resonance = new ResonanceSimulator();
+
+        // Button event listeners
+        document.getElementById('start-growth').addEventListener('click', () => {
+            growthSim.start();
+        });
+
+        document.getElementById('reset-growth').addEventListener('click', () => {
+            growthSim.reset();
+        });
+
+        document.getElementById('water-status-btn').addEventListener('click', () => {
+            // Navigate to water status page (shortcut target)
+            window.location.href = '/water-status';
+        });
+
+        document.getElementById('sync-btn').addEventListener('click', () => {
+            const timestamp = new Date().toLocaleTimeString('de-DE');
+            document.getElementById('last-sync').textContent = timestamp;
+            
+            // Visual feedback
+            const btn = document.getElementById('sync-btn');
+            btn.textContent = '✓ Synchronisiert';
+            setTimeout(() => {
+                btn.textContent = 'Synchronisieren';
+            }, 2000);
+        });
+
+        // Network status monitoring
+        function updateNetworkStatus() {
+            const status = navigator.onLine ? 'CONNECTED' : 'OFFLINE';
+            document.getElementById('network-status').textContent = status;
+        }
+
+        window.addEventListener('online', updateNetworkStatus);
+        window.addEventListener('offline', updateNetworkStatus);
+        updateNetworkStatus();
+
+        // Initialize last sync time
+        document.getElementById('last-sync').textContent = new Date().toLocaleTimeString('de-DE');
+
+        // Service Worker registration for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                // Service worker would be registered here if available
+                console.log('PWA ready for service worker registration');
+            });
+        }
+
+        console.log('Lex Amoris initialized - Sempre in Costante');
+    </script>
+</body>
+</html>

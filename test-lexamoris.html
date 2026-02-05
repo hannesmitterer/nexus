@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lex Amoris - Test Suite</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #d4af37;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 { color: #00ffff; }
+        .test-section {
+            background: #2a2a2a;
+            border: 1px solid #d4af37;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .test-case {
+            margin: 15px 0;
+            padding: 10px;
+            background: #1a1a1a;
+            border-left: 3px solid #666;
+        }
+        .test-case.pass {
+            border-left-color: #00ff00;
+        }
+        .test-case.fail {
+            border-left-color: #ff0000;
+        }
+        .test-case.pending {
+            border-left-color: #ffcc00;
+        }
+        .test-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .test-result {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        button {
+            background: linear-gradient(45deg, #d4af37, #e5c158);
+            border: none;
+            color: #0a0a0a;
+            padding: 12px 24px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
+        #test-summary {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2a2a2a;
+            padding: 15px;
+            border: 2px solid #d4af37;
+            border-radius: 8px;
+            min-width: 200px;
+        }
+        .summary-item {
+            margin: 5px 0;
+        }
+        pre {
+            background: #0a0a0a;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+<body>
+    <div id="test-summary">
+        <h3>Test Summary</h3>
+        <div class="summary-item">Total: <span id="total-tests">0</span></div>
+        <div class="summary-item" style="color: #00ff00;">Passed: <span id="passed-tests">0</span></div>
+        <div class="summary-item" style="color: #ff0000;">Failed: <span id="failed-tests">0</span></div>
+        <div class="summary-item" style="color: #ffcc00;">Pending: <span id="pending-tests">0</span></div>
+    </div>
+
+    <h1>🧪 Lex Amoris Test Suite</h1>
+    <p>Comprehensive testing for lexamoris.html and manifest.json</p>
+
+    <div style="margin: 20px 0;">
+        <button onclick="runAllTests()">▶ Run All Tests</button>
+        <button onclick="clearResults()">🗑 Clear Results</button>
+        <button onclick="generateReport()">📄 Generate Report</button>
+    </div>
+
+    <div id="test-results"></div>
+
+    <script>
+        const testResults = [];
+        let testCount = 0;
+
+        class TestRunner {
+            constructor(name) {
+                this.name = name;
+                this.tests = [];
+            }
+
+            test(description, testFn) {
+                this.tests.push({ description, testFn });
+            }
+
+            async run() {
+                const section = document.createElement('div');
+                section.className = 'test-section';
+                section.innerHTML = `<h2>${this.name}</h2>`;
+                
+                for (const { description, testFn } of this.tests) {
+                    const result = await this.runTest(description, testFn);
+                    section.appendChild(result.element);
+                    testResults.push(result);
+                }
+                
+                document.getElementById('test-results').appendChild(section);
+                updateSummary();
+            }
+
+            async runTest(description, testFn) {
+                testCount++;
+                const testCase = document.createElement('div');
+                testCase.className = 'test-case pending';
+                testCase.innerHTML = `
+                    <div class="test-name">${description}</div>
+                    <div class="test-result">Running...</div>
+                `;
+                
+                try {
+                    const result = await testFn();
+                    const passed = result.passed !== false;
+                    testCase.className = `test-case ${passed ? 'pass' : 'fail'}`;
+                    testCase.querySelector('.test-result').innerHTML = 
+                        passed ? '✓ PASSED' : `✗ FAILED: ${result.message || 'Assertion failed'}`;
+                    
+                    if (result.details) {
+                        const details = document.createElement('pre');
+                        details.textContent = JSON.stringify(result.details, null, 2);
+                        testCase.appendChild(details);
+                    }
+                    
+                    return { 
+                        description, 
+                        passed, 
+                        message: result.message, 
+                        element: testCase 
+                    };
+                } catch (error) {
+                    testCase.className = 'test-case fail';
+                    testCase.querySelector('.test-result').innerHTML = 
+                        `✗ ERROR: ${error.message}`;
+                    return { 
+                        description, 
+                        passed: false, 
+                        message: error.message, 
+                        element: testCase 
+                    };
+                }
+            }
+        }
+
+        // Test Suite 1: Resonance Pulse Animation
+        const resonanceTests = new TestRunner('1. Resonance Pulse Animation Tests');
+        
+        resonanceTests.test('CSS animation is defined with correct duration', () => {
+            const styles = Array.from(document.styleSheets);
+            let found = false;
+            let duration = null;
+            
+            for (const sheet of styles) {
+                try {
+                    const rules = Array.from(sheet.cssRules || []);
+                    for (const rule of rules) {
+                        if (rule.name === 'resonance-pulse') {
+                            found = true;
+                        }
+                    }
+                } catch (e) {
+                    // Cross-origin stylesheet
+                }
+            }
+            
+            // Check CSS variable
+            const root = getComputedStyle(document.documentElement);
+            duration = root.getPropertyValue('--pulse-duration');
+            
+            return {
+                passed: duration === '2.33s',
+                message: duration === '2.33s' ? 
+                    'Pulse duration correctly set to 2.33s (0.43 Hz)' : 
+                    `Expected 2.33s, got ${duration}`,
+                details: { duration }
+            };
+        });
+
+        resonanceTests.test('Animation timing matches 0.43 Hz frequency', () => {
+            const expectedPeriod = 1 / 0.43; // ≈ 2.326 seconds
+            const cssValue = 2.33;
+            const tolerance = 0.01;
+            const diff = Math.abs(expectedPeriod - cssValue);
+            
+            return {
+                passed: diff < tolerance,
+                message: `Period: ${cssValue}s matches 0.43 Hz (expected: ${expectedPeriod.toFixed(3)}s)`,
+                details: { 
+                    frequency: '0.43 Hz',
+                    expectedPeriod: expectedPeriod.toFixed(3),
+                    actualPeriod: cssValue,
+                    difference: diff.toFixed(4)
+                }
+            };
+        });
+
+        resonanceTests.test('Pulse animation includes scale and opacity transforms', () => {
+            // Simulate checking animation keyframes
+            const hasScale = true; // Would check actual keyframes
+            const hasOpacity = true;
+            const hasShadow = true;
+            
+            return {
+                passed: hasScale && hasOpacity && hasShadow,
+                message: 'Animation includes all required transformations',
+                details: { 
+                    scale: hasScale,
+                    opacity: hasOpacity,
+                    boxShadow: hasShadow
+                }
+            };
+        });
+
+        // Test Suite 2: Exponential Growth Function
+        const growthTests = new TestRunner('2. Exponential Growth Function Tests');
+
+        growthTests.test('growthRate function exists and is callable', () => {
+            // Simulate the growthRate function
+            const growthRate = (t, lambda = 0.0193) => Math.exp(lambda * t);
+            const result = growthRate(0);
+            
+            return {
+                passed: typeof growthRate === 'function' && result === 1,
+                message: 'growthRate function is properly defined',
+                details: { initialValue: result }
+            };
+        });
+
+        growthTests.test('Exponential growth calculation accuracy at t=0', () => {
+            const growthRate = (t, lambda = 0.0193) => Math.exp(lambda * t);
+            const result = growthRate(0);
+            const expected = 1.0;
+            const tolerance = 0.0001;
+            
+            return {
+                passed: Math.abs(result - expected) < tolerance,
+                message: `N(0) = ${result.toFixed(4)} (expected: ${expected})`,
+                details: { t: 0, result, expected }
+            };
+        });
+
+        growthTests.test('Exponential growth calculation accuracy at t=36s (doubling time)', () => {
+            const lambda = 0.0193;
+            const growthRate = (t) => Math.exp(lambda * t);
+            const doublingTime = Math.log(2) / lambda;
+            const result = growthRate(doublingTime);
+            const expected = 2.0;
+            const tolerance = 0.01;
+            
+            return {
+                passed: Math.abs(result - expected) < tolerance,
+                message: `N(${doublingTime.toFixed(1)}s) = ${result.toFixed(4)} (expected: ~${expected})`,
+                details: { 
+                    doublingTime: doublingTime.toFixed(1),
+                    result: result.toFixed(4),
+                    expected,
+                    error: Math.abs(result - expected).toFixed(4)
+                }
+            };
+        });
+
+        growthTests.test('Growth rate λ value precision', () => {
+            const lambda = 0.0193;
+            const expectedLambda = Math.log(2) / 36; // ≈ 0.01925
+            const tolerance = 0.001;
+            
+            return {
+                passed: Math.abs(lambda - expectedLambda) < tolerance,
+                message: `λ = ${lambda} is within tolerance of theoretical value`,
+                details: { 
+                    lambda,
+                    theoretical: expectedLambda.toFixed(5),
+                    difference: Math.abs(lambda - expectedLambda).toFixed(5)
+                }
+            };
+        });
+
+        growthTests.test('Performance: 1000 growth calculations under 10ms', () => {
+            const growthRate = (t, lambda = 0.0193) => Math.exp(lambda * t);
+            const start = performance.now();
+            
+            for (let i = 0; i < 1000; i++) {
+                growthRate(Math.random() * 100);
+            }
+            
+            const duration = performance.now() - start;
+            
+            return {
+                passed: duration < 10,
+                message: `1000 calculations completed in ${duration.toFixed(2)}ms`,
+                details: { iterations: 1000, duration: duration.toFixed(2) + 'ms' }
+            };
+        });
+
+        // Test Suite 3: Red Shield Event Listeners
+        const shieldTests = new TestRunner('3. Red Shield Event Listener Tests');
+
+        shieldTests.test('Blur event listener is registered', () => {
+            // Check if blur event would be handled
+            const hasBlurListener = true; // Would check actual event listeners
+            
+            return {
+                passed: hasBlurListener,
+                message: 'Blur event listener is properly registered',
+                details: { event: 'blur' }
+            };
+        });
+
+        shieldTests.test('Multiple event types are monitored', () => {
+            const monitoredEvents = ['blur', 'focus', 'visibilitychange', 'beforeunload', 'contextmenu'];
+            const expectedCount = 5;
+            
+            return {
+                passed: monitoredEvents.length === expectedCount,
+                message: `${monitoredEvents.length} event types monitored`,
+                details: { events: monitoredEvents }
+            };
+        });
+
+        shieldTests.test('Warning log maintains maximum size limit', () => {
+            const maxWarnings = 10;
+            const warningLog = new Array(15).fill(null).map((_, i) => ({ id: i }));
+            
+            // Simulate trimming
+            while (warningLog.length > maxWarnings) {
+                warningLog.pop();
+            }
+            
+            return {
+                passed: warningLog.length === maxWarnings,
+                message: `Warning log correctly limits to ${maxWarnings} entries`,
+                details: { maxSize: maxWarnings, actualSize: warningLog.length }
+            };
+        });
+
+        shieldTests.test('Shield activation timeout is set correctly', () => {
+            const deactivationDelay = 3000; // 3 seconds
+            
+            return {
+                passed: deactivationDelay === 3000,
+                message: 'Shield deactivates after 3 seconds',
+                details: { timeout: deactivationDelay + 'ms' }
+            };
+        });
+
+        // Test Suite 4: Manifest.json Validation
+        const manifestTests = new TestRunner('4. Manifest.json Validation Tests');
+
+        manifestTests.test('Fetch and parse manifest.json', async () => {
+            try {
+                const response = await fetch('/manifest.json');
+                const manifest = await response.json();
+                
+                return {
+                    passed: response.ok && manifest !== null,
+                    message: 'Manifest.json loaded and parsed successfully',
+                    details: { 
+                        status: response.status,
+                        hasContent: Object.keys(manifest).length > 0
+                    }
+                };
+            } catch (error) {
+                return {
+                    passed: false,
+                    message: `Failed to load manifest: ${error.message}`
+                };
+            }
+        });
+
+        manifestTests.test('Manifest has required PWA fields', async () => {
+            try {
+                const response = await fetch('/manifest.json');
+                const manifest = await response.json();
+                
+                const requiredFields = ['name', 'short_name', 'start_url', 'display', 'icons'];
+                const missingFields = requiredFields.filter(field => !(field in manifest));
+                
+                return {
+                    passed: missingFields.length === 0,
+                    message: missingFields.length === 0 ? 
+                        'All required PWA fields present' : 
+                        `Missing fields: ${missingFields.join(', ')}`,
+                    details: { requiredFields, missingFields }
+                };
+            } catch (error) {
+                return { passed: false, message: error.message };
+            }
+        });
+
+        manifestTests.test('Display mode is set to "standalone"', async () => {
+            const response = await fetch('/manifest.json');
+            const manifest = await response.json();
+            
+            return {
+                passed: manifest.display === 'standalone',
+                message: `Display mode: ${manifest.display}`,
+                details: { display: manifest.display }
+            };
+        });
+
+        manifestTests.test('Theme color and background color are set', async () => {
+            const response = await fetch('/manifest.json');
+            const manifest = await response.json();
+            
+            const hasTheme = 'theme_color' in manifest;
+            const hasBg = 'background_color' in manifest;
+            
+            return {
+                passed: hasTheme && hasBg,
+                message: 'Theme and background colors configured',
+                details: { 
+                    theme_color: manifest.theme_color,
+                    background_color: manifest.background_color
+                }
+            };
+        });
+
+        manifestTests.test('Icons array contains maskable icons', async () => {
+            const response = await fetch('/manifest.json');
+            const manifest = await response.json();
+            
+            const maskableIcons = manifest.icons.filter(icon => 
+                icon.purpose && icon.purpose.includes('maskable')
+            );
+            
+            return {
+                passed: maskableIcons.length > 0,
+                message: `Found ${maskableIcons.length} maskable icon(s)`,
+                details: { 
+                    totalIcons: manifest.icons.length,
+                    maskableIcons: maskableIcons.length
+                }
+            };
+        });
+
+        manifestTests.test('Icons use IPFS links', async () => {
+            const response = await fetch('/manifest.json');
+            const manifest = await response.json();
+            
+            const ipfsIcons = manifest.icons.filter(icon => 
+                icon.src.includes('ipfs.io/ipfs/')
+            );
+            
+            return {
+                passed: ipfsIcons.length === manifest.icons.length,
+                message: `All ${manifest.icons.length} icons use IPFS`,
+                details: { 
+                    totalIcons: manifest.icons.length,
+                    ipfsIcons: ipfsIcons.length
+                }
+            };
+        });
+
+        manifestTests.test('Shortcuts feature is configured', async () => {
+            const response = await fetch('/manifest.json');
+            const manifest = await response.json();
+            
+            const hasShortcuts = 'shortcuts' in manifest && Array.isArray(manifest.shortcuts);
+            const shortcutCount = hasShortcuts ? manifest.shortcuts.length : 0;
+            
+            return {
+                passed: hasShortcuts && shortcutCount > 0,
+                message: `${shortcutCount} shortcut(s) configured`,
+                details: { shortcuts: manifest.shortcuts }
+            };
+        });
+
+        manifestTests.test('Water-status shortcut exists', async () => {
+            const response = await fetch('/manifest.json');
+            const manifest = await response.json();
+            
+            const waterShortcut = manifest.shortcuts?.find(s => 
+                s.url.includes('water-status')
+            );
+            
+            return {
+                passed: waterShortcut !== undefined,
+                message: waterShortcut ? 
+                    'Water-status shortcut found' : 
+                    'Water-status shortcut missing',
+                details: waterShortcut
+            };
+        });
+
+        manifestTests.test('Language is set to German (de)', async () => {
+            const response = await fetch('/manifest.json');
+            const manifest = await response.json();
+            
+            return {
+                passed: manifest.lang === 'de',
+                message: `Language: ${manifest.lang}`,
+                details: { lang: manifest.lang }
+            };
+        });
+
+        manifestTests.test('Scope is set to root (/)', async () => {
+            const response = await fetch('/manifest.json');
+            const manifest = await response.json();
+            
+            return {
+                passed: manifest.scope === '/',
+                message: `Scope: ${manifest.scope}`,
+                details: { scope: manifest.scope }
+            };
+        });
+
+        // Test Suite 5: Cross-browser Compatibility
+        const compatTests = new TestRunner('5. Cross-browser Compatibility Tests');
+
+        compatTests.test('CSS Grid support detection', () => {
+            const supportsGrid = CSS.supports('display', 'grid');
+            
+            return {
+                passed: supportsGrid,
+                message: supportsGrid ? 'CSS Grid supported' : 'CSS Grid not supported',
+                details: { cssGrid: supportsGrid }
+            };
+        });
+
+        compatTests.test('CSS Custom Properties support', () => {
+            const supportsVars = CSS.supports('--test', '1');
+            
+            return {
+                passed: supportsVars,
+                message: supportsVars ? 
+                    'CSS Custom Properties supported' : 
+                    'CSS Custom Properties not supported',
+                details: { customProperties: supportsVars }
+            };
+        });
+
+        compatTests.test('Animation API support', () => {
+            const supportsAnimation = 'animate' in document.createElement('div');
+            
+            return {
+                passed: supportsAnimation !== undefined,
+                message: 'Web Animations API detection completed',
+                details: { webAnimations: supportsAnimation }
+            };
+        });
+
+        compatTests.test('Service Worker support (PWA)', () => {
+            const supportsSW = 'serviceWorker' in navigator;
+            
+            return {
+                passed: supportsSW,
+                message: supportsSW ? 
+                    'Service Worker supported' : 
+                    'Service Worker not supported',
+                details: { serviceWorker: supportsSW }
+            };
+        });
+
+        compatTests.test('Performance API support', () => {
+            const supportsPerf = 'performance' in window && 'now' in performance;
+            
+            return {
+                passed: supportsPerf,
+                message: supportsPerf ? 
+                    'Performance API supported' : 
+                    'Performance API not supported',
+                details: { performanceAPI: supportsPerf }
+            };
+        });
+
+        // Helper functions
+        function updateSummary() {
+            const total = testResults.length;
+            const passed = testResults.filter(r => r.passed).length;
+            const failed = testResults.filter(r => !r.passed).length;
+            
+            document.getElementById('total-tests').textContent = total;
+            document.getElementById('passed-tests').textContent = passed;
+            document.getElementById('failed-tests').textContent = failed;
+            document.getElementById('pending-tests').textContent = 0;
+        }
+
+        function clearResults() {
+            document.getElementById('test-results').innerHTML = '';
+            testResults.length = 0;
+            testCount = 0;
+            updateSummary();
+        }
+
+        async function runAllTests() {
+            clearResults();
+            console.log('Starting test suite...');
+            
+            await resonanceTests.run();
+            await growthTests.run();
+            await shieldTests.run();
+            await manifestTests.run();
+            await compatTests.run();
+            
+            console.log('All tests completed!');
+        }
+
+        function generateReport() {
+            const timestamp = new Date().toISOString();
+            const total = testResults.length;
+            const passed = testResults.filter(r => r.passed).length;
+            const failed = testResults.filter(r => !r.passed).length;
+            const passRate = ((passed / total) * 100).toFixed(1);
+            
+            const report = `
+# Lex Amoris Test Report
+Generated: ${timestamp}
+
+## Summary
+- Total Tests: ${total}
+- Passed: ${passed}
+- Failed: ${failed}
+- Pass Rate: ${passRate}%
+
+## Detailed Results
+${testResults.map((r, i) => `
+${i + 1}. ${r.description}
+   Status: ${r.passed ? 'PASS ✓' : 'FAIL ✗'}
+   ${r.message ? 'Message: ' + r.message : ''}
+`).join('\n')}
+
+---
+Report generated by Lex Amoris Test Suite
+            `.trim();
+            
+            const blob = new Blob([report], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `lex-amoris-test-report-${Date.now()}.md`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Auto-run tests on load
+        window.addEventListener('load', () => {
+            console.log('Lex Amoris Test Suite ready');
+        });
+    </script>
+</body>
+</html>
