@@ -1,0 +1,36 @@
+{
+  "short_name": "Nexus",
+  "name": "Lex Amoris Nexus Core",
+  "description": "Souveränes Interface der Resonance School - Sempre in Costante",
+  "icons": [
+    {
+      "src": "https://ipfs.io/ipfs/QmResonanceIconHash",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://ipfs.io/ipfs/QmResonanceIconHash512",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/index.html",
+  "background_color": "#0a0a0a",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#8b0000",
+  "shortcuts": [
+    {
+      "name": "Leonardo-Status",
+      "short_name": "Water",
+      "url": "/water-status",
+      "icons": [{ "src": "water-icon.png", "sizes": "192x192" }]
+    }
+  ],
+  "lang": "de",
+  "dir": "ltr",
+  "orientation": "portrait",
+  "lex_amoris_protection": "active",
+  "s_roi_target": "0.5192"
+}
