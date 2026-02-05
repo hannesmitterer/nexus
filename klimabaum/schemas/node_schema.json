@@ -1,0 +1,219 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Klimabaum Node Schema",
+  "description": "Schema for urban climate monitoring nodes (Klimabaum)",
+  "type": "object",
+  "required": [
+    "node_id",
+    "location",
+    "node_type",
+    "monitoring_capabilities",
+    "status"
+  ],
+  "properties": {
+    "node_id": {
+      "type": "string",
+      "description": "Unique identifier for the Klimabaum node (format: KB-[COUNTRY_CODE]-[NUMBER], e.g., KB-IT-000001, KB-USA-000042)",
+      "pattern": "^KB-[A-Z]{2,3}-[0-9]{6}$"
+    },
+    "location": {
+      "type": "object",
+      "required": ["latitude", "longitude", "city", "country"],
+      "properties": {
+        "latitude": {
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90
+        },
+        "longitude": {
+          "type": "number",
+          "minimum": -180,
+          "maximum": 180
+        },
+        "altitude": {
+          "type": "number",
+          "description": "Altitude in meters above sea level"
+        },
+        "city": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "urban_zone": {
+          "type": "string",
+          "enum": ["residential", "commercial", "industrial", "park", "mixed"]
+        }
+      }
+    },
+    "node_type": {
+      "type": "string",
+      "enum": ["primary", "secondary", "micro"],
+      "description": "Classification of node based on monitoring capacity"
+    },
+    "monitoring_capabilities": {
+      "type": "object",
+      "properties": {
+        "air_quality": {
+          "type": "boolean",
+          "default": true
+        },
+        "temperature": {
+          "type": "boolean",
+          "default": true
+        },
+        "humidity": {
+          "type": "boolean",
+          "default": true
+        },
+        "co2_levels": {
+          "type": "boolean",
+          "default": false
+        },
+        "noise_pollution": {
+          "type": "boolean",
+          "default": false
+        },
+        "energy_consumption": {
+          "type": "boolean",
+          "default": false
+        },
+        "water_usage": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "maintenance", "offline", "degraded"],
+      "description": "Current operational status of the node"
+    },
+    "installed_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_maintenance": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "operator": {
+      "type": "object",
+      "properties": {
+        "efa_did": {
+          "type": "string",
+          "description": "Euystacio Field Agent DID responsible for this node"
+        },
+        "organization": {
+          "type": "string"
+        },
+        "contact": {
+          "type": "string"
+        }
+      }
+    },
+    "nsr_compliance": {
+      "type": "object",
+      "required": ["compliant", "last_audit"],
+      "properties": {
+        "compliant": {
+          "type": "boolean"
+        },
+        "compliance_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "last_audit": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "violations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "date": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "type": {
+                "type": "string"
+              },
+              "severity": {
+                "type": "string",
+                "enum": ["low", "medium", "high", "critical"]
+              },
+              "resolved": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    },
+    "resource_allocation": {
+      "type": "object",
+      "description": "Current resource distribution optimization",
+      "properties": {
+        "energy_priority": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Priority level for energy distribution (0-100)"
+        },
+        "water_priority": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "cooling_priority": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "optimization_mode": {
+          "type": "string",
+          "enum": ["balanced", "efficiency", "equity", "emergency"],
+          "default": "balanced"
+        }
+      }
+    },
+    "predictive_metrics": {
+      "type": "object",
+      "description": "AI-generated predictive analytics",
+      "properties": {
+        "climate_risk_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Predicted climate impact risk (0=low, 100=critical)"
+        },
+        "resource_demand_forecast": {
+          "type": "object",
+          "properties": {
+            "next_24h": {
+              "type": "number"
+            },
+            "next_7d": {
+              "type": "number"
+            },
+            "next_30d": {
+              "type": "number"
+            }
+          }
+        },
+        "anomaly_probability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Probability of anomalous conditions in next 24h"
+        },
+        "recommendation": {
+          "type": "string",
+          "description": "AI-generated recommendation for resource optimization"
+        }
+      }
+    }
+  }
+}

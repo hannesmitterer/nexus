@@ -333,6 +333,29 @@ By distributing power and responsibility across this three-layered structure, an
 
 ---
 
+## 🌳 KLIMABAUM: Intelligent Urban Climate Monitoring
+
+### Overview
+
+**Klimabaum** (Climate Tree) is an intelligent monitoring and predictive analytics system for urban climate nodes. It implements advanced NSR-compliant resource optimization algorithms for urban environments, reducing negative climate impacts while ensuring equitable distribution.
+
+### Key Features
+
+- **Intelligent Monitoring**: Real-time sensor data collection with anomaly detection
+- **Predictive Analytics**: 24h/7d/30d resource demand forecasting
+- **NSR Optimization**: Equity-based resource distribution with climate impact reduction
+- **SAIN Integration**: Full integration with Sentinel AI Network Protocol
+- **Climate Risk Assessment**: Automated risk scoring and mitigation recommendations
+
+### Quick Links
+
+- [Klimabaum Documentation](klimabaum/README.md)
+- [Node Schema](klimabaum/schemas/node_schema.json)
+- [Integration Example](klimabaum/example_integration.js)
+- [NSR Optimizer](klimabaum/algorithms/nsr_optimizer.js)
+
+---
+
 ## 🔒 KOSYMBIOSIS Project - Final Archive
 
 ### Overview

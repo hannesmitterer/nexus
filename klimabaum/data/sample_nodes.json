@@ -1,0 +1,162 @@
+[
+  {
+    "node_id": "KB-IT-000001",
+    "location": {
+      "latitude": 45.4642,
+      "longitude": 9.1900,
+      "altitude": 122,
+      "city": "Milano",
+      "country": "Italy",
+      "urban_zone": "residential"
+    },
+    "node_type": "primary",
+    "monitoring_capabilities": {
+      "air_quality": true,
+      "temperature": true,
+      "humidity": true,
+      "co2_levels": true,
+      "noise_pollution": true,
+      "energy_consumption": true,
+      "water_usage": true
+    },
+    "status": "active",
+    "installed_date": "2025-06-15T10:00:00Z",
+    "last_maintenance": "2026-01-10T14:30:00Z",
+    "operator": {
+      "efa_did": "did:efa:italia-nord-001",
+      "organization": "Milano Smart City Initiative",
+      "contact": "info@milanoclimate.it"
+    },
+    "nsr_compliance": {
+      "compliant": true,
+      "compliance_score": 92,
+      "last_audit": "2026-01-05T09:00:00Z",
+      "violations": []
+    },
+    "resource_allocation": {
+      "energy_priority": 75,
+      "water_priority": 60,
+      "cooling_priority": 80,
+      "optimization_mode": "balanced"
+    },
+    "predictive_metrics": {
+      "climate_risk_score": 45,
+      "resource_demand_forecast": {
+        "next_24h": 65,
+        "next_7d": 70,
+        "next_30d": 75
+      },
+      "anomaly_probability": 0.15,
+      "recommendation": "All systems nominal. Continue standard monitoring protocol."
+    }
+  },
+  {
+    "node_id": "KB-DE-000042",
+    "location": {
+      "latitude": 52.5200,
+      "longitude": 13.4050,
+      "altitude": 34,
+      "city": "Berlin",
+      "country": "Germany",
+      "urban_zone": "mixed"
+    },
+    "node_type": "primary",
+    "monitoring_capabilities": {
+      "air_quality": true,
+      "temperature": true,
+      "humidity": true,
+      "co2_levels": true,
+      "noise_pollution": false,
+      "energy_consumption": true,
+      "water_usage": true
+    },
+    "status": "active",
+    "installed_date": "2025-03-20T08:00:00Z",
+    "last_maintenance": "2025-12-18T11:00:00Z",
+    "operator": {
+      "efa_did": "did:efa:deutschland-berlin-001",
+      "organization": "Berlin Climate Network",
+      "contact": "kontakt@berlinclimate.de"
+    },
+    "nsr_compliance": {
+      "compliant": true,
+      "compliance_score": 88,
+      "last_audit": "2025-12-20T10:00:00Z",
+      "violations": [
+        {
+          "date": "2025-11-15T14:00:00Z",
+          "type": "minor_calibration_drift",
+          "severity": "low",
+          "resolved": true
+        }
+      ]
+    },
+    "resource_allocation": {
+      "energy_priority": 65,
+      "water_priority": 70,
+      "cooling_priority": 55,
+      "optimization_mode": "equity"
+    },
+    "predictive_metrics": {
+      "climate_risk_score": 38,
+      "resource_demand_forecast": {
+        "next_24h": 55,
+        "next_7d": 58,
+        "next_30d": 62
+      },
+      "anomaly_probability": 0.08,
+      "recommendation": "All systems nominal. Continue standard monitoring protocol."
+    }
+  },
+  {
+    "node_id": "KB-ES-000123",
+    "location": {
+      "latitude": 40.4168,
+      "longitude": -3.7038,
+      "altitude": 667,
+      "city": "Madrid",
+      "country": "Spain",
+      "urban_zone": "commercial"
+    },
+    "node_type": "secondary",
+    "monitoring_capabilities": {
+      "air_quality": true,
+      "temperature": true,
+      "humidity": true,
+      "co2_levels": false,
+      "noise_pollution": true,
+      "energy_consumption": false,
+      "water_usage": true
+    },
+    "status": "active",
+    "installed_date": "2025-08-10T12:00:00Z",
+    "last_maintenance": "2026-01-08T09:30:00Z",
+    "operator": {
+      "efa_did": "did:efa:espana-madrid-001",
+      "organization": "Madrid Green Initiative",
+      "contact": "info@madridverde.es"
+    },
+    "nsr_compliance": {
+      "compliant": true,
+      "compliance_score": 95,
+      "last_audit": "2026-01-02T13:00:00Z",
+      "violations": []
+    },
+    "resource_allocation": {
+      "energy_priority": 85,
+      "water_priority": 90,
+      "cooling_priority": 95,
+      "optimization_mode": "efficiency"
+    },
+    "predictive_metrics": {
+      "climate_risk_score": 72,
+      "resource_demand_forecast": {
+        "next_24h": 85,
+        "next_7d": 88,
+        "next_30d": 92
+      },
+      "anomaly_probability": 0.25,
+      "recommendation": "Moderate climate risk. Consider increasing monitoring frequency and resource reserves."
+    }
+  }
+]
