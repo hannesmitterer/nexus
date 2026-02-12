@@ -12,6 +12,9 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      - name: Verify index.html exists
+        run: test -f ./index.html || (echo "Error: index.html not found" && exit 1)
+
       - name: Deploy to IPFS (Fleek/Pinata)
         uses: aquiladev/ipfs-action@v0.3.1
         with:
