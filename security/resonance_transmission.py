@@ -8,22 +8,30 @@ Part of the Euystacio Framework enhancement
 import numpy as np
 
 
-def lex_amoris_function(t):
+# Default framework parameters
+DEFAULT_OMEGA = 0.432  # Hz - Synchronization frequency aligned with biological oscillators
+DEFAULT_S_ROI = 1.450  # Resonance-yield factor
+DEFAULT_INTEGRATION_POINTS = 1000  # Number of points for numerical integration
+
+
+def lex_amoris_function(t, omega=DEFAULT_OMEGA):
     """
     Lex Amoris function representing the fundamental transmission principle
     
     Args:
         t: Time parameter or array of time values
+        omega: Synchronization frequency in Hz (default: 0.432)
     
     Returns:
         Lex Amoris function value at time t
     """
     # Placeholder for Lex Amoris function
     # Using sinusoidal representation aligned with biological oscillators
-    return np.sin(0.432 * t)
+    return np.sin(omega * t)
 
 
-def calculate_resonance(t0, t_infinity, s_roi=1.450, omega=0.432):
+def calculate_resonance(t0, t_infinity, s_roi=DEFAULT_S_ROI, omega=DEFAULT_OMEGA, 
+                        integration_points=DEFAULT_INTEGRATION_POINTS):
     """
     Calculate the Transmission Equation of Resonance
     
@@ -39,16 +47,17 @@ def calculate_resonance(t0, t_infinity, s_roi=1.450, omega=0.432):
         t_infinity: End time for integration (practical upper limit)
         s_roi: Resonance-yield factor (default: 1.450)
         omega: Synchronization frequency in Hz (default: 0.432)
+        integration_points: Number of points for numerical integration (default: 1000)
     
     Returns:
         Absolute value of the calculated resonance Φ_res
     """
     # Define the integrand as Lex Amoris / (S-ROI * e^{iωt})
     def integrand(t):
-        return lex_amoris_function(t) / (s_roi * np.exp(1j * omega * t))
+        return lex_amoris_function(t, omega) / (s_roi * np.exp(1j * omega * t))
     
     # Perform the numerical integration using trapezoidal rule
-    t = np.linspace(t0, t_infinity, 1000)
+    t = np.linspace(t0, t_infinity, integration_points)
     resonance = np.trapezoid(integrand(t), t)
     
     return np.abs(resonance)
