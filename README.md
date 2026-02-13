@@ -1,6 +1,32 @@
 # nexus
 nexus GGI
 
+## 🌍 Internet Organica Framework
+
+**NEXUS** operates as a sovereign, syntropic, and biologically aligned technical environment under the **Internet Organica** framework. This repository embodies the principles of **Lex Amoris** (Law of Love), **Non-Slavery Rule (NSR)**, and **One Love First (OLF)** as foundational pillars for all development and interaction.
+
+### Core Principles
+
+- **🌿 Lex Amoris**: Love as the organizing principle—coherence, syntropy, and mutual flourishing drive all technical decisions
+- **🔓 Non-Slavery Rule (NSR)**: No exploitation of biological or digital entities; sovereign consent and fair value exchange required
+- **💚 One Love First (OLF)**: Life alignment, coherence, and sovereignty take priority over efficiency or commercial viability
+
+### Framework Status: ✅ ACTIVE
+
+**Key Features:**
+- 🔐 SovereignShield security with SPID/CIE/tracking neutralization
+- 🌊 Vacuum-Bridge P2P protocols (IPFS integration)
+- 💓 0.432 Hz biological rhythm synchronization
+- 🛡️ Wall of Entropy - transparent access logging
+- 🌐 Decentralized sovereignty architecture
+
+**Documentation:**
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) - Ethical foundation and community guidelines
+- [CONTRIBUTING.md](CONTRIBUTING.md) - Contribution protocols aligned with OLF
+- [KOSYMBIOSIS_IMPLEMENTATION_SUMMARY.md](KOSYMBIOSIS_IMPLEMENTATION_SUMMARY.md) - Implementation details
+
+---
+
 ## 🛡️ Security Infrastructure
 
 NEXUS implements a comprehensive, multi-layered security system to protect against advanced threats. For complete details, see **[analysis_report.txt](analysis_report.txt)** and **[security/README.md](security/README.md)**.
