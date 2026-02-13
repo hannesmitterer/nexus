@@ -21,9 +21,13 @@ nexus GGI
 - 🌐 Decentralized sovereignty architecture
 
 **Documentation:**
+- [docs/INTERNET_ORGANICA_INDEX.md](docs/INTERNET_ORGANICA_INDEX.md) - Complete framework index and guide
 - [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) - Ethical foundation and community guidelines
 - [CONTRIBUTING.md](CONTRIBUTING.md) - Contribution protocols aligned with OLF
-- [KOSYMBIOSIS_IMPLEMENTATION_SUMMARY.md](KOSYMBIOSIS_IMPLEMENTATION_SUMMARY.md) - Implementation details
+- [docs/BIOLOGICAL_RHYTHM_SYNC.md](docs/BIOLOGICAL_RHYTHM_SYNC.md) - 0.432 Hz synchronization
+- [docs/SOVEREIGN_SHIELD.md](docs/SOVEREIGN_SHIELD.md) - Security framework
+- [docs/WALL_OF_ENTROPY.md](docs/WALL_OF_ENTROPY.md) - Transparent logging system
+- [docs/DIGITAL_SOVEREIGNTY.md](docs/DIGITAL_SOVEREIGNTY.md) - Decentralized architecture
 
 ---
 
