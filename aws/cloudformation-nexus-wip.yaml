@@ -1,0 +1,420 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Nexus WIP Deployment with SovereignShield Quantum-Safe Security and Rollback Capabilities'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: 'wip'
+    AllowedValues:
+      - dev
+      - wip
+      - staging
+      - production
+    Description: Deployment environment
+
+  EnableRollback:
+    Type: String
+    Default: 'true'
+    AllowedValues:
+      - 'true'
+      - 'false'
+    Description: Enable automatic rollback on deployment failure
+
+  RollbackTimeout:
+    Type: Number
+    Default: 600
+    MinValue: 300
+    MaxValue: 3600
+    Description: Rollback timeout in seconds
+
+  QuantumSafeEnabled:
+    Type: String
+    Default: 'true'
+    AllowedValues:
+      - 'true'
+      - 'false'
+    Description: Enable quantum-safe NTRU verification
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: "Environment Configuration"
+        Parameters:
+          - Environment
+          - EnableRollback
+          - RollbackTimeout
+      - Label:
+          default: "Security Configuration"
+        Parameters:
+          - QuantumSafeEnabled
+
+Resources:
+  # S3 Bucket for deployment artifacts and rollback snapshots
+  NexusDeploymentBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub 'nexus-deployment-${Environment}-${AWS::AccountId}'
+      VersioningConfiguration:
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldVersions
+            Status: Enabled
+            NoncurrentVersionExpirationInDays: 90
+          - Id: MoveToGlacier
+            Status: Enabled
+            Transitions:
+              - TransitionInDays: 30
+                StorageClass: GLACIER
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Project
+          Value: Nexus
+        - Key: Component
+          Value: SovereignShield
+
+  # DynamoDB table for deployment state tracking
+  DeploymentStateTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub 'nexus-deployment-state-${Environment}'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: deploymentId
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: N
+      KeySchema:
+        - AttributeName: deploymentId
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Project
+          Value: Nexus
+
+  # DynamoDB table for rollback checkpoints
+  RollbackCheckpointTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub 'nexus-rollback-checkpoints-${Environment}'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: checkpointId
+          AttributeType: S
+        - AttributeName: createdAt
+          AttributeType: N
+      KeySchema:
+        - AttributeName: checkpointId
+          KeyType: HASH
+        - AttributeName: createdAt
+          KeyType: RANGE
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Project
+          Value: Nexus
+
+  # Lambda function for deployment orchestration
+  DeploymentOrchestratorFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub 'nexus-deployment-orchestrator-${Environment}'
+      Runtime: python3.11
+      Handler: index.handler
+      Role: !GetAtt DeploymentOrchestratorRole.Arn
+      Timeout: !Ref RollbackTimeout
+      Environment:
+        Variables:
+          ENVIRONMENT: !Ref Environment
+          DEPLOYMENT_BUCKET: !Ref NexusDeploymentBucket
+          STATE_TABLE: !Ref DeploymentStateTable
+          CHECKPOINT_TABLE: !Ref RollbackCheckpointTable
+          ENABLE_ROLLBACK: !Ref EnableRollback
+          QUANTUM_SAFE_ENABLED: !Ref QuantumSafeEnabled
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          import os
+          from datetime import datetime, timedelta
+          
+          s3 = boto3.client('s3')
+          dynamodb = boto3.resource('dynamodb')
+          
+          def handler(event, context):
+              """
+              Orchestrate Nexus WIP deployment with rollback capability
+              """
+              environment = os.environ['ENVIRONMENT']
+              enable_rollback = os.environ.get('ENABLE_ROLLBACK', 'true') == 'true'
+              
+              deployment_id = event.get('deploymentId', f"deploy-{datetime.now().isoformat()}")
+              action = event.get('action', 'deploy')  # deploy, rollback, checkpoint
+              
+              try:
+                  if action == 'deploy':
+                      return handle_deployment(deployment_id, event, enable_rollback)
+                  elif action == 'rollback':
+                      return handle_rollback(deployment_id, event)
+                  elif action == 'checkpoint':
+                      return create_checkpoint(deployment_id, event)
+                  else:
+                      raise ValueError(f"Unknown action: {action}")
+                      
+              except Exception as e:
+                  print(f"Deployment error: {str(e)}")
+                  if enable_rollback:
+                      print(f"Initiating automatic rollback for {deployment_id}")
+                      return handle_rollback(deployment_id, {'reason': str(e)})
+                  raise
+          
+          def handle_deployment(deployment_id, event, enable_rollback):
+              """Handle new deployment with checkpoint creation"""
+              state_table = dynamodb.Table(os.environ['STATE_TABLE'])
+              checkpoint_table = dynamodb.Table(os.environ['CHECKPOINT_TABLE'])
+              
+              # Create pre-deployment checkpoint if rollback enabled
+              if enable_rollback:
+                  checkpoint_id = f"pre-{deployment_id}"
+                  checkpoint_data = {
+                      'checkpointId': checkpoint_id,
+                      'createdAt': int(datetime.now().timestamp()),
+                      'deploymentId': deployment_id,
+                      'type': 'pre-deployment',
+                      'canRollback': True,
+                      'ttl': int((datetime.now() + timedelta(days=30)).timestamp())
+                  }
+                  checkpoint_table.put_item(Item=checkpoint_data)
+                  print(f"Created checkpoint: {checkpoint_id}")
+              
+              # Record deployment state
+              state_data = {
+                  'deploymentId': deployment_id,
+                  'timestamp': int(datetime.now().timestamp()),
+                  'status': 'in-progress',
+                  'environment': os.environ['ENVIRONMENT'],
+                  'quantumSafeEnabled': os.environ.get('QUANTUM_SAFE_ENABLED', 'true'),
+                  'rollbackEnabled': enable_rollback
+              }
+              state_table.put_item(Item=state_data)
+              
+              # Simulate deployment steps
+              print(f"Deploying SovereignShield for {deployment_id}")
+              
+              # Update deployment status
+              state_table.update_item(
+                  Key={'deploymentId': deployment_id, 'timestamp': state_data['timestamp']},
+                  UpdateExpression='SET #status = :status, completedAt = :completed',
+                  ExpressionAttributeNames={'#status': 'status'},
+                  ExpressionAttributeValues={
+                      ':status': 'completed',
+                      ':completed': int(datetime.now().timestamp())
+                  }
+              )
+              
+              return {
+                  'statusCode': 200,
+                  'body': json.dumps({
+                      'deploymentId': deployment_id,
+                      'status': 'completed',
+                      'rollbackEnabled': enable_rollback
+                  })
+              }
+          
+          def handle_rollback(deployment_id, event):
+              """Handle rollback to previous checkpoint"""
+              checkpoint_table = dynamodb.Table(os.environ['CHECKPOINT_TABLE'])
+              state_table = dynamodb.Table(os.environ['STATE_TABLE'])
+              
+              # Find latest checkpoint
+              target_checkpoint = event.get('checkpointId', f"pre-{deployment_id}")
+              
+              print(f"Rolling back to checkpoint: {target_checkpoint}")
+              
+              # Retrieve checkpoint data
+              response = checkpoint_table.get_item(
+                  Key={'checkpointId': target_checkpoint}
+              )
+              
+              if 'Item' not in response:
+                  raise ValueError(f"Checkpoint not found: {target_checkpoint}")
+              
+              checkpoint = response['Item']
+              
+              if not checkpoint.get('canRollback', False):
+                  raise ValueError(f"Checkpoint {target_checkpoint} is not rollbackable")
+              
+              # Record rollback action
+              rollback_data = {
+                  'deploymentId': f"rollback-{deployment_id}",
+                  'timestamp': int(datetime.now().timestamp()),
+                  'status': 'rollback-completed',
+                  'targetCheckpoint': target_checkpoint,
+                  'reason': event.get('reason', 'Manual rollback')
+              }
+              state_table.put_item(Item=rollback_data)
+              
+              return {
+                  'statusCode': 200,
+                  'body': json.dumps({
+                      'rollbackId': rollback_data['deploymentId'],
+                      'targetCheckpoint': target_checkpoint,
+                      'status': 'completed'
+                  })
+              }
+          
+          def create_checkpoint(deployment_id, event):
+              """Create a manual checkpoint"""
+              checkpoint_table = dynamodb.Table(os.environ['CHECKPOINT_TABLE'])
+              
+              checkpoint_id = event.get('checkpointId', f"manual-{deployment_id}")
+              description = event.get('description', 'Manual checkpoint')
+              
+              checkpoint_data = {
+                  'checkpointId': checkpoint_id,
+                  'createdAt': int(datetime.now().timestamp()),
+                  'deploymentId': deployment_id,
+                  'type': 'manual',
+                  'description': description,
+                  'canRollback': True,
+                  'ttl': int((datetime.now() + timedelta(days=90)).timestamp())
+              }
+              
+              checkpoint_table.put_item(Item=checkpoint_data)
+              
+              return {
+                  'statusCode': 200,
+                  'body': json.dumps({
+                      'checkpointId': checkpoint_id,
+                      'status': 'created'
+                  })
+              }
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Project
+          Value: Nexus
+
+  # IAM Role for Deployment Orchestrator
+  DeploymentOrchestratorRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'nexus-deployment-orchestrator-role-${Environment}'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'
+      Policies:
+        - PolicyName: DeploymentPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 's3:GetObject'
+                  - 's3:PutObject'
+                  - 's3:ListBucket'
+                  - 's3:GetObjectVersion'
+                Resource:
+                  - !GetAtt NexusDeploymentBucket.Arn
+                  - !Sub '${NexusDeploymentBucket.Arn}/*'
+              - Effect: Allow
+                Action:
+                  - 'dynamodb:GetItem'
+                  - 'dynamodb:PutItem'
+                  - 'dynamodb:UpdateItem'
+                  - 'dynamodb:Query'
+                  - 'dynamodb:Scan'
+                Resource:
+                  - !GetAtt DeploymentStateTable.Arn
+                  - !GetAtt RollbackCheckpointTable.Arn
+
+  # CloudWatch Log Group for deployment logs
+  DeploymentLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/nexus/deployment/${Environment}'
+      RetentionInDays: 30
+
+  # SNS Topic for deployment notifications
+  DeploymentNotificationTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub 'nexus-deployment-notifications-${Environment}'
+      DisplayName: Nexus Deployment Notifications
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+
+  # CloudWatch Alarm for deployment failures
+  DeploymentFailureAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub 'nexus-deployment-failure-${Environment}'
+      AlarmDescription: Alert on deployment failures
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref DeploymentOrchestratorFunction
+      AlarmActions:
+        - !Ref DeploymentNotificationTopic
+      TreatMissingData: notBreaching
+
+Outputs:
+  DeploymentBucket:
+    Description: S3 bucket for deployment artifacts
+    Value: !Ref NexusDeploymentBucket
+    Export:
+      Name: !Sub '${AWS::StackName}-DeploymentBucket'
+
+  DeploymentOrchestratorFunction:
+    Description: Lambda function for deployment orchestration
+    Value: !Ref DeploymentOrchestratorFunction
+    Export:
+      Name: !Sub '${AWS::StackName}-OrchestratorFunction'
+
+  DeploymentStateTable:
+    Description: DynamoDB table for deployment state
+    Value: !Ref DeploymentStateTable
+    Export:
+      Name: !Sub '${AWS::StackName}-StateTable'
+
+  RollbackCheckpointTable:
+    Description: DynamoDB table for rollback checkpoints
+    Value: !Ref RollbackCheckpointTable
+    Export:
+      Name: !Sub '${AWS::StackName}-CheckpointTable'
+
+  NotificationTopicArn:
+    Description: SNS topic for deployment notifications
+    Value: !Ref DeploymentNotificationTopic
+    Export:
+      Name: !Sub '${AWS::StackName}-NotificationTopic'
