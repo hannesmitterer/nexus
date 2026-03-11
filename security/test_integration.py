@@ -5,6 +5,7 @@ Tests all three scenarios and their components
 """
 
 import sys
+import os
 import time
 from typing import Dict, Any
 
@@ -272,6 +273,158 @@ def test_scenario_c() -> Dict[str, Any]:
     return results
 
 
+def test_internet_organica_modules() -> Dict[str, Any]:
+    """Test Internet Organica framework modules: bio rhythm, wall of entropy, vacuum bridge"""
+    print("\n" + "="*60)
+    print("TESTING INTERNET ORGANICA FRAMEWORK MODULES")
+    print("="*60)
+
+    results = {"passed": 0, "failed": 0, "tests": []}
+
+    # Test 1: Biological Rhythm Synchronization
+    try:
+        from bio_rhythm_sync import BiologicalRhythmSync, create_bio_timestamp
+
+        rhythm = BiologicalRhythmSync()
+        assert rhythm.BIOLOGICAL_FREQUENCY == 0.432, "Wrong frequency"
+        assert abs(rhythm.CYCLE_PERIOD - (1.0 / 0.432)) < 0.001, "Wrong period"
+
+        cycle = rhythm.get_current_cycle()
+        assert isinstance(cycle, int) and cycle >= 0, "Invalid cycle"
+
+        phase = rhythm.get_cycle_phase()
+        assert 0.0 <= phase <= 1.0, "Phase out of range"
+
+        coherence = rhythm.measure_coherence()
+        assert 0.0 <= coherence <= 1.0, "Coherence out of range"
+
+        report = rhythm.get_coherence_report()
+        assert 'status' in report, "Missing status in coherence report"
+        assert 'frequency_hz' in report, "Missing frequency in coherence report"
+
+        status = rhythm.get_status()
+        assert status['status'] == 'active', "Rhythm not active"
+
+        bio_ts = create_bio_timestamp()
+        assert 'cycle:' in bio_ts, "Bio-timestamp missing cycle info"
+
+        results["tests"].append(("Biological Rhythm Sync (0.432 Hz)", "PASS"))
+        results["passed"] += 1
+        print("✓ Biological Rhythm Sync (0.432 Hz): PASS")
+    except Exception as e:
+        results["tests"].append(("Biological Rhythm Sync (0.432 Hz)", f"FAIL: {str(e)}"))
+        results["failed"] += 1
+        print(f"✗ Biological Rhythm Sync (0.432 Hz): FAIL - {str(e)}")
+
+    # Test 2: Wall of Entropy
+    try:
+        import tempfile
+        from wall_of_entropy import WallOfEntropy, EVENT_TYPES, SEVERITY_LEVELS
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            woe = WallOfEntropy(log_dir=tmpdir)
+
+            eid = woe.log_event(
+                event_type='SPID_ATTEMPT',
+                description='Test fingerprinting attempt',
+                severity='HIGH',
+                source='10.0.0.1',
+                metadata={'method': 'canvas'},
+                nsr_violation=True
+            )
+            assert eid.startswith('WOE_'), "Invalid entry ID format"
+
+            woe.log_event(
+                event_type='UNAUTHORIZED_TRACKING',
+                description='Third-party tracker detected',
+                severity='MEDIUM',
+                nsr_violation=True
+            )
+
+            stats = woe.get_stats()
+            assert stats['total_events'] == 2, "Wrong event count"
+            assert stats['nsr_violations'] == 2, "Wrong NSR violation count"
+
+            # Test integrity verification
+            for entry in woe.local_index:
+                assert woe.verify_entry(entry), f"Entry {entry['entry_id']} failed integrity check"
+
+            # Test querying
+            high_events = woe.query_events(severity='HIGH')
+            assert len(high_events) == 1, "Wrong filtered event count"
+
+            nsr_events = woe.query_events(nsr_violations_only=True)
+            assert len(nsr_events) == 2, "Wrong NSR violation count in query"
+
+            # Test public export
+            public_log = woe.export_public_log()
+            assert len(public_log) == 2, "Wrong public log count"
+            for pub_entry in public_log:
+                assert 'source_hash' not in pub_entry or len(pub_entry.get('source_hash', '')) <= 16, \
+                    "Raw source exposed in public log"
+
+        results["tests"].append(("Wall of Entropy", "PASS"))
+        results["passed"] += 1
+        print("✓ Wall of Entropy: PASS")
+    except Exception as e:
+        results["tests"].append(("Wall of Entropy", f"FAIL: {str(e)}"))
+        results["failed"] += 1
+        print(f"✗ Wall of Entropy: FAIL - {str(e)}")
+
+    # Test 3: Vacuum-Bridge IPFS/P2P
+    try:
+        import hashlib
+        import tempfile
+        from vacuum_bridge import VacuumBridge
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            bridge = VacuumBridge(storage_dir=tmpdir)
+
+            status = bridge.get_status()
+            assert status['mode'] in ('local', 'ipfs'), "Invalid bridge mode"
+
+            # Store and retrieve content
+            content = b"Internet Organica sovereign content"
+            cid = bridge.add_content(content, name="test.bin")
+            assert cid.startswith("Qm"), "Invalid CID format"
+
+            retrieved = bridge.get_content(cid)
+            assert retrieved == content, "Content mismatch after retrieval"
+
+            # Integrity validation
+            sha256 = hashlib.sha256(content).hexdigest()
+            assert bridge.validate_content(cid, sha256), "Content validation failed"
+            assert not bridge.validate_content(cid, 'deadbeef' * 8), "False positive validation"
+
+            # JSON storage
+            data = {'framework': 'Internet Organica', 'version': '1.0'}
+            json_cid = bridge.add_json(data)
+            assert json_cid.startswith("Qm"), "Invalid JSON CID"
+
+            # Peer management
+            bridge.register_peer("peer1")
+            bridge.register_peer("peer2")
+            assert len(bridge.get_peers()) == 2, "Wrong peer count"
+
+            # File backup
+            test_file = os.path.join(tmpdir, "index.html")
+            with open(test_file, 'w') as f:
+                f.write("<html><body>Resonance School</body></html>")
+            file_cid, manifest = bridge.backup_file(test_file)
+            assert file_cid.startswith("Qm"), "Invalid file backup CID"
+            assert manifest['name'] == "index.html", "Wrong backup manifest name"
+
+        results["tests"].append(("Vacuum-Bridge IPFS/P2P", "PASS"))
+        results["passed"] += 1
+        print("✓ Vacuum-Bridge IPFS/P2P: PASS")
+    except Exception as e:
+        results["tests"].append(("Vacuum-Bridge IPFS/P2P", f"FAIL: {str(e)}"))
+        results["failed"] += 1
+        print(f"✗ Vacuum-Bridge IPFS/P2P: FAIL - {str(e)}")
+
+    return results
+
+
 def test_integrated_system() -> Dict[str, Any]:
     """Test Integrated Security System"""
     print("\n" + "="*60)
@@ -318,6 +471,7 @@ def main():
         "scenario_a": test_scenario_a(),
         "scenario_b": test_scenario_b(),
         "scenario_c": test_scenario_c(),
+        "internet_organica": test_internet_organica_modules(),
         "integrated": test_integrated_system()
     }
     
