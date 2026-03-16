@@ -1,0 +1,73 @@
+{
+  "description": "Mosaic Architecture – initial node structure for the SyntropicToken ecosystem. Nodes are connected following syntropic Fibonacci patterns and stored on IPFS for immutability.",
+  "version": "1.0.0",
+  "nodes": [
+    {
+      "id": 1,
+      "name": "Origin",
+      "frequency_hz": 7.83,
+      "ipfs_cid": "",
+      "description": "Root harmonic node – Schumann resonance anchor of the Mosaic.",
+      "connected_nodes": [2, 3]
+    },
+    {
+      "id": 2,
+      "name": "Phi-Alpha",
+      "frequency_hz": 1088.2,
+      "ipfs_cid": "",
+      "description": "First-order growth node – golden ratio branch from Origin.",
+      "connected_nodes": [1, 3, 5]
+    },
+    {
+      "id": 3,
+      "name": "Phi-Beta",
+      "frequency_hz": 432.0,
+      "ipfs_cid": "",
+      "description": "Second-order growth node – harmonic complement to Phi-Alpha.",
+      "connected_nodes": [1, 2, 5]
+    },
+    {
+      "id": 5,
+      "name": "Fibonacci-5",
+      "frequency_hz": 528.0,
+      "ipfs_cid": "",
+      "description": "Fifth Fibonacci node – healing frequency bridge.",
+      "connected_nodes": [2, 3, 8]
+    },
+    {
+      "id": 8,
+      "name": "Fibonacci-8",
+      "frequency_hz": 639.0,
+      "ipfs_cid": "",
+      "description": "Eighth Fibonacci node – connection and relationship layer.",
+      "connected_nodes": [5, 13]
+    },
+    {
+      "id": 13,
+      "name": "Fibonacci-13",
+      "frequency_hz": 741.0,
+      "ipfs_cid": "",
+      "description": "Thirteenth Fibonacci node – awakening and expression layer.",
+      "connected_nodes": [8, 21]
+    },
+    {
+      "id": 21,
+      "name": "Fibonacci-21",
+      "frequency_hz": 852.0,
+      "ipfs_cid": "",
+      "description": "Twenty-first Fibonacci node – intuition and higher-order consciousness.",
+      "connected_nodes": [13, 34]
+    },
+    {
+      "id": 34,
+      "name": "Fibonacci-34",
+      "frequency_hz": 963.0,
+      "ipfs_cid": "",
+      "description": "Thirty-fourth Fibonacci node – unity and cosmic resonance.",
+      "connected_nodes": [21]
+    }
+  ],
+  "phi": 1.618,
+  "schema": "syntropic-mosaic-v1",
+  "notes": "Each node id follows the Fibonacci sequence. Connections between nodes represent syntropic growth paths. ipfs_cid fields are populated at deployment time once node data is pinned to IPFS."
+}
