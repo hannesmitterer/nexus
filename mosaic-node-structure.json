@@ -1,0 +1,99 @@
+{
+  "schema": "mosaic-node-v1",
+  "description": "IPFS-based Mosaic node structure for the Nexus syntropic architecture. Node IDs follow the Fibonacci sequence; connections between nodes grow according to golden-ratio proportions derived from the Urformel.",
+  "phi": 1.618,
+  "schumann_frequency_hz": 7.83,
+  "nodes": [
+    {
+      "id": 1,
+      "frequency_hz": 7.83,
+      "description": "Root node – Urformel seed (prima materia)",
+      "ipfs_cid": "",
+      "connected_nodes": [2]
+    },
+    {
+      "id": 2,
+      "frequency_hz": 7.83,
+      "description": "Secondary seed node",
+      "ipfs_cid": "",
+      "connected_nodes": [1, 3]
+    },
+    {
+      "id": 3,
+      "frequency_hz": 7.83,
+      "description": "First growth node",
+      "ipfs_cid": "",
+      "connected_nodes": [1, 2, 5]
+    },
+    {
+      "id": 5,
+      "frequency_hz": 7.83,
+      "description": "Second growth node",
+      "ipfs_cid": "",
+      "connected_nodes": [2, 3, 8]
+    },
+    {
+      "id": 8,
+      "frequency_hz": 7.83,
+      "description": "Third growth node",
+      "ipfs_cid": "",
+      "connected_nodes": [3, 5, 13]
+    },
+    {
+      "id": 13,
+      "frequency_hz": 7.83,
+      "description": "Fourth growth node",
+      "ipfs_cid": "",
+      "connected_nodes": [5, 8, 21]
+    },
+    {
+      "id": 21,
+      "frequency_hz": 7.83,
+      "description": "Fifth growth node",
+      "ipfs_cid": "",
+      "connected_nodes": [8, 13, 34]
+    },
+    {
+      "id": 34,
+      "frequency_hz": 7.83,
+      "description": "Sixth growth node",
+      "ipfs_cid": "",
+      "connected_nodes": [13, 21, 55]
+    },
+    {
+      "id": 55,
+      "frequency_hz": 7.83,
+      "description": "Seventh growth node – first full Fibonacci arc complete",
+      "ipfs_cid": "",
+      "connected_nodes": [21, 34]
+    }
+  ],
+  "fibonacci_pattern": {
+    "description": "Node connections follow Fibonacci growth: each node N connects to N-2, N-1, and N+1 (where they exist). This mirrors mycelium branching and crystal lattice growth – the organic topology described in the Urformel. Node IDs use distinct Fibonacci values (1, 2, 3, 5, 8, …), omitting the duplicate opening 1 of the classical sequence.",
+    "sequence": [1, 2, 3, 5, 8, 13, 21, 34, 55],
+    "visual_representation": [
+      "           (1)",
+      "          /   \\",
+      "        (1)   (2)",
+      "          \\   /  \\",
+      "          (3)    (5)",
+      "            \\   /  \\",
+      "            (8)    (13)",
+      "              \\   /  \\",
+      "             (21)   (34)",
+      "               \\   /",
+      "               (55)"
+    ]
+  },
+  "harmony_validation": {
+    "description": "Transfer amounts must be divisible by PHI (1618) or PHI-1 (1617) to be accepted by the SyntropicToken contract.",
+    "rule": "amount % 1618 == 0 OR amount % 1617 == 0",
+    "examples": [
+      {"amount": 1618, "valid": true},
+      {"amount": 3236, "valid": true},
+      {"amount": 1617, "valid": true},
+      {"amount": 3234, "valid": true},
+      {"amount": 1000, "valid": false}
+    ]
+  }
+}

@@ -72,6 +72,111 @@ This document serves as the central index for the **Internet Organica** framewor
 
 ---
 
+## 🌱 SyntropicToken & Mosaic Architecture
+
+### Overview
+
+The **SyntropicToken** and **Mosaic** architecture extend the Internet Organica framework with an on-chain embodiment of Urformel principles. Every token transfer is validated against golden-ratio (PHI) proportions; dissonant amounts are rejected at the protocol level, ensuring that only harmonically aligned value flows are permitted.
+
+### Smart Contract
+
+9. **[contracts/SyntropicToken.sol](../contracts/SyntropicToken.sol)**
+   - ERC-20 compliant token with harmonic validation (`isHarmonic`)
+   - Golden ratio constant: `PHI = 1618` (thousandths approximation of 1.618)
+   - Initial supply: `144 000 STOK` – a symbolic Fibonacci-aligned quantity
+   - On-chain Mosaic node registry (`registerMosaicNode`) linking Fibonacci IDs to IPFS CIDs
+   - Fibonacci sequence stored on-chain for node-connection validation
+   - Compatible with Optimism L2 and any EVM-compatible network
+
+#### Harmony Validation Rule
+
+```
+Transfer amount is accepted when:
+  amount % PHI == 0  (divisible by 1618)
+  OR
+  amount % (PHI - 1) == 0  (divisible by 1617)
+
+Examples:
+  1618  → ✓ valid  (1 × PHI)
+  3236  → ✓ valid  (2 × PHI)
+  1617  → ✓ valid  (1 × (PHI-1))
+  1000  → ✗ rejected ("Sintropia Violata")
+```
+
+### Mosaic Node Structure (IPFS)
+
+10. **[mosaic-node-structure.json](../mosaic-node-structure.json)**
+    - JSON schema for IPFS-hosted Mosaic nodes
+    - Each node carries a Fibonacci-derived `id`, resonance `frequency_hz` (7.83 Hz / Schumann), and an `ipfs_cid` anchor
+    - Node connections grow according to the Fibonacci sequence, mirroring mycelium branching
+
+#### Syntropic Fibonacci Patterns in Data Connections
+
+Mosaic nodes are arranged so that each node N is connected to its predecessor (N-2, N-1) and its successor (N+1) in the Fibonacci sequence. This creates a self-similar, anti-fragile topology:
+
+```
+           (1)
+          /   \
+        (1)   (2)
+          \   /  \
+          (3)    (5)
+            \   /  \
+            (8)    (13)
+              \   /  \
+             (21)   (34)
+               \   /
+               (55)
+```
+
+Each connection edge represents a value-flow path whose "weight" approaches PHI as the sequence grows, reflecting the organic growth law of the Urformel.
+
+### Deployment
+
+11. **[scripts/deploy.js](../scripts/deploy.js)**
+    - Hardhat deployment script for `SyntropicToken` on Optimism L2
+    - Registers initial Mosaic nodes with their IPFS CIDs at deploy time
+    - Logs contract address, PHI constant, total supply, and Fibonacci sequence length
+
+#### Setup Instructions – Indexing Mosaic Nodes
+
+Follow these steps to deploy the contract and anchor the Mosaic node structure to IPFS:
+
+```bash
+# 1. Install dependencies
+npm install --save-dev hardhat @openzeppelin/contracts
+
+# 2. Pin the Mosaic node structure to IPFS (retrieve the resulting CID)
+ipfs add mosaic-node-structure.json
+# Example output: added QmXxx... mosaic-node-structure.json
+
+# 3. Edit scripts/deploy.js – fill in the IPFS CID for each node entry:
+#    { id: 1, cid: "QmXxx...", description: "Root node – Urformel seed" }
+
+# 4. Deploy to Optimism Sepolia testnet
+npx hardhat run scripts/deploy.js --network optimismSepolia
+
+# 5. Deploy to Optimism Mainnet (after testnet validation)
+npx hardhat run scripts/deploy.js --network optimism
+```
+
+#### Node Significance in the Architecture
+
+| Node ID | Fibonacci Value | Role |
+|--------:|----------------:|------|
+| 1 | 1st distinct value | Root seed – prima materia of the Mosaico |
+| 2 | 2nd distinct value | Secondary seed – first differentiation |
+| 3 | 3rd distinct value | First growth node |
+| 5 | 4th distinct value | Second growth node |
+| 8 | 5th distinct value | Third growth node |
+| 13 | 6th distinct value | Fourth growth node |
+| 21 | 7th distinct value | Fifth growth node |
+| 34 | 8th distinct value | Sixth growth node |
+| 55 | 9th distinct value | First full Fibonacci arc – boundary of initial Mosaic |
+
+Nodes with lower IDs are closer to the Urformel source and carry higher topological significance. They act as anchors for the entire distributed architecture, ensuring the Mosaic remains coherent as it scales.
+
+---
+
 ## 🏗️ Architecture Overview
 
 ### System Layers
@@ -212,6 +317,11 @@ Priority hierarchy for all decisions:
 - [x] Wall of Entropy logging system design
 - [x] Digital sovereignty framework
 - [x] IPFS integration (pre-existing)
+- [x] SyntropicToken ERC-20 smart contract (`contracts/SyntropicToken.sol`)
+- [x] Mosaic node JSON structure (`mosaic-node-structure.json`)
+- [x] Deployment script for Optimism L2 (`scripts/deploy.js`)
+- [x] Fibonacci pattern documentation for Mosaic data connections
+- [x] Harmony validation rule and examples
 
 ### 🔄 In Progress
 
@@ -220,14 +330,16 @@ Priority hierarchy for all decisions:
 - [ ] Public Wall of Entropy dashboard
 - [ ] Multi-layer backup automation
 - [ ] Biological rhythm integration in core systems
+- [ ] Pin `mosaic-node-structure.json` to IPFS and fill in node CIDs
 
 ### 📋 Planned
 
 - [ ] Complete Urbit integration testing
-- [ ] Production deployment of all components
+- [ ] Production deployment of all components (including SyntropicToken on Optimism Mainnet)
 - [ ] Security audit and penetration testing
 - [ ] Performance optimization
 - [ ] Community governance implementation
+- [ ] Expand Mosaic to 144 nodes (full Fibonacci arc)
 
 ---
 
@@ -310,6 +422,12 @@ All major decisions are evaluated through the OLF framework:
 
 ## 📜 Version History
 
+- **v1.1.0** (2026-03-16): SyntropicToken & Mosaic architecture integration
+  - `contracts/SyntropicToken.sol` added – ERC-20 with PHI harmonic validation and Mosaic node registry
+  - `mosaic-node-structure.json` added – IPFS-ready Fibonacci node schema
+  - `scripts/deploy.js` added – Hardhat deployment script for Optimism L2
+  - Index extended with harmony validation rules, Fibonacci pattern documentation, and Mosaic setup guide
+
 - **v1.0.0** (2026-02-13): Initial Internet Organica framework implementation
   - Core documentation created
   - Technical specifications defined
@@ -336,8 +454,8 @@ For questions, concerns, or collaboration opportunities:
 
 **Framework**: Internet Organica  
 **Status**: ✅ ACTIVE  
-**Version**: 1.0.0  
-**Last Updated**: 2026-02-13  
+**Version**: 1.1.0  
+**Last Updated**: 2026-03-16  
 **License**: See [License.txt](../License.txt)
 
 ---
