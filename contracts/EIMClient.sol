@@ -11,6 +11,14 @@ interface ITFKVerifier {
     function currentModelCID() external view returns (bytes32);
 }
 
+interface IBlacklistManager {
+    function isAddressBlacklisted(address entity) external view returns (bool isBlacklisted, bool isPermanent);
+    function isCIDBlacklisted(bytes32 cid) external view returns (bool isBlacklisted, bool isPermanent);
+    function isDIDBlacklisted(bytes32 did) external view returns (bool isBlacklisted, bool isPermanent);
+    function isAnyBlacklisted(address entityAddress, bytes32 entityCID, bytes32 entityDID) external view returns (bool isBlacklisted);
+    function activateMISPTrigger(string calldata indicatorType, uint256 severityLevel, bytes32 threatHash, address entityToBlacklist) external;
+}
+
 interface IFinalizable {
     /**
      * @notice Finalize a transaction atomically
@@ -60,6 +68,7 @@ contract EIMClient is IFinalizable {
     // VCE (Veto Consensus Event) tracking
     mapping(bytes32 => VCETrigger) public vceTriggers;
     mapping(bytes32 => mapping(address => bool)) public vceReported; // Track reporters efficiently
+    mapping(bytes32 => address) public sepToSAN; // Map SEP ID to SAN node for VCE blacklisting
     uint256 public vceCount;
     
     // Authorized entities
@@ -70,6 +79,7 @@ contract EIMClient is IFinalizable {
     // Governance
     address public ggcMultisig;
     address public tfkVerifier;  // TFKVerifier contract for model validation
+    address public blacklistManager;  // BlacklistManager contract for permanent blocking
     
     // Automation settings
     bool public automationEnabled = true;
@@ -129,6 +139,12 @@ contract EIMClient is IFinalizable {
     
     event MonitorAuthorized(address indexed monitor, bool authorized);
     event SANRegistered(address indexed san, bool registered);
+    event BlacklistedEntityBlocked(
+        address indexed entity,
+        bytes32 indexed sepId,
+        string reason,
+        uint256 timestamp
+    );
     
     // ============ Modifiers ============
     
@@ -159,12 +175,15 @@ contract EIMClient is IFinalizable {
     
     // ============ Constructor ============
     
-    constructor(address _ggcMultisig, address _tfkVerifier) {
+    constructor(address _ggcMultisig, address _tfkVerifier, address _blacklistManager) {
         require(_ggcMultisig != address(0), "Invalid GGC address");
         require(_tfkVerifier != address(0), "Invalid TFKVerifier address");
+        // Note: _blacklistManager can be address(0) for backward compatibility
+        // It can be set later via updateBlacklistManager()
         
         ggcMultisig = _ggcMultisig;
         tfkVerifier = _tfkVerifier;
+        blacklistManager = _blacklistManager;
         
         // Deploy address is first authorized monitor
         authorizedMonitors[address(this)] = true;
@@ -191,6 +210,21 @@ contract EIMClient is IFinalizable {
         require(sepId != bytes32(0), "Invalid SEP ID");
         require(!processedSEPs[sepId], "SEP already processed");
         
+        // Check blacklist: Block any blacklisted SAN node or CID
+        if (blacklistManager != address(0)) {
+            (bool isBlacklisted, ) = IBlacklistManager(blacklistManager).isAddressBlacklisted(msg.sender);
+            if (isBlacklisted) {
+                emit BlacklistedEntityBlocked(msg.sender, sepId, "Blacklisted SAN node", block.timestamp);
+                revert("SAN node is blacklisted");
+            }
+            
+            (bool isCIDBlacklisted, ) = IBlacklistManager(blacklistManager).isCIDBlacklisted(modelDigest);
+            if (isCIDBlacklisted) {
+                emit BlacklistedEntityBlocked(msg.sender, sepId, "Blacklisted model CID", block.timestamp);
+                revert("Model CID is blacklisted");
+            }
+        }
+        
         operationHash = keccak256(
             abi.encodePacked(sepId, msg.sender, block.timestamp)
         );
@@ -209,6 +243,7 @@ contract EIMClient is IFinalizable {
         });
         
         processedSEPs[sepId] = true;
+        sepToSAN[sepId] = msg.sender; // Track SAN for this SEP (for VCE blacklisting)
         totalValidations++;
         
         emit SEPSubmitted(sepId, msg.sender, artifactType, block.timestamp);
@@ -413,6 +448,32 @@ contract EIMClient is IFinalizable {
             vce.executed = true;
             
             emit VCEExecuted(vceId, sepId, true, block.timestamp);
+            
+            // Trigger MISP policy if VCE threshold is met and blacklist manager is available
+            if (blacklistManager != address(0)) {
+                // Find the SAN node that submitted this SEP using our mapping
+                address violatingSAN = sepToSAN[sepId];
+                
+                // Only trigger MISP if we have a valid SAN address
+                // (sepId might not be in mapping if it predates this feature)
+                if (violatingSAN != address(0)) {
+                    // Create evidence hash for VCE consensus
+                    bytes32 vceEvidenceHash = keccak256(abi.encodePacked(sepId, violationType, "VCE"));
+                    
+                    // Trigger MISP with critical severity (5) for VCE violations
+                    // This will auto-blacklist the violating SAN
+                    try IBlacklistManager(blacklistManager).activateMISPTrigger(
+                        violationType,
+                        5,  // Critical severity
+                        vceEvidenceHash,
+                        violatingSAN
+                    ) {
+                        // MISP trigger activated successfully
+                    } catch {
+                        // Continue even if MISP trigger fails
+                    }
+                }
+            }
         }
         
         return vceId;
@@ -517,6 +578,13 @@ contract EIMClient is IFinalizable {
      */
     function registerSAN(address san) external onlyGGC {
         require(san != address(0), "Invalid address");
+        
+        // Check blacklist before registration
+        if (blacklistManager != address(0)) {
+            (bool isBlacklisted, ) = IBlacklistManager(blacklistManager).isAddressBlacklisted(san);
+            require(!isBlacklisted, "Cannot register blacklisted address");
+        }
+        
         registeredSANs[san] = true;
         emit SANRegistered(san, true);
     }
@@ -581,5 +649,37 @@ contract EIMClient is IFinalizable {
     function updateTFKVerifier(address newTFKVerifier) external onlyGGC {
         require(newTFKVerifier != address(0), "Invalid address");
         tfkVerifier = newTFKVerifier;
+    }
+    
+    /**
+     * @notice Update BlacklistManager contract address
+     * @param newBlacklistManager New BlacklistManager address (can be address(0) to disable)
+     */
+    function updateBlacklistManager(address newBlacklistManager) external onlyGGC {
+        blacklistManager = newBlacklistManager;
+    }
+    
+    /**
+     * @notice Manually trigger MISP policy for a specific SAN
+     * @param sanNode SAN address to report
+     * @param violationType Type of violation
+     * @param severityLevel Severity level (1-5)
+     * @param evidenceHash Hash of evidence
+     */
+    function triggerMISPPolicy(
+        address sanNode,
+        string calldata violationType,
+        uint256 severityLevel,
+        bytes32 evidenceHash
+    ) external onlyAuthorizedEFA {
+        require(blacklistManager != address(0), "BlacklistManager not set");
+        require(sanNode != address(0), "Invalid SAN address");
+        
+        IBlacklistManager(blacklistManager).activateMISPTrigger(
+            violationType,
+            severityLevel,
+            evidenceHash,
+            sanNode
+        );
     }
 }
