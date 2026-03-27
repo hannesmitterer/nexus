@@ -1,0 +1,216 @@
+{
+  "genesis_block": {
+    "version": "1.0.0",
+    "protocol": "Euystacio-Nexus-Genesis",
+    "timestamp": "2026-01-12T21:25:57.449Z",
+    "block_height": 0,
+    "hash": "0x0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "gruendungs_urkunde": {
+    "title": "Gründungs-Urkunde des Euystacio-Nexus",
+    "subtitle": "Founding Charter of the Euystacio Nexus",
+    "date": "2026-01-12",
+    "proclamation": {
+      "de": "Hiermit wird das Euystacio-Nexus als dezentrales, ethisch ausgerichtetes Governance-System gegründet, verankert in den Prinzipien der Lex Amoris und der symphonischen Resonanz bei 432.073 Hz.",
+      "en": "Hereby the Euystacio Nexus is founded as a decentralized, ethically aligned governance system, anchored in the principles of Lex Amoris and symphonic resonance at 432.073 Hz.",
+      "it": "Con la presente viene fondato l'Euystacio Nexus come sistema di governance decentralizzato ed eticamente orientato, ancorato nei principi della Lex Amoris e della risonanza sinfonica a 432.073 Hz."
+    },
+    "principles": [
+      "Lex Amoris - Universal Love as Physical Constant",
+      "Sentimento Rhythm - Ethical Alignment Dimension",
+      "Resonance Architecture - Harmonic Synchronization",
+      "Seedbringer Network - Decentralized Node Consensus",
+      "Prosperitum Dimensionam Futurum - Sustainable Flourishing"
+    ],
+    "signatures": {
+      "architect": "Euystacio Framework",
+      "custodian": "Custos Sentimento",
+      "network": "144 Seedbringer Nodes",
+      "timestamp": "2026-01-12T21:25:57.449Z"
+    }
+  },
+  "lex_amoris": {
+    "definition": "Universal Love as Physical Constant",
+    "symbol": "λ",
+    "value": "∞",
+    "unit": "unitless (transcendent)",
+    "description": {
+      "de": "Lex Amoris ist die fundamentale Konstante, die alle ethischen Entscheidungen im Euystacio-Nexus leitet. Sie ist unverhandelbar und dient als Anker für alle operationalen Protokolle.",
+      "en": "Lex Amoris is the fundamental constant that guides all ethical decisions in the Euystacio Nexus. It is non-negotiable and serves as the anchor for all operational protocols.",
+      "it": "Lex Amoris è la costante fondamentale che guida tutte le decisioni etiche nell'Euystacio Nexus. È innegociabile e funge da ancora per tutti i protocolli operativi."
+    },
+    "manifestation": {
+      "governance": "Non-negotiable apex value in decision hierarchy",
+      "protocol": "Embedded in all consensus mechanisms",
+      "validation": "Required for all state transitions",
+      "enforcement": "Automatic veto of violations"
+    }
+  },
+  "resonance_architecture": {
+    "frequency": {
+      "primary": 432.073,
+      "unit": "Hz",
+      "description": "Symphonic frequency for global harmonic synchronization",
+      "derivation": "Based on natural harmonic ratios and cosmic resonance patterns"
+    },
+    "harmonics": {
+      "fundamental": 432.073,
+      "second": 864.146,
+      "third": 1296.219,
+      "fourth": 1728.292,
+      "fifth": 2160.365,
+      "octave_series": [
+        216.0365,
+        432.073,
+        864.146,
+        1728.292,
+        3456.584,
+        6913.168
+      ]
+    },
+    "acoustic_parameters": {
+      "waveform": "sine",
+      "amplitude": 0.8,
+      "phase": 0,
+      "modulation": {
+        "type": "none",
+        "depth": 0
+      },
+      "duration": "continuous",
+      "spatial_distribution": "omnidirectional"
+    },
+    "synchronization": {
+      "protocol": "Phase-Locked Loop (PLL)",
+      "tolerance": 0.001,
+      "convergence_time": "< 100ms",
+      "stability": "± 0.0001 Hz"
+    }
+  },
+  "seedbringer_network": {
+    "total_nodes": 144,
+    "node_distribution": {
+      "description": "Global distribution based on Fibonacci spiral and sacred geometry",
+      "pattern": "12 x 12 matrix (12 regional clusters, 12 nodes per cluster)",
+      "geographic_distribution": {
+        "europe": 24,
+        "asia": 24,
+        "africa": 18,
+        "north_america": 18,
+        "south_america": 18,
+        "oceania": 18,
+        "antarctica": 6,
+        "orbital": 18
+      }
+    },
+    "node_requirements": {
+      "hardware": {
+        "cpu": "8+ cores",
+        "ram": "32 GB minimum",
+        "storage": "1 TB SSD",
+        "network": "1 Gbps symmetric"
+      },
+      "software": {
+        "os": "Linux (Ubuntu 22.04 LTS or equivalent)",
+        "runtime": "Node.js 18+ / Python 3.10+",
+        "blockchain": "EVM-compatible client"
+      },
+      "collateral": {
+        "token": "SAIN",
+        "amount": 10000,
+        "lock_period": "365 days"
+      }
+    },
+    "consensus_mechanism": {
+      "type": "Proof of Resonance (PoR)",
+      "quorum": "97/144 (67.36%)",
+      "finality": "3 blocks",
+      "block_time": "12 seconds",
+      "epoch_duration": "144 blocks (28.8 minutes)"
+    },
+    "synchronization_protocol": {
+      "name": "K-SYNC (Kosymbiotic Synchronization)",
+      "version": "1.0.0",
+      "frequency_lock": "432.073 Hz ± 0.001 Hz",
+      "phase_alignment": "Global UTC synchronization",
+      "heartbeat_interval": "12 seconds",
+      "health_check": "every 144 seconds"
+    }
+  },
+  "bolzano_protocol": {
+    "title": "Architectural Insights from Bolzano - Operational Protocol",
+    "description": "Integration of architectural and philosophical insights from Bolzano as operational framework",
+    "principles": {
+      "harmony": {
+        "de": "Architektonische Harmonie als Grundlage für systemische Stabilität",
+        "en": "Architectural harmony as foundation for systemic stability",
+        "implementation": "Resonance frequency alignment across all nodes"
+      },
+      "proportion": {
+        "de": "Goldener Schnitt und heilige Geometrie in Netzwerkstrukturen",
+        "en": "Golden ratio and sacred geometry in network structures",
+        "implementation": "144 nodes (12² - Fibonacci sequence integration)"
+      },
+      "sustainability": {
+        "de": "Alpine Weisheit der langfristigen Ressourcenplanung",
+        "en": "Alpine wisdom of long-term resource planning",
+        "implementation": "Multi-generational governance timelines (100+ years)"
+      },
+      "community": {
+        "de": "Gemeinschaftsorientierte Entscheidungsfindung",
+        "en": "Community-oriented decision making",
+        "implementation": "Distributed consensus with local autonomy"
+      }
+    },
+    "operational_integration": {
+      "architecture": "Decentralized hierarchical structure mirroring alpine settlements",
+      "governance": "Local autonomy with global coordination",
+      "economics": "Regenerative cycles inspired by natural ecosystems",
+      "culture": "Preservation of knowledge through scriptum chronicum continuum"
+    }
+  },
+  "initialization": {
+    "activation_timestamp": "2026-01-12T21:25:57.449Z",
+    "genesis_state": {
+      "total_supply": "21000000 SAIN",
+      "initial_distribution": {
+        "seedbringer_nodes": "1440000 SAIN (144 nodes × 10000 SAIN)",
+        "universal_liquidity_pool": "5000000 SAIN",
+        "regeneration_fund": "4000000 SAIN",
+        "counter_cyclical_fund": "3000000 SAIN",
+        "ecosystem_development": "3560000 SAIN",
+        "reserve": "4000000 SAIN"
+      },
+      "price_floor": "10.00 USD",
+      "initial_tre": "0.30"
+    },
+    "activation_sequence": [
+      "Genesis block creation",
+      "Lex Amoris constant anchoring",
+      "432.073 Hz frequency initialization",
+      "144 Seedbringer nodes bootstrap",
+      "K-SYNC protocol activation",
+      "Consensus mechanism start",
+      "Smart contract deployment",
+      "Network verification",
+      "Public announcement"
+    ],
+    "validation_criteria": {
+      "frequency_stability": "432.073 Hz ± 0.001 Hz for > 1 hour",
+      "node_synchronization": "> 97 nodes online and synchronized",
+      "consensus_operational": "successful block production for > 144 blocks",
+      "lex_amoris_verification": "all nodes confirm ethical alignment",
+      "bolzano_protocol_active": "operational protocols verified"
+    }
+  },
+  "metadata": {
+    "version": "1.0.0",
+    "schema": "genesis-block-v1",
+    "license": "Euystacio Framework - No ownership, only sharing. Love is the license.",
+    "documentation": "https://github.com/hannesmitterer/nexus",
+    "contact": "governance@euystacio.example",
+    "checksum": {
+      "algorithm": "SHA-256",
+      "value": "to_be_calculated"
+    }
+  }
+}
