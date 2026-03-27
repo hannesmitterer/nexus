@@ -29,6 +29,11 @@ nexus GGI
 - [docs/WALL_OF_ENTROPY.md](docs/WALL_OF_ENTROPY.md) - Transparent logging system
 - [docs/DIGITAL_SOVEREIGNTY.md](docs/DIGITAL_SOVEREIGNTY.md) - Decentralized architecture
 
+**SyntropicToken & Mosaic:**
+- [contracts/SyntropicToken.sol](contracts/SyntropicToken.sol) - ERC-20 token with harmonic (PHI) validation and Mosaic node registry
+- [mosaic-node-structure.json](mosaic-node-structure.json) - IPFS-ready Fibonacci Mosaic node schema
+- [scripts/deploy.js](scripts/deploy.js) - Hardhat deployment script for Optimism L2
+
 ---
 
 ## 🛡️ Security Infrastructure
