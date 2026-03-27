@@ -1,0 +1,61 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  # Nexus application logs
+  - job_name: nexus-logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: nexus
+          __path__: /var/log/nexus/*.log
+
+  # System logs
+  - job_name: system-logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: system
+          __path__: /var/log/syslog
+
+  # Security and intrusion logs
+  - job_name: security-logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: security
+          __path__: /var/log/auth.log
+    pipeline_stages:
+      - match:
+          selector: '{job="security"}'
+          stages:
+            - regex:
+                expression: '(?P<timestamp>.*) (?P<hostname>.*) (?P<service>.*)\[(?P<pid>\d+)\]: (?P<message>.*)'
+            - labels:
+                service:
+                hostname:
+            - timestamp:
+                source: timestamp
+                format: 'Jan _2 15:04:05'
+
+  # Docker container logs
+  - job_name: docker-logs
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+    relabel_configs:
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/(.*)'
+        target_label: 'container'
+      - source_labels: ['__meta_docker_container_log_stream']
+        target_label: 'stream'

@@ -30,3 +30,29 @@ __pycache__/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Monitoring data
+monitoring/grafana-storage/
+monitoring/loki-storage/
+monitoring/prometheus-storage/
+
+# Security and backup files
+/var/lib/nexus/
+/var/log/nexus/
+*.gpg
+*.sig
+*.sha256
+
+# Temporary files
+/tmp/
+*.tmp
+*.bak
+
+# Environment files
+.env
+.env.local
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo

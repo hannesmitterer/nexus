@@ -1,0 +1,22 @@
+{
+  "enable_tor_routing": true,
+  "enable_vpn_failover": true,
+  "enable_ip_blocking": true,
+  "enable_notifications": true,
+  "notification_webhook": null,
+  "tor_control_port": 9051,
+  "vpn_config": "/etc/openvpn/nexus.conf",
+  "log_retention_days": 30,
+  "failed_login_threshold": 5,
+  "time_window_seconds": 300,
+  "monitored_logs": [
+    "/var/log/auth.log",
+    "/var/log/syslog",
+    "/var/log/nexus/*.log"
+  ],
+  "blocked_ips_file": "/var/lib/nexus/blocked-ips.txt",
+  "whitelist_ips": [
+    "127.0.0.1",
+    "::1"
+  ]
+}

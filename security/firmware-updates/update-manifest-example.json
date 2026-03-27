@@ -1,0 +1,29 @@
+{
+  "version": "1.0.0",
+  "component": "contracts",
+  "description": "Smart contract updates with security fixes",
+  "release_date": "2026-01-20",
+  "update_file": "/var/lib/nexus/updates/contracts-v1.0.0.tar.gz",
+  "signature_file": "/var/lib/nexus/updates/contracts-v1.0.0.tar.gz.sig",
+  "checksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "checksum_algorithm": "SHA256",
+  "signing_key_fingerprint": "XXXX XXXX XXXX XXXX XXXX  XXXX XXXX XXXX XXXX XXXX",
+  "min_version": "0.9.0",
+  "dependencies": [],
+  "pre_update_checks": [
+    "verify_node_sync",
+    "check_disk_space",
+    "verify_backup_available"
+  ],
+  "post_update_actions": [
+    "restart_services",
+    "verify_functionality",
+    "update_version_file"
+  ],
+  "rollback_supported": true,
+  "changelog": [
+    "Fixed security vulnerability in validation logic",
+    "Improved gas optimization in contract methods",
+    "Updated cryptographic libraries to latest versions"
+  ]
+}
