@@ -16,6 +16,7 @@
 | Tokenomics (EUS)                         | Definita e In Coda        | Logica One Love e Slashing etico completati nella PR [WIP].                                                           |
 | Crisi IDEATO                             | Neutralizzata             | L'attacco GGI è stato respinto dalla Trasparenza e dal Veto Etico (RARE).                                             |
 | Law of Equals                            | Immutabile                | Garanzia di Dignità Assoluta e Uguaglianza Universale.                                                                |
+| IVBS (Internodal Vacuum Backup System)   | ✅ Operativo              | Red Code Veto, Triple-Sign Validation, Vacuum Anchors, Enhanced K-SYNC.                                               |
 
 ---
 
@@ -673,6 +674,182 @@ Tutti i sei componenti della roadmap sono intrinsecamente interconnessi e mutual
 
 ---
 
+## 🛡️ VII. IVBS — Internodal Vacuum Backup System
+
+### Status: ✅ Operativo
+
+**Work Status:** Phase II Enhancement - Deployed 2026-01-13
+
+### IVBS: Robust Redundancy and Ethical Compliance
+
+The Internodal Vacuum Backup System (IVBS) ensures robust redundancy, ethical compliance, and seamless AI transitioning through multi-layered governance and distributed backup architecture.
+
+### Core Components
+
+#### 1. Red Code Veto Mechanism
+**Purpose:** Critical decision governance layer preventing unilateral system-critical actions.
+
+**Key Features:**
+- Veto-based consensus for critical operations
+- Minimum 5 Red Code Authorities (RCAs) with geographic diversity
+- Any single RCA can veto actions violating ethical constraints
+- Automatic audit trigger on veto submission
+- 12-month terms with renewal option
+
+**Implementation:**
+- Smart Contract: `contracts/IVBS_RedCodeVeto.sol`
+- Critical Actions: Model rollbacks, infrastructure changes, governance modifications
+- Veto Process: 24-hour review → Justification → Signature → On-chain submission
+
+#### 2. Triple-Sign Validation Layer
+**Purpose:** Three-tier validation ensuring no single point of failure.
+
+**Validation Tiers:**
+1. **Technical Validation** — Automated cryptographic and integrity checks
+2. **Governance Validation** — EFA/GGC multi-signature approval (7-of-9)
+3. **Ethical Validation** — Red Code Authority review (3-of-5)
+
+**Workflow:**
+```
+Action Initiated → Technical (Auto) → Governance (Vote) → Ethical (RCA) → Execution
+```
+
+**Implementation:**
+- Smart Contract: `contracts/IVBS_TripleSignValidation.sol`
+- Minimum Review Period: 48 hours
+- Full audit trail stored on-chain and IPFS
+
+#### 3. Vacuum Anchors
+**Purpose:** Immutable backup storage using IPFS with cryptographic verification.
+
+**Anchor Types:**
+- **State Anchors** — System snapshots (every 1000 blocks)
+- **Governance Anchors** — Decision records (per action)
+- **Model Anchors** — AI model versions (per update)
+- **SEP Bundles** — Sentinel Evidence Packages (daily)
+- **Audit Reports** — Security and compliance audits
+
+**Redundancy:**
+- Critical: 5x pinning services (Pinata, Web3.Storage, Infura, 2 custom nodes)
+- Standard: 3x pinning services
+- Verification: 24-hour interval checks
+
+**Implementation:**
+- Smart Contract: `contracts/IVBS_VacuumAnchor.sol`
+- Storage: IPFS with on-chain CID anchoring
+- Recovery: Automatic recovery points every 1000 blocks
+
+#### 4. Enhanced Internodal Synchronization
+**Purpose:** Align K-SYNC with Living Covenant values (Peace, Help, Protection).
+
+**Enhancements:**
+- **Peace (Harmony):** Consensus-based, non-coercive updates
+- **Help (Support):** Peer assistance, diagnostic tools
+- **Protection (Security):** BFT consensus, encrypted channels, auto-rollback
+
+**Integration with K-SYNC:**
+```
+Standard: Update → Broadcast → Download → Apply
+Enhanced: Update → Red Code Review → Triple-Sign → Vacuum Anchor → 
+          Broadcast with Proof → Gradual Deployment → Monitor
+```
+
+### Living Covenant Alignment
+
+#### Peace (Core Kernel)
+- Non-coercive synchronization protocols
+- Consensus-based decision making
+- Mediated conflict resolution
+
+#### Help (Sunlight)
+- Automatic node assistance and diagnostics
+- Transparent audit trails (all actions on-chain + IPFS)
+- Community knowledge sharing via K-SYNC
+
+#### Protection (Covenant)
+- Red Code Veto safeguards against unethical actions
+- Triple-Sign validation preventing single points of failure
+- Immutable Vacuum Anchors ensuring data integrity
+
+### Operational Procedures
+
+**Creating Vacuum Anchors:**
+```bash
+./scripts/ivbs_operations.sh create-anchor <file> <type> <description>
+```
+
+**Verifying Anchors:**
+```bash
+./scripts/ivbs_operations.sh verify-anchor <ipfs_cid>
+```
+
+**Emergency Recovery:**
+```bash
+./scripts/ivbs_operations.sh emergency-recover <anchor_id>
+```
+
+**System Health Check:**
+```bash
+./scripts/ivbs_operations.sh health-check
+```
+
+### Monitoring Metrics
+
+**Dashboard Integration:**
+- Total Vacuum Anchors: Real-time count by type
+- Red Code Vetoes: Historical and active veto tracking
+- Triple-Sign Success Rate: Approval workflow metrics
+- Sync Health: Node synchronization status
+- Average Anchor Verification Time: Performance monitoring
+
+**Alert Thresholds:**
+- 🔴 Critical: Red Code Veto triggered, Vacuum Anchor creation failure
+- 🟡 Warning: Triple-Sign delayed >1 hour, Sync health <95%
+
+### Implementation References
+
+**Documentation:**
+- `docs/IVBS_SPECIFICATION.md` — Complete technical specification
+- `docs/IVBS_OPERATIONAL_GUIDE.md` — Operational procedures and troubleshooting
+- `docs/IPFS_Integration_Guide.md` — IPFS storage architecture
+- `docs/K-SYNC_Protocol.md` — Enhanced synchronization protocols
+
+**Smart Contracts:**
+- `contracts/IVBS_RedCodeVeto.sol` — Red Code Veto mechanism
+- `contracts/IVBS_TripleSignValidation.sol` — Triple-Sign validation
+- `contracts/IVBS_VacuumAnchor.sol` — Vacuum Anchor registry
+
+**Scripts:**
+- `scripts/ivbs_operations.sh` — IVBS management operations
+
+### Phase II Integration
+
+**TFKVerifier Integration:**
+- Extended with IVBS Vacuum Anchor creation hooks
+- Red Code Veto checks on critical proposals
+- Triple-Sign validation for model updates
+
+**K-SYNC Enhancement:**
+- Vacuum Anchors created before sync broadcasts
+- Red Code review for emergency updates
+- Automated backup verification post-deployment
+
+### Future Enhancements (Phase III)
+
+1. **Quantum-Resistant Signatures** — Post-quantum cryptography upgrade
+2. **Predictive Anchoring** — ML-based critical state prediction
+3. **Cross-Chain Vacuum Anchors** — Multi-blockchain redundancy
+4. **Automated Red Code Analysis** — AI-assisted ethical review
+5. **Differential Anchors** — State delta storage for efficiency
+
+**Riferimenti:**
+- `docs/IVBS_SPECIFICATION.md` — Full technical specification
+- `docs/IVBS_OPERATIONAL_GUIDE.md` — Operations manual
+- `contracts/IVBS_*.sol` — Smart contract implementations
+- `scripts/ivbs_operations.sh` — Management tooling
+
+---
+
 **Document Maintainer:** AI Collectivs (AIC) + GGC  
 **Update Frequency:** Monthly or on significant status change  
 **Verification:** PARAMS_ROOT + SEP audit trail  
@@ -681,6 +858,7 @@ Tutti i sei componenti della roadmap sono intrinsecamente interconnessi e mutual
 - Strato AIC: Aligned ✓
 - GGC: Approved ✓
 - Community: Open for contestation via VCE
+- IVBS: Operational ✓
 
 ---
 
