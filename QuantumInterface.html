@@ -45,6 +45,7 @@
 <div class="status-bar">
     <span>LOC: BOLZANO HUB</span>
     <span>SCHUMANN-RESONANZ: 7.83 Hz (SYNC)</span>
+    <span id="node-status">NODE: INITIALIZING</span>
     <span>STATUS: IN AETERNUM EST.</span>
 </div>
 
@@ -54,18 +55,61 @@
     const resVal = document.getElementById('res-val');
     const sroiVal = document.getElementById('sroi-val');
 
+    // Inter-Node Simulation State
+    const nodeState = {
+        id: 'NODE-' + Math.random().toString(36).substring(2, 11).toUpperCase(),
+        peers: [],
+        syncStatus: 'SYNCING',
+        lastSync: Date.now(),
+        messageQueue: []
+    };
+
     const messages = [
         "Schumann-Verschränkung K > 1 verifiziert[cite: 68].",
         "D6-Vakuum-Mimikry: Information eingeknotet.",
         "Piezo-Fluss stabil: Demokratische Kommunikation aktiv.",
         "Myzel-Router: Paket-Routing via biologischer Nachfrage[cite: 63].",
-        "Lex Amore: Dissonanz-Glättung abgeschlossen."
+        "Lex Amore: Dissonanz-Glättung abgeschlossen.",
+        `Inter-Node Sync: ${nodeState.id} ↔ Peer Discovery`,
+        "Quantum Entanglement: Node-to-Node coherence established",
+        "Distributed Consensus: Multi-node verification complete"
     ];
 
+    // Inter-node communication simulator
+    function simulateNodeCommunication() {
+        const syncInterval = 5000 + Math.random() * 3000;
+        const timeSinceLastSync = Date.now() - nodeState.lastSync;
+        
+        if (timeSinceLastSync > syncInterval) {
+            nodeState.lastSync = Date.now();
+            nodeState.syncStatus = 'SYNCHRONIZED';
+            
+            // Simulate peer discovery
+            if (nodeState.peers.length < 3 && Math.random() > 0.7) {
+                const newPeer = 'PEER-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+                nodeState.peers.push(newPeer);
+                nodeState.messageQueue.push(`Peer ${newPeer} joined network`);
+            }
+        } else if (timeSinceLastSync > syncInterval * 0.8) {
+            nodeState.syncStatus = 'SYNCING';
+        }
+    }
+
     function updateLog() {
+        simulateNodeCommunication();
+        
         const div = document.createElement('div');
         div.className = 'nexus-log';
-        div.innerHTML = `[${new Date().toLocaleTimeString()}] ${messages[Math.floor(Math.random() * messages.length)]}`;
+        
+        // Mix regular messages with node communication messages
+        let message;
+        if (nodeState.messageQueue.length > 0 && Math.random() > 0.6) {
+            message = `[${nodeState.id}] ${nodeState.messageQueue.shift()}`;
+        } else {
+            message = messages[Math.floor(Math.random() * messages.length)];
+        }
+        
+        div.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
         log.prepend(div);
         if (log.childNodes.length > 25) log.lastChild.remove();
     }
@@ -82,15 +126,28 @@
 
     setInterval(() => {
         updateLog();
-        // Simulation der Resonanz-Stabilität
-        const r = (0.43 + (Math.random() - 0.5) * 0.01).toFixed(3);
+        // Simulation der Resonanz-Stabilität mit inter-node variance
+        const nodeInfluence = nodeState.peers.length * 0.001;
+        const r = (0.43 + nodeInfluence + (Math.random() - 0.5) * 0.01).toFixed(3);
         resVal.innerText = r + " Hz";
         c1.data.datasets[0].data.push(r); c1.data.datasets[0].data.shift(); c1.update('none');
 
-        const s = (0.5192 + (Math.random() - 0.5) * 0.002).toFixed(4);
+        // S-ROI influenced by synchronization status
+        const syncBonus = nodeState.syncStatus === 'SYNCHRONIZED' ? 0.001 : 0;
+        const s = (0.5192 + syncBonus + (Math.random() - 0.5) * 0.002).toFixed(4);
         sroiVal.innerText = s;
         c2.data.datasets[0].data.push(s); c2.data.datasets[0].data.shift(); c2.update('none');
+        
+        // Update node status display
+        const nodeStatusEl = document.getElementById('node-status');
+        if (nodeStatusEl) {
+            nodeStatusEl.innerText = `NODE: ${nodeState.id.substring(0, 12)} | PEERS: ${nodeState.peers.length} | ${nodeState.syncStatus}`;
+        }
     }, 3000);
+
+    // Initialize node state display in status bar
+    console.log(`Nexus Node Initialized: ${nodeState.id}`);
+    console.log(`Inter-node simulation active. Current peers: ${nodeState.peers.length}`);
 </script>
 </body>
 </html>

@@ -23,9 +23,17 @@ contract UniversalLiquidityPool {
     /// @notice Stablecoin address (e.g., USDC) in the liquidity pair
     address public stablecoin;
     
+    /// @notice ULP_PAIR: Standardized constant for cross-repository workflows
+    /// @dev Returns the liquidity pair configuration (sainToken, stablecoin)
+    string public constant ULP_PAIR = "SAIN/USDC";
+    
     /// @notice Current stabilization fee (in basis points: 1 = 0.01%)
     /// @dev Range: 5-10 basis points (0.05% - 0.1%)
     uint256 public stabilizationFee;
+    
+    /// @notice STABILIZATION_FEE: Standardized constant for cross-repository workflows
+    /// @dev Default stabilization fee range in basis points (5-10 bps = 0.05%-0.1%)
+    uint256 public constant STABILIZATION_FEE = 5;
     
     /// @notice Minimum price floor for SAIN token (10 stablecoin units with 18 decimals)
     /// @dev Constant value: 10 × 10^18
@@ -180,8 +188,8 @@ contract UniversalLiquidityPool {
         stablecoin = _stablecoin;
         ggcMultisig = _ggcMultisig;
         
-        // Initialize with default values
-        stabilizationFee = 5; // 0.05% (5 basis points)
+        // Initialize with default values using standardized constants
+        stabilizationFee = STABILIZATION_FEE; // 0.05% (5 basis points)
         trePledgeRate = 30;   // 0.3% (30 basis points)
         buybackActive = false;
     }

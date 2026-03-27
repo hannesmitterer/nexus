@@ -32,8 +32,13 @@ contract ULP {
     // Soglia proattiva difesa: 10.55 USD
     uint256 public PROACTIVE_DEFENSE_THRESHOLD_USD = 1055 * 1e16; // 10.55 * 1e18
 
-    // Stabilization Fee (base) = 0.1% (in basis points = 10)
-    uint256 public stabilizationFeeBps = 10; // 10 bps = 0.10%
+    // STABILIZATION_FEE: Standardized constant for cross-repository workflows
+    // Stabilization Fee (base) = 0.05% (in basis points = 5)
+    uint256 public constant STABILIZATION_FEE = 5; // 5 bps = 0.05%
+    uint256 public stabilizationFeeBps = STABILIZATION_FEE;
+
+    // ULP_PAIR: Standardized constant for cross-repository workflows
+    string public constant ULP_PAIR = "SAIN/USDC";
 
     // Ripartizione flussi: 40 / 30 / 30 -> totale 100
     uint256 public constant SPLIT_RESTITUTION_BPS = 4000;
