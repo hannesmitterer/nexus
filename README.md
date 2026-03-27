@@ -171,6 +171,19 @@ forge script scripts/DeploySynthiaGenesis.s.sol --rpc-url $RPC_URL --broadcast
 
 ---
 
+## 🤖 Governance Automation Status
+
+![Governance Metrics](https://github.com/hannesmitterer/nexus/actions/workflows/governance-metrics-monitor.yml/badge.svg)
+![Proposal Lifecycle](https://github.com/hannesmitterer/nexus/actions/workflows/proposal-lifecycle.yml/badge.svg)
+![K-SYNC Monitor](https://github.com/hannesmitterer/nexus/actions/workflows/ksync-monitor.yml/badge.svg)
+![Security Checks](https://github.com/hannesmitterer/nexus/actions/workflows/security-integrity-checks.yml/badge.svg)
+![EFA Compliance](https://github.com/hannesmitterer/nexus/actions/workflows/efa-compliance.yml/badge.svg)
+![Documentation](https://github.com/hannesmitterer/nexus/actions/workflows/governance-documentation.yml/badge.svg)
+
+**Automated Governance Pipelines**: 6 workflows operational  
+**Coverage**: Metrics monitoring, proposal management, K-SYNC, security, EFA compliance, documentation  
+**Details**: See [.github/workflows/README.md](.github/workflows/README.md)
+
 ## 🗺️ Roadmap & Implementation Status
 
 For a comprehensive overview of the project's roadmap components and implementation status, see **[ROADMAP_COMPONENTS.md](ROADMAP_COMPONENTS.md)**.
