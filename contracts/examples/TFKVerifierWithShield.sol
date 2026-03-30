@@ -150,20 +150,24 @@ contract TFKVerifierWithShield {
         
         uint256 proposalId = proposalCount;
         
-        // Create operation ID for SovereignShield
+        // Create deterministic operation ID (no timestamp for signature verification)
         bytes32 operationId = keccak256(
-            abi.encodePacked(ipfsCID, msg.sender, block.timestamp, proposalId)
+            abi.encode(ipfsCID, msg.sender, proposalId, description)
         );
         
         // *** ADDED: SovereignShield validation ***
         if (address(sovereignShield) != address(0)) {
-            // Pack proposal data for validation
-            bytes memory proposalData = abi.encodePacked(
+            // Enforce quantum-safe requirement if enabled
+            require(!quantumSafeRequired || (signature.length > 0 && publicKey.length > 0), 
+                "Quantum-safe signature required");
+            
+            // Pack proposal data for validation (deterministic, no timestamp)
+            // Use abi.encode to avoid ambiguity with dynamic types
+            bytes memory proposalData = abi.encode(
                 ipfsCID,
                 description,
                 modelData,
-                msg.sender,
-                block.timestamp
+                msg.sender
             );
             
             bool shieldValidated = sovereignShield.validateOperation(

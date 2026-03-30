@@ -16,7 +16,7 @@ interface IQuantumSafeVerifier {
         bytes32 messageHash,
         bytes calldata signature,
         bytes calldata publicKey
-    ) external view returns (bool);
+    ) external returns (bool);
 }
 
 /**
@@ -319,12 +319,24 @@ contract SovereignShield {
         // Rate limiting check (use msg.sender to prevent bypass via intermediate contracts)
         if (!_checkRateLimit(msg.sender, filter)) {
             rejectedOperations++;
+            emit OperationRejected(
+                operationId,
+                msg.sender,
+                "Rate limit exceeded",
+                block.timestamp
+            );
             return false;
         }
         
         // Input size validation
         if (inputSize > filter.maxInputSize || inputSize < filter.minInputSize) {
             rejectedOperations++;
+            emit OperationRejected(
+                operationId,
+                msg.sender,
+                "Input size out of range",
+                block.timestamp
+            );
             return false;
         }
         
@@ -565,6 +577,17 @@ contract SovereignShield {
     /**
      * @notice Execute rollback to a previous checkpoint (for WIP deployments)
      * @param checkpointId The checkpoint to roll back to
+     * 
+     * @dev IMPORTANT: This function only updates the checkpoint pointer and does not
+     * restore any on-chain state (filters, protected contracts, operations, rate limits, etc.).
+     * Due to blockchain immutability constraints, true state rollback is not possible.
+     * This mechanism is primarily for tracking deployment history and coordinating with
+     * off-chain rollback processes (e.g., AWS Lambda orchestrator).
+     * 
+     * For actual state recovery:
+     * - Use off-chain backup/restore mechanisms (e.g., S3 snapshots)
+     * - Manually reconfigure filters and protected contracts after rollback
+     * - Consider deploying a new contract instance for clean state
      */
     function rollbackToCheckpoint(uint256 checkpointId) external onlyGGC {
         require(checkpointId < checkpointCount, "Invalid checkpoint");

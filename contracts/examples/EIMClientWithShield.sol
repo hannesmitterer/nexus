@@ -146,21 +146,22 @@ contract EIMClientWithShield {
         require(sepId != bytes32(0), "Invalid SEP ID");
         require(!processedSEPs[sepId], "SEP already processed");
         
+        // Use deterministic operation hash (no timestamp for signature verification)
         operationHash = keccak256(
-            abi.encodePacked(sepId, msg.sender, block.timestamp)
+            abi.encode(sepId, msg.sender, artifactType, inputDigest, outputDigest, modelDigest)
         );
         
         // *** ADDED: SovereignShield validation ***
         if (address(sovereignShield) != address(0)) {
-            // Pack SEP data for validation
-            bytes memory sepData = abi.encodePacked(
+            // Pack SEP data for validation (deterministic, no timestamp)
+            // Use abi.encode to avoid ambiguity with dynamic types
+            bytes memory sepData = abi.encode(
                 sepId,
                 artifactType,
                 inputDigest,
                 outputDigest,
                 modelDigest,
-                msg.sender,
-                block.timestamp
+                msg.sender
             );
             
             bool shieldValidated;

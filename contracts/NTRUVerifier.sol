@@ -196,8 +196,8 @@ contract NTRUVerifier {
         view 
         returns (bool) 
     {
-        // Check minimum size (N coefficients, each could be 2 bytes)
-        uint256 minSize = (defaultParams.N * 2) / 8; // Approximate
+        // Check minimum size (N coefficients, each could be ~2 bytes)
+        uint256 minSize = defaultParams.N * 2;
         if (publicKey.length < minSize) {
             return false;
         }
@@ -228,8 +228,8 @@ contract NTRUVerifier {
         view 
         returns (bool) 
     {
-        // Similar size checks for signature
-        uint256 minSize = (defaultParams.N * 2) / 8;
+        // Similar size checks for signature (N coefficients, each ~2 bytes)
+        uint256 minSize = defaultParams.N * 2;
         if (signature.length < minSize || signature.length > defaultParams.N * 4) {
             return false;
         }

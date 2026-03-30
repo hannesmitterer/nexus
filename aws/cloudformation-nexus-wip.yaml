@@ -115,13 +115,9 @@ Resources:
       AttributeDefinitions:
         - AttributeName: checkpointId
           AttributeType: S
-        - AttributeName: createdAt
-          AttributeType: N
       KeySchema:
         - AttributeName: checkpointId
           KeyType: HASH
-        - AttributeName: createdAt
-          KeyType: RANGE
       TimeToLiveSpecification:
         AttributeName: ttl
         Enabled: true

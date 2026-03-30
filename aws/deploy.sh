@@ -5,6 +5,10 @@
 
 set -e
 
+# Determine script and repository root directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
 # Configuration
 ENVIRONMENT=${ENVIRONMENT:-"wip"}
 REGION=${AWS_REGION:-"us-east-1"}
@@ -58,21 +62,29 @@ print_success "AWS credentials valid (Account: ${ACCOUNT_ID})"
 # Create checkpoint before deployment
 create_checkpoint() {
     local CHECKPOINT_ID="pre-deploy-$(date +%s)"
+    local BUCKET="nexus-deployment-${ENVIRONMENT}-${ACCOUNT_ID}"
     print_step "Creating deployment checkpoint: ${CHECKPOINT_ID}"
+
+    # Check if the deployment bucket exists before attempting to upload
+    if aws s3api head-bucket --bucket "${BUCKET}" >/dev/null 2>&1; then
+        # Store current state in S3; let failures surface (set -e will abort)
+        aws s3 cp "${REPO_ROOT}/contracts/SovereignShield.sol" \
+            "s3://${BUCKET}/checkpoints/${CHECKPOINT_ID}/SovereignShield.sol" \
+            --region ${REGION}
+        print_success "Checkpoint created in S3: ${CHECKPOINT_ID}"
+    else
+        # Likely first deployment: bucket not created yet; record only a local checkpoint
+        print_step "Deployment bucket ${BUCKET} not available yet; storing local checkpoint only"
+        print_success "Local checkpoint recorded: ${CHECKPOINT_ID}"
+    fi
     
-    # Store current state in S3
-    aws s3 cp ./contracts/SovereignShield.sol \
-        s3://nexus-deployment-${ENVIRONMENT}-${ACCOUNT_ID}/checkpoints/${CHECKPOINT_ID}/SovereignShield.sol \
-        2>/dev/null || echo "First deployment - no previous state"
-    
-    print_success "Checkpoint created: ${CHECKPOINT_ID}"
-    echo "${CHECKPOINT_ID}" > .last_checkpoint
+    echo "${CHECKPOINT_ID}" > "${REPO_ROOT}/.last_checkpoint"
 }
 
 # Validate CloudFormation template
 print_step "Validating CloudFormation template..."
 if aws cloudformation validate-template \
-    --template-body file://aws/cloudformation-nexus-wip.yaml \
+    --template-body file://${SCRIPT_DIR}/cloudformation-nexus-wip.yaml \
     --region ${REGION} > /dev/null; then
     print_success "Template validation passed"
 else
@@ -88,7 +100,7 @@ fi
 # Deploy CloudFormation stack
 print_step "Deploying CloudFormation stack: ${STACK_NAME}"
 aws cloudformation deploy \
-    --template-file aws/cloudformation-nexus-wip.yaml \
+    --template-file ${SCRIPT_DIR}/cloudformation-nexus-wip.yaml \
     --stack-name ${STACK_NAME} \
     --parameter-overrides \
         Environment=${ENVIRONMENT} \
@@ -103,12 +115,11 @@ if [ $? -eq 0 ]; then
 else
     print_error "Stack deployment failed"
     
-    if [ "${ENABLE_ROLLBACK}" = "true" ] && [ -f .last_checkpoint ]; then
-        CHECKPOINT_ID=$(cat .last_checkpoint)
+    if [ "${ENABLE_ROLLBACK}" = "true" ] && [ -f "${REPO_ROOT}/.last_checkpoint" ]; then
+        CHECKPOINT_ID=$(cat "${REPO_ROOT}/.last_checkpoint")
         print_step "Initiating automatic rollback to checkpoint: ${CHECKPOINT_ID}"
         
         # Trigger rollback using absolute path
-        SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
         "${SCRIPT_DIR}/rollback.sh" ${CHECKPOINT_ID}
     fi
     
@@ -134,11 +145,11 @@ print_success "Orchestrator function: ${ORCHESTRATOR_FUNCTION}"
 
 # Upload contract artifacts
 print_step "Uploading SovereignShield contract to S3..."
-aws s3 cp ./contracts/SovereignShield.sol \
+aws s3 cp ${REPO_ROOT}/contracts/SovereignShield.sol \
     s3://${DEPLOYMENT_BUCKET}/contracts/SovereignShield.sol \
     --region ${REGION}
 
-aws s3 cp ./contracts/NTRUVerifier.sol \
+aws s3 cp ${REPO_ROOT}/contracts/NTRUVerifier.sol \
     s3://${DEPLOYMENT_BUCKET}/contracts/NTRUVerifier.sol \
     --region ${REGION}
 
@@ -150,6 +161,7 @@ DEPLOYMENT_ID="test-deploy-$(date +%s)"
 aws lambda invoke \
     --function-name ${ORCHESTRATOR_FUNCTION} \
     --payload "{\"action\":\"deploy\",\"deploymentId\":\"${DEPLOYMENT_ID}\"}" \
+    --cli-binary-format raw-in-base64-out \
     --region ${REGION} \
     /tmp/deploy-response.json > /dev/null
 

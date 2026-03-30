@@ -5,6 +5,10 @@
 
 set -e
 
+# Determine script and repository root directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
 ENVIRONMENT=${ENVIRONMENT:-"wip"}
 REGION=${AWS_REGION:-"us-east-1"}
 STACK_NAME="nexus-sovereignshield-${ENVIRONMENT}"
@@ -27,7 +31,9 @@ if [ -z "${CHECKPOINT_ID}" ]; then
     echo "Usage: $0 <checkpoint-id>"
     echo ""
     echo "Available checkpoints:"
-    aws s3 ls s3://nexus-deployment-${ENVIRONMENT}-*/checkpoints/ --recursive 2>/dev/null || echo "No checkpoints found"
+    ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+    DEPLOYMENT_BUCKET="nexus-deployment-${ENVIRONMENT}-${ACCOUNT_ID}"
+    aws s3 ls s3://${DEPLOYMENT_BUCKET}/checkpoints/ --recursive 2>/dev/null || echo "No checkpoints found"
     exit 1
 fi
 
@@ -50,6 +56,7 @@ echo -e "${YELLOW}▶ Invoking rollback orchestrator...${NC}"
 aws lambda invoke \
     --function-name ${ORCHESTRATOR_FUNCTION} \
     --payload "{\"action\":\"rollback\",\"checkpointId\":\"${CHECKPOINT_ID}\",\"reason\":\"Manual rollback initiated\"}" \
+    --cli-binary-format raw-in-base64-out \
     --region ${REGION} \
     /tmp/rollback-response.json
 
@@ -65,7 +72,7 @@ if [ $? -eq 0 ]; then
     echo -e "${YELLOW}▶ Restoring contracts from checkpoint...${NC}"
     aws s3 cp \
         s3://${DEPLOYMENT_BUCKET}/checkpoints/${CHECKPOINT_ID}/SovereignShield.sol \
-        ./contracts/SovereignShield.sol.restored \
+        ${REPO_ROOT}/contracts/SovereignShield.sol.restored \
         2>/dev/null && echo -e "${GREEN}✓ SovereignShield.sol restored${NC}"
     
     echo ""

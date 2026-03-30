@@ -55,10 +55,12 @@ The AWS infrastructure provides:
 
 ### 1. Deploy Infrastructure
 
+**Important**: Run the deployment script from the repository root directory.
+
 ```bash
-cd aws
-chmod +x deploy.sh rollback.sh
-./deploy.sh
+# From repository root
+chmod +x aws/deploy.sh aws/rollback.sh
+./aws/deploy.sh
 ```
 
 This will:
@@ -71,30 +73,30 @@ This will:
 ### 2. Deploy for Different Environments
 
 ```bash
-# WIP environment (default)
-ENVIRONMENT=wip ./deploy.sh
+# WIP environment (default) - run from repo root
+ENVIRONMENT=wip ./aws/deploy.sh
 
 # Development environment
-ENVIRONMENT=dev ./deploy.sh
+ENVIRONMENT=dev ./aws/deploy.sh
 
 # Staging environment
-ENVIRONMENT=staging ./deploy.sh
+ENVIRONMENT=staging ./aws/deploy.sh
 
 # Production environment (rollback disabled by default)
-ENVIRONMENT=production ENABLE_ROLLBACK=false ./deploy.sh
+ENVIRONMENT=production ENABLE_ROLLBACK=false ./aws/deploy.sh
 ```
 
 ### 3. Custom Configuration
 
 ```bash
 # Deploy to specific region
-AWS_REGION=eu-west-1 ./deploy.sh
+AWS_REGION=eu-west-1 ./aws/deploy.sh
 
 # Disable quantum-safe verification
-QUANTUM_SAFE_ENABLED=false ./deploy.sh
+QUANTUM_SAFE_ENABLED=false ./aws/deploy.sh
 
 # Disable automatic rollback
-ENABLE_ROLLBACK=false ./deploy.sh
+ENABLE_ROLLBACK=false ./aws/deploy.sh
 ```
 
 ## Rollback
@@ -106,11 +108,11 @@ If a deployment fails and `ENABLE_ROLLBACK=true`, the system automatically rolls
 ### Manual Rollback
 
 ```bash
-# List available checkpoints
+# List available checkpoints (run from repo root)
 aws s3 ls s3://nexus-deployment-wip-<ACCOUNT_ID>/checkpoints/ --recursive
 
 # Rollback to specific checkpoint
-./rollback.sh pre-deploy-1234567890
+./aws/rollback.sh pre-deploy-1234567890
 ```
 
 ### Using Lambda Orchestrator
