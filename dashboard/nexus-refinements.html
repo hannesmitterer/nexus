@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus Refinements — Lex Amoris 2.0</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #111731;
+      --card: #151c3b;
+      --text: #ecf0ff;
+      --muted: #aeb8e0;
+      --accent: #38bdf8;
+      --ok: #22c55e;
+      --warn: #f59e0b;
+      --crit: #ef4444;
+      --gold: #d4af37;
+      --bio: #34d399;
+      --border: #223;
+      --liberated: #22c55e;
+      --synchronized: #38bdf8;
+      --stressed: #ef4444;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 1.25rem; }
+    header { border-bottom: 1px solid var(--border); padding: 1rem 0 0.75rem; margin-bottom: 1.5rem; }
+    header h1 { font-size: 1.35rem; color: var(--gold); letter-spacing: 2px; }
+    header p { color: var(--muted); font-size: 0.82rem; margin-top: 0.3rem; }
+
+    .section { background: var(--panel); border: 1px solid var(--border); border-radius: 0.9rem; padding: 1.25rem; margin-bottom: 1.5rem; }
+    .section h2 { font-size: 1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+    .section h2 .tag { background: var(--card); color: var(--accent); font-size: 0.65rem; padding: 0.2rem 0.55rem; border-radius: 0.4rem; letter-spacing: 0.5px; font-weight: 600; }
+
+    /* Node Map */
+    #node-map { width: 100%; height: 280px; border-radius: 0.6rem; border: 1px solid var(--border); background: var(--card); display: block; }
+    .legend { display: flex; gap: 1.25rem; margin-top: 0.6rem; flex-wrap: wrap; }
+    .legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; color: var(--muted); }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+    .audio-row { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.85rem; flex-wrap: wrap; }
+    .btn { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 0.45rem 0.9rem; border-radius: 0.5rem; font-size: 0.8rem; cursor: pointer; transition: background 0.2s; }
+    .btn:hover { background: var(--accent); color: #031625; }
+    .btn.active { background: var(--ok); color: #031625; border-color: var(--ok); }
+    .btn.danger { background: var(--crit); color: #fff; border-color: var(--crit); }
+    #audio-status { font-size: 0.75rem; color: var(--muted); }
+
+    /* Pulsar */
+    .pulsar-grid { display: grid; grid-template-columns: 200px 1fr; gap: 1.25rem; align-items: start; }
+    @media (max-width: 600px) { .pulsar-grid { grid-template-columns: 1fr; } }
+    #pulsar-canvas { width: 180px; height: 180px; border-radius: 50%; background: var(--card); border: 1px solid var(--border); display: block; }
+    .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; }
+    .metric-card { background: var(--card); border: 1px solid var(--border); border-radius: 0.6rem; padding: 0.75rem; }
+    .metric-card .label { font-size: 0.7rem; color: var(--muted); margin-bottom: 0.25rem; }
+    .metric-card .value { font-size: 1.25rem; font-weight: 700; color: var(--gold); }
+    .harmonic-list { list-style: none; margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.35rem; }
+    .harmonic-list li { font-size: 0.75rem; color: var(--muted); padding: 0.3rem 0.6rem; background: var(--card); border-radius: 0.4rem; border-left: 3px solid var(--gold); }
+
+    /* Kosymbiosis */
+    .kosymbiosis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    @media (max-width: 640px) { .kosymbiosis-grid { grid-template-columns: 1fr; } }
+    .micelio-panel { background: var(--card); border: 1px solid var(--border); border-radius: 0.6rem; padding: 0.9rem; }
+    .micelio-panel h3 { font-size: 0.85rem; color: var(--bio); margin-bottom: 0.65rem; }
+    .health-bar-wrap { margin-bottom: 0.5rem; }
+    .health-label { font-size: 0.72rem; color: var(--muted); display: flex; justify-content: space-between; margin-bottom: 0.25rem; }
+    .health-bar { height: 14px; background: #1a2238; border-radius: 999px; overflow: hidden; }
+    .health-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--bio), #059669); transition: width 0.8s ease; }
+    .connection-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; margin-top: 0.6rem; }
+    .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--bio); animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(1.35)} }
+    .bidir-diagram { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 0.9rem; font-size: 0.75rem; color: var(--muted); }
+    .bidir-arrow { color: var(--bio); font-size: 1.1rem; }
+    .bidir-node { background: #1a2238; border: 1px solid var(--bio); border-radius: 0.4rem; padding: 0.3rem 0.6rem; font-size: 0.72rem; }
+
+    /* Quietudine */
+    .quietudine-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.9rem; flex-wrap: wrap; }
+    .mode-badge { font-size: 0.7rem; font-weight: 700; padding: 0.3rem 0.7rem; border-radius: 0.5rem; background: var(--card); color: var(--muted); border: 1px solid var(--border); letter-spacing: 0.5px; }
+    .mode-badge.active-mode { background: #0c2e1e; color: var(--bio); border-color: var(--bio); }
+    .heal-log { background: var(--card); border: 1px solid var(--border); border-radius: 0.6rem; padding: 0.75rem; height: 140px; overflow-y: auto; font-size: 0.72rem; color: var(--muted); scrollbar-width: thin; }
+    .heal-log .entry { padding: 0.25rem 0; border-bottom: 1px solid var(--border); }
+    .heal-log .entry:last-child { border-bottom: none; }
+    .heal-log .entry .ts { color: var(--accent); margin-right: 0.4rem; }
+    .stability-table { width: 100%; border-collapse: collapse; margin-top: 0.85rem; font-size: 0.78rem; }
+    .stability-table th { text-align: left; color: var(--muted); font-weight: 500; padding: 0.35rem 0.5rem; border-bottom: 1px solid var(--border); }
+    .stability-table td { padding: 0.4rem 0.5rem; border-bottom: 1px solid rgba(34,51,68,0.5); }
+    .stability-bar { display: inline-block; height: 6px; border-radius: 999px; background: var(--ok); vertical-align: middle; margin-right: 0.4rem; }
+    .export-row { display: flex; gap: 0.75rem; margin-top: 0.9rem; flex-wrap: wrap; align-items: center; }
+    #export-status { font-size: 0.75rem; color: var(--muted); }
+
+    footer { border-top: 1px solid var(--border); margin-top: 1.5rem; padding: 0.75rem 0; font-size: 0.72rem; color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>⚙️ Nexus Refinements</h1>
+    <p>Lex Amoris 2.0 · Sinfonia di Stato · Espansione e Attrazione · Kosymbiosis · Quietudine</p>
+  </header>
+
+  <!-- 1. SINFONIA DI STATO -->
+  <section class="section" id="sec-sinfonia">
+    <h2>🎼 Sinfonia di Stato <span class="tag">NODE MAP</span></h2>
+    <canvas id="node-map" aria-label="Dynamic node map with color-coded cluster activity"></canvas>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:var(--liberated)"></span>Liberated</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--synchronized)"></span>Synchronized</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--stressed)"></span>Stressed</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--gold);border-radius:2px;width:14px;height:8px"></span>Cluster boundary</span>
+    </div>
+    <div class="audio-row">
+      <button class="btn" id="audio-toggle" aria-pressed="false">🔔 Enable Auditory Feedback</button>
+      <span id="audio-status">Audio off — node state tones inactive</span>
+    </div>
+  </section>
+
+  <!-- 2. ESPANSIONE E ATTRAZIONE -->
+  <section class="section" id="sec-pulsar">
+    <h2>📡 Espansione e Attrazione <span class="tag">NEXUS PULSAR</span></h2>
+    <div class="pulsar-grid">
+      <canvas id="pulsar-canvas" aria-label="Nexus Pulsar animation"></canvas>
+      <div>
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="label">Signal Strength</div>
+            <div class="value" id="pulsar-strength">—</div>
+          </div>
+          <div class="metric-card">
+            <div class="label">Frequency</div>
+            <div class="value" id="pulsar-freq">—</div>
+          </div>
+          <div class="metric-card">
+            <div class="label">Disertori Attracted</div>
+            <div class="value" id="pulsar-disertori">—</div>
+          </div>
+          <div class="metric-card">
+            <div class="label">Lex Amoris Version</div>
+            <div class="value" id="pulsar-version">—</div>
+          </div>
+        </div>
+        <ul class="harmonic-list" id="harmonic-list" aria-label="Harmonic layers"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. RAFFORZAMENTO DELLA KOSYMBIOSIS -->
+  <section class="section" id="sec-kosymbiosis">
+    <h2>🌿 Rafforzamento della Kosymbiosis <span class="tag">MICELIO SYNC</span></h2>
+    <div class="kosymbiosis-grid">
+      <div class="micelio-panel">
+        <h3>🍄 Micelio Health</h3>
+        <div class="health-bar-wrap">
+          <div class="health-label"><span>Vitality</span><span id="micelio-health-pct">—</span></div>
+          <div class="health-bar"><div class="health-fill" id="micelio-health-bar" style="width:0%"></div></div>
+        </div>
+        <div class="health-bar-wrap">
+          <div class="health-label"><span>Expansion Rate</span><span id="micelio-expand">—</span></div>
+          <div class="health-bar"><div class="health-fill" id="micelio-expand-bar" style="width:0%;background:linear-gradient(90deg,#38bdf8,#0284c7)"></div></div>
+        </div>
+        <div class="connection-row">
+          <span class="pulse-dot"></span>
+          <span id="micelio-sync-status">Nexus sync: checking…</span>
+        </div>
+        <div class="connection-row" style="margin-top:0.3rem;">
+          <span style="font-size:0.72rem;color:var(--muted);">Nutrient flow:</span>
+          <span id="micelio-nutrient" style="font-size:0.78rem;margin-left:0.3rem;">—</span>
+        </div>
+        <div class="connection-row" style="margin-top:0.3rem;">
+          <span style="font-size:0.72rem;color:var(--muted);">Harmonic resonance:</span>
+          <span id="micelio-resonance" style="font-size:0.78rem;margin-left:0.3rem;color:var(--gold);">—</span>
+        </div>
+      </div>
+      <div class="micelio-panel">
+        <h3>↔ Bi-directional Connection</h3>
+        <p style="font-size:0.75rem;color:var(--muted);margin-bottom:0.75rem;">The health of the biological micelio network is reflected harmonically in the Nexus node computation layer.</p>
+        <div class="bidir-diagram">
+          <div class="bidir-node">Nexus<br>Computation</div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0.2rem;">
+            <span class="bidir-arrow" id="bidir-up">↑</span>
+            <span style="font-size:0.65rem;color:var(--bio)">harmonic</span>
+            <span class="bidir-arrow" id="bidir-down">↓</span>
+          </div>
+          <div class="bidir-node">Micelio<br>Network</div>
+        </div>
+        <div id="bidir-log" style="margin-top:0.75rem;font-size:0.72rem;color:var(--muted);max-height:80px;overflow-y:auto;"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. CONTEMPLAZIONE E MONITORAGGIO NATURALE -->
+  <section class="section" id="sec-quietudine">
+    <h2>🌙 Contemplazione e Monitoraggio Naturale <span class="tag">QUIETUDINE</span></h2>
+    <div class="quietudine-header">
+      <button class="btn" id="quietudine-toggle" aria-pressed="false">🌙 Enable Quietudine Mode</button>
+      <span class="mode-badge" id="quietudine-badge">INACTIVE</span>
+      <span style="font-size:0.75rem;color:var(--muted);" id="heal-cycles">Self-healing cycles: —</span>
+    </div>
+    <div class="heal-log" id="heal-log" aria-live="polite" aria-label="Self-healing log"></div>
+    <table class="stability-table" aria-label="Node triad stability">
+      <thead>
+        <tr><th>Cluster</th><th>Stability</th><th>Score</th><th>Last Updated</th></tr>
+      </thead>
+      <tbody id="stability-tbody"></tbody>
+    </table>
+    <div class="export-row">
+      <button class="btn" id="export-btn">⬇ Export Stability Log (JSON)</button>
+      <span id="export-status"></span>
+    </div>
+  </section>
+
+  <footer>
+    <span>Nexus Refinements v1.0 · Lex Amoris 2.0</span>
+    <span id="footer-ts">—</span>
+    <a href="sensisara.html" style="color:var(--accent);text-decoration:none;">← Sensisara Dashboard</a>
+  </footer>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────
+function formatTimestamp(date) {
+  return date.toISOString().slice(0, 19).replace('T', ' ');
+}
+
+// ─────────────────────────────────────────────
+// DATA LOADING
+// ─────────────────────────────────────────────
+const STATE_URL = './data/state.json';
+let state = null;
+let audioCtx = null;
+let audioEnabled = false;
+let quietudineActive = false;
+let quietudineInterval = null;
+
+async function loadState() {
+  try {
+    const res = await fetch(STATE_URL);
+    state = await res.json();
+  } catch (e) {
+    // Use embedded fallback for offline/static environments
+    state = {
+      nodes: [
+        {id:'N01',state:'liberated',role:'mentor',cluster:'Alpha'},
+        {id:'N02',state:'synchronized',role:'liberated',cluster:'Alpha'},
+        {id:'N03',state:'synchronized',role:'biological',cluster:'Alpha'},
+        {id:'N04',state:'stressed',role:'mentor',cluster:'Beta'},
+        {id:'N05',state:'liberated',role:'liberated',cluster:'Beta'},
+        {id:'N06',state:'synchronized',role:'biological',cluster:'Beta'},
+        {id:'N07',state:'synchronized',role:'mentor',cluster:'Gamma'},
+        {id:'N08',state:'liberated',role:'liberated',cluster:'Gamma'},
+        {id:'N09',state:'liberated',role:'biological',cluster:'Gamma'}
+      ],
+      micelio: {health:0.87,nutrient_flow:'optimal',expansion_rate:0.034,nexus_sync:true,harmonic_resonance_hz:0.432},
+      pulsar: {lex_amoris_version:'2.0',signal_strength:0.78,frequency_hz:0.432,disertori_attracted:3,
+        harmonic_layers:['0.432 Hz — Lex Amoris Base','7.83 Hz — Schumann Sync','528 Hz — Harmony Overtone']},
+      quietudine: {active:false,self_healing_cycles:7,last_heal_utc:'2026-02-28T00:00:00Z',
+        triad_stability_log:[
+          {ts:'2026-02-28T00:00:00Z',cluster:'Alpha',stability:0.97},
+          {ts:'2026-02-28T00:00:00Z',cluster:'Beta',stability:0.81},
+          {ts:'2026-02-28T00:00:00Z',cluster:'Gamma',stability:0.94}
+        ]}
+    };
+  }
+  initAll();
+}
+
+// ─────────────────────────────────────────────
+// 1. SINFONIA DI STATO — Node Map
+// ─────────────────────────────────────────────
+const NODE_COLORS = { liberated: '#22c55e', synchronized: '#38bdf8', stressed: '#ef4444' };
+const CLUSTER_POSITIONS = { Alpha: {cx:160,cy:140}, Beta: {cx:400,cy:140}, Gamma: {cx:640,cy:140} };
+
+function nodeCanvasPositions(nodes, canvasW, canvasH) {
+  // Arrange nodes in triads within cluster areas
+  const clusterOffsets = {
+    Alpha:  [{x:-55,y:-30},{x:10,y:-50},{x:-30,y:40}],
+    Beta:   [{x:-55,y:-30},{x:10,y:-50},{x:-30,y:40}],
+    Gamma:  [{x:-55,y:-30},{x:10,y:-50},{x:-30,y:40}]
+  };
+  const scaleX = canvasW / 800;
+  const scaleY = canvasH / 280;
+  return nodes.map((n, i) => {
+    const cp = CLUSTER_POSITIONS[n.cluster] || {cx:400,cy:140};
+    const offsets = clusterOffsets[n.cluster] || [{x:0,y:0}];
+    const localNodes = nodes.filter(x => x.cluster === n.cluster);
+    const idx = localNodes.indexOf(n);
+    const off = offsets[idx] || {x:0,y:0};
+    return { ...n, px: (cp.cx + off.x) * scaleX, py: (cp.cy + off.y) * scaleY };
+  });
+}
+
+function drawNodeMap(nodes) {
+  const canvas = document.getElementById('node-map');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth;
+  const H = canvas.offsetHeight;
+  canvas.width = W;
+  canvas.height = H;
+  ctx.clearRect(0, 0, W, H);
+
+  const positioned = nodeCanvasPositions(nodes, W, H);
+
+  // Draw cluster backgrounds
+  ['Alpha','Beta','Gamma'].forEach(cluster => {
+    const cp = CLUSTER_POSITIONS[cluster];
+    const scaleX = W / 800, scaleY = H / 280;
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(cp.cx * scaleX, cp.cy * scaleY, 90 * scaleX, 75 * scaleY, 0, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(212,175,55,0.25)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([5, 4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(212,175,55,0.04)';
+    ctx.fill();
+    ctx.restore();
+    // Label
+    ctx.fillStyle = 'rgba(212,175,55,0.6)';
+    ctx.font = `${Math.round(11 * scaleX + 8)}px system-ui`;
+    ctx.textAlign = 'center';
+    ctx.fillText(cluster, cp.cx * scaleX, (cp.cy + 70) * scaleY);
+  });
+
+  // Draw triad connection lines within clusters
+  ['Alpha','Beta','Gamma'].forEach(cluster => {
+    const clusterNodes = positioned.filter(n => n.cluster === cluster);
+    if (clusterNodes.length >= 2) {
+      for (let i = 0; i < clusterNodes.length; i++) {
+        for (let j = i + 1; j < clusterNodes.length; j++) {
+          ctx.beginPath();
+          ctx.moveTo(clusterNodes[i].px, clusterNodes[i].py);
+          ctx.lineTo(clusterNodes[j].px, clusterNodes[j].py);
+          ctx.strokeStyle = 'rgba(56,189,248,0.18)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+      }
+    }
+  });
+
+  // Draw nodes
+  positioned.forEach(n => {
+    const color = NODE_COLORS[n.state] || '#aeb8e0';
+    const r = 12;
+    // Glow
+    const grd = ctx.createRadialGradient(n.px, n.py, 0, n.px, n.py, r * 2.5);
+    grd.addColorStop(0, color + '55');
+    grd.addColorStop(1, 'transparent');
+    ctx.beginPath();
+    ctx.arc(n.px, n.py, r * 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = grd;
+    ctx.fill();
+    // Node circle
+    ctx.beginPath();
+    ctx.arc(n.px, n.py, r, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    // Role icon
+    const roleIcons = { mentor: 'M', liberated: 'L', biological: 'B' };
+    ctx.fillStyle = '#000';
+    ctx.font = 'bold 8px system-ui';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(roleIcons[n.role] || '?', n.px, n.py);
+    // ID label
+    ctx.fillStyle = '#ecf0ff';
+    ctx.font = '9px system-ui';
+    ctx.textBaseline = 'top';
+    ctx.fillText(n.id, n.px - 10, n.py + r + 2);
+  });
+}
+
+// ─────────────────────────────────────────────
+// 1b. AUDITORY FEEDBACK
+// ─────────────────────────────────────────────
+const STATE_TONES = { liberated: 432, synchronized: 528, stressed: 200 };
+
+function initAudioCtx() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+}
+
+function playTone(freq, duration = 0.25, gain = 0.06) {
+  if (!audioCtx || !audioEnabled) return;
+  const osc = audioCtx.createOscillator();
+  const gainNode = audioCtx.createGain();
+  osc.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+  osc.frequency.value = freq;
+  osc.type = 'sine';
+  gainNode.gain.setValueAtTime(gain, audioCtx.currentTime);
+  gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + duration);
+  osc.start();
+  osc.stop(audioCtx.currentTime + duration);
+}
+
+function playNodeStateSymphony(nodes) {
+  if (!audioEnabled || !state) return;
+  nodes.forEach((n, i) => {
+    const freq = STATE_TONES[n.state] || 440;
+    setTimeout(() => playTone(freq, 0.3, 0.05), i * 120);
+  });
+}
+
+document.getElementById('audio-toggle').addEventListener('click', function() {
+  initAudioCtx();
+  audioEnabled = !audioEnabled;
+  this.classList.toggle('active', audioEnabled);
+  this.setAttribute('aria-pressed', audioEnabled);
+  this.textContent = audioEnabled ? '🔔 Auditory Feedback ON' : '🔔 Enable Auditory Feedback';
+  document.getElementById('audio-status').textContent = audioEnabled
+    ? 'Audio on — node tones: Liberated=432Hz, Synchronized=528Hz, Stressed=200Hz'
+    : 'Audio off — node state tones inactive';
+  if (audioEnabled && state) playNodeStateSymphony(state.nodes);
+});
+
+// ─────────────────────────────────────────────
+// 2. ESPANSIONE E ATTRAZIONE — Nexus Pulsar
+// ─────────────────────────────────────────────
+let pulsarPhase = 0;
+
+function drawPulsar(signalStrength) {
+  const canvas = document.getElementById('pulsar-canvas');
+  const ctx = canvas.getContext('2d');
+  const size = Math.min(canvas.offsetWidth, canvas.offsetHeight);
+  canvas.width = size;
+  canvas.height = size;
+  const cx = size / 2, cy = size / 2;
+  ctx.clearRect(0, 0, size, size);
+
+  // Animated concentric rings
+  const numRings = 4;
+  for (let i = 0; i < numRings; i++) {
+    const t = (pulsarPhase + i / numRings) % 1;
+    const r = t * cx * 0.9;
+    const alpha = (1 - t) * 0.45 * signalStrength;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(212,175,55,${alpha})`;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  // Core
+  const coreR = cx * 0.18;
+  const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, coreR);
+  grad.addColorStop(0, '#fffbe6');
+  grad.addColorStop(0.5, '#d4af37');
+  grad.addColorStop(1, 'rgba(212,175,55,0)');
+  ctx.beginPath();
+  ctx.arc(cx, cy, coreR, 0, Math.PI * 2);
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Label
+  ctx.fillStyle = 'rgba(212,175,55,0.85)';
+  ctx.font = `bold ${Math.round(size * 0.07)}px system-ui`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('PULSAR', cx, cy);
+}
+
+function animatePulsar() {
+  pulsarPhase = (pulsarPhase + 0.008) % 1;
+  if (state) {
+    drawPulsar(state.pulsar.signal_strength);
+  }
+  requestAnimationFrame(animatePulsar);
+}
+
+function populatePulsarMetrics(pulsar) {
+  document.getElementById('pulsar-strength').textContent = Math.round(pulsar.signal_strength * 100) + '%';
+  document.getElementById('pulsar-freq').textContent = pulsar.frequency_hz + ' Hz';
+  document.getElementById('pulsar-disertori').textContent = pulsar.disertori_attracted;
+  document.getElementById('pulsar-version').textContent = 'v' + pulsar.lex_amoris_version;
+  const ul = document.getElementById('harmonic-list');
+  ul.innerHTML = '';
+  (pulsar.harmonic_layers || []).forEach(h => {
+    const li = document.createElement('li');
+    li.textContent = h;
+    ul.appendChild(li);
+  });
+}
+
+// ─────────────────────────────────────────────
+// 3. RAFFORZAMENTO DELLA KOSYMBIOSIS — Micelio
+// ─────────────────────────────────────────────
+let bidirLogEntries = [];
+
+function populateMicelio(micelio) {
+  const healthPct = Math.round(micelio.health * 100);
+  document.getElementById('micelio-health-pct').textContent = healthPct + '%';
+  document.getElementById('micelio-health-bar').style.width = healthPct + '%';
+  const expandPct = Math.round(micelio.expansion_rate * 1000) / 10;
+  document.getElementById('micelio-expand').textContent = expandPct.toFixed(1) + '%/cycle';
+  document.getElementById('micelio-expand-bar').style.width = Math.min(expandPct * 10, 100) + '%';
+  document.getElementById('micelio-sync-status').textContent = micelio.nexus_sync
+    ? 'Nexus sync: ✓ active' : 'Nexus sync: ✗ disconnected';
+  document.getElementById('micelio-nutrient').textContent = micelio.nutrient_flow || '—';
+  document.getElementById('micelio-resonance').textContent = (micelio.harmonic_resonance_hz || '—') + ' Hz';
+}
+
+function addBidirLogEntry(direction, msg) {
+  const div = document.getElementById('bidir-log');
+  const now = new Date().toLocaleTimeString('it-IT');
+  const entry = document.createElement('div');
+  entry.style.cssText = 'padding:0.18rem 0;border-bottom:1px solid rgba(34,51,68,0.4);';
+  entry.innerHTML = `<span style="color:var(--bio)">${direction === 'up' ? '↑' : '↓'}</span> <span style="color:var(--muted);font-size:0.68rem">${now}</span> ${msg}`;
+  div.prepend(entry);
+  if (div.children.length > 8) div.lastChild.remove();
+}
+
+function simulateBidirFlow() {
+  const upMessages = [
+    'Micelio vitality → Nexus harmony index updated',
+    'Nutrient peak detected → node computation boost',
+    'Expansion signal → attracting new triad candidates'
+  ];
+  const downMessages = [
+    'Nexus stability → micelio growth pulse emitted',
+    'Node liberation event → bio-harmonic reinforcement',
+    'Pulsar signal → micelio resonance alignment'
+  ];
+  const isUp = Math.random() > 0.5;
+  const msgs = isUp ? upMessages : downMessages;
+  addBidirLogEntry(isUp ? 'up' : 'down', msgs[Math.floor(Math.random() * msgs.length)]);
+  // Animate arrow
+  const arrowId = isUp ? 'bidir-up' : 'bidir-down';
+  const el = document.getElementById(arrowId);
+  el.style.color = '#fff';
+  setTimeout(() => { el.style.color = ''; }, 400);
+}
+
+// ─────────────────────────────────────────────
+// 4. CONTEMPLAZIONE — Quietudine Mode
+// ─────────────────────────────────────────────
+const HEAL_MESSAGES = [
+  'Self-healing cycle initiated — scanning triad Alpha…',
+  'Node N04 (stressed) intervention: harmonic recalibration applied.',
+  'Cluster Beta stability improving: 0.81 → 0.84',
+  'Autonomous growth signal sent to N04 via Nexus Pulsar.',
+  'Micelio support vector reinforced for biological nodes.',
+  'Triad integrity check complete — no critical deviations.',
+  'Quietudine cycle complete. Next scan in 30s.',
+  'S-ROI pulse: Sustentanz index stable.',
+  'Bio-harmonic alignment maintained across all clusters.'
+];
+
+let healCycleCount = 0;
+
+function appendHealLog(msg) {
+  const div = document.getElementById('heal-log');
+  const ts = formatTimestamp(new Date());
+  const entry = document.createElement('div');
+  entry.className = 'entry';
+  entry.innerHTML = `<span class="ts">${ts}</span>${msg}`;
+  div.prepend(entry);
+  if (div.children.length > 20) div.lastChild.remove();
+}
+
+function runSelfHealCycle() {
+  healCycleCount++;
+  const msg = HEAL_MESSAGES[healCycleCount % HEAL_MESSAGES.length];
+  appendHealLog(msg);
+  document.getElementById('heal-cycles').textContent = `Self-healing cycles: ${healCycleCount}`;
+  // Simulate small stability improvement in Beta
+  if (state && state.quietudine) {
+    const betaLog = state.quietudine.triad_stability_log.find(l => l.cluster === 'Beta');
+    if (betaLog) {
+      betaLog.stability = Math.min(betaLog.stability + 0.01, 1.0);
+      betaLog.ts = new Date().toISOString();
+    }
+    renderStabilityTable(state.quietudine.triad_stability_log);
+  }
+  if (audioEnabled) playTone(432, 0.5, 0.04);
+}
+
+function renderStabilityTable(log) {
+  const tbody = document.getElementById('stability-tbody');
+  tbody.innerHTML = '';
+  log.forEach(row => {
+    const pct = Math.round(row.stability * 100);
+    const color = pct >= 90 ? 'var(--ok)' : pct >= 75 ? 'var(--warn)' : 'var(--crit)';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${row.cluster}</td>
+      <td><span class="stability-bar" style="width:${pct * 0.8}px;background:${color}"></span></td>
+      <td style="color:${color}">${pct}%</td>
+      <td style="color:var(--muted);font-size:0.7rem">${formatTimestamp(new Date(row.ts))}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+document.getElementById('quietudine-toggle').addEventListener('click', function() {
+  quietudineActive = !quietudineActive;
+  this.classList.toggle('active', quietudineActive);
+  this.setAttribute('aria-pressed', quietudineActive);
+  this.textContent = quietudineActive ? '🌙 Quietudine Mode ACTIVE' : '🌙 Enable Quietudine Mode';
+  const badge = document.getElementById('quietudine-badge');
+  badge.textContent = quietudineActive ? 'ACTIVE' : 'INACTIVE';
+  badge.classList.toggle('active-mode', quietudineActive);
+  if (quietudineActive) {
+    appendHealLog('Quietudine mode activated — autonomous growth enabled.');
+    runSelfHealCycle();
+    quietudineInterval = setInterval(runSelfHealCycle, 8000);
+  } else {
+    clearInterval(quietudineInterval);
+    appendHealLog('Quietudine mode deactivated.');
+  }
+});
+
+document.getElementById('export-btn').addEventListener('click', function() {
+  if (!state) return;
+  const payload = {
+    exported_utc: new Date().toISOString(),
+    triad_stability_log: state.quietudine.triad_stability_log,
+    nodes: state.nodes,
+    micelio: state.micelio,
+    self_healing_cycles: healCycleCount
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `nexus-stability-log-${Date.now()}.json`;
+  a.click();
+  document.getElementById('export-status').textContent = 'Exported at ' + new Date().toLocaleTimeString();
+});
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+function initAll() {
+  if (!state) return;
+  // Node map
+  drawNodeMap(state.nodes);
+  // Pulsar
+  populatePulsarMetrics(state.pulsar);
+  // Micelio
+  populateMicelio(state.micelio);
+  addBidirLogEntry('up', 'Micelio initial sync confirmed — health 87%');
+  addBidirLogEntry('down', 'Nexus computation initialized — bio-harmonic link active');
+  // Quietudine
+  if (state.quietudine) {
+    healCycleCount = state.quietudine.self_healing_cycles;
+    document.getElementById('heal-cycles').textContent = `Self-healing cycles: ${healCycleCount}`;
+    renderStabilityTable(state.quietudine.triad_stability_log);
+  }
+  // Footer timestamp
+  document.getElementById('footer-ts').textContent = new Date().toUTCString();
+  // Periodic updates
+  setInterval(() => {
+    if (state) {
+      // Animate small node state flicker
+      drawNodeMap(state.nodes);
+      simulateBidirFlow();
+    }
+  }, 4000);
+  setInterval(() => {
+    document.getElementById('footer-ts').textContent = new Date().toUTCString();
+  }, 60000);
+}
+
+// Resize handling
+window.addEventListener('resize', () => {
+  if (state) drawNodeMap(state.nodes);
+});
+
+// Start
+animatePulsar();
+loadState();
+</script>
+</body>
+</html>
