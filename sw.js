@@ -40,11 +40,16 @@ self.addEventListener('fetch', event => {
         
         return fetch(fetchRequest).then(response => {
           // Check if valid response
-          if (!response || response.status !== 200 || response.type !== 'basic') {
+          if (!response || response.status !== 200) {
             return response;
           }
           
-          // Clone the response
+          // Don't cache opaque responses (CORS, etc) but allow them through
+          if (response.type === 'opaque') {
+            return response;
+          }
+          
+          // Clone the response for caching
           const responseToCache = response.clone();
           
           caches.open(CACHE_NAME)
