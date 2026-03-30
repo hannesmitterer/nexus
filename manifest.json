@@ -4,13 +4,13 @@
   "description": "Souveränes Interface der Resonance School - Sempre in Costante",
   "icons": [
     {
-      "src": "https://ipfs.io/ipfs/QmResonanceIconHash",
+      "src": "/icons/icon-192.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any maskable"
     },
     {
-      "src": "https://ipfs.io/ipfs/QmResonanceIconHash512",
+      "src": "/icons/icon-512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
@@ -22,10 +22,10 @@
   "theme_color": "#8b0000",
   "shortcuts": [
     {
-      "name": "Leonardo-Status",
-      "short_name": "Water",
-      "url": "/water-status",
-      "icons": [{ "src": "water-icon.png", "sizes": "192x192" }]
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "url": "/dashboard/index.html",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
     }
   ],
   "lang": "de",

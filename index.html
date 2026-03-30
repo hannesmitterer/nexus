@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Nexus | Kosymbiosis Live</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#8b0000">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         :root { --p-blue: #0047ab; --p-yellow: #f1c40f; --p-red: #c0392b; --p-beige: #e8e4d9; --p-black: #1a1a1a; }
@@ -780,6 +782,15 @@ async function transmit() {
             group.scale.set(1, 1, 1);
             nucleus.material.color.set(0x0047ab);
         }, 800);
+    }
+
+    // Register service worker for PWA offline functionality
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => console.log('ServiceWorker registered:', registration.scope))
+                .catch(err => console.log('ServiceWorker registration failed:', err));
+        });
     }
 </script>
 </body>
