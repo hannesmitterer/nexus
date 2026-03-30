@@ -669,19 +669,13 @@ This archive represents the **final, immutable state** of the KOSYMBIOSIS projec
 
 Ensures **integrity**, **authenticity**, **availability**, and **transparency** for long-term preservation.
 
-### Contact and Governance
-
-- **Email**: governance@euystacio.example
-- **Repository**: https://github.com/hannesmitterer/nexus
-- **Governance Body**: Euystacio Global Governance Initiative (GGI)
 - **Framework**: Euystacio v1.0
 - **Protocol**: KOSYMBIOSIS-FINAL-001
 
 ### License
 
 Released under Euystacio ethical framework principles:
-- Free access to knowledge
-- Respectful citation of contributors
+- Free access to archive Respectful citation of contributors
 - Alignment with NSR and OLF in derivative works
 
 ---
