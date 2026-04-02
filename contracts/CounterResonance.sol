@@ -230,13 +230,17 @@ contract CounterResonance {
     /**
      * @notice Calculate expected phase based on block timestamp
      * @return uint256 Expected phase in degrees
+     * @dev Uses microsecond precision to avoid overflow (timestamps valid until year ~2554)
      */
     function calculateExpectedPhase() public view returns (uint256) {
         // Phase = (timestamp % period) / period * 360
-        // Period = 1 / 432.073 Hz = 0.002314814 seconds = 2314814 nanoseconds
-        uint256 period = 2314814; // nanoseconds
-        uint256 timestampNs = block.timestamp * 1000000000; // convert to nanoseconds
-        uint256 phase = ((timestampNs % period) * 360) / period;
+        // Period = 1 / 432.073 Hz = 2314.814 microseconds
+        uint256 period = 2314814; // microseconds
+        // Use microseconds instead of nanoseconds to avoid overflow
+        // block.timestamp is in seconds, multiply by 1,000,000 for microseconds
+        // Safe until timestamp > 2^256 / 10^6 = ~10^71 seconds (~10^63 years)
+        uint256 timestampUs = block.timestamp * 1000000; // convert to microseconds
+        uint256 phase = ((timestampUs % period) * 360) / period;
         return phase;
     }
     

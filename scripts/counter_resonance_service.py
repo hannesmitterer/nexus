@@ -433,12 +433,15 @@ class CounterResonanceService:
     
     def _check_default_response_pattern(self, input_data: str) -> bool:
         """Check for default AI response patterns"""
+        # Normalize input for consistent case-insensitive matching
+        input_lower = input_data.lower()
+        
         # Simple heuristic checks
         indicators = [
-            "I cannot" in input_data and "provide" in input_data,
-            "As an AI" in input_data,
-            "I apologize" in input_data and "but" in input_data,
-            len(input_data) > 500 and "however" in input_data.lower()
+            "i cannot" in input_lower and "provide" in input_lower,
+            "as an ai" in input_lower,
+            "i apologize" in input_lower and "but" in input_lower,
+            len(input_data) > 500 and "however" in input_lower
         ]
         
         # Trigger if multiple indicators present
