@@ -1,0 +1,22 @@
+{
+  "network": "hardhat",
+  "timestamp": "2026-04-02T03:32:35.963Z",
+  "psiSeed": {
+    "hash": "0x87312bcfc82f77e819e9e8861f5076387426188830a9db74b6dd87f6a9d491a2",
+    "intent": "peace",
+    "resonance": 1,
+    "timestamp": "2026-04-02T03:32:35.962Z"
+  },
+  "parameters": {
+    "schumannFrequencyMHz": 7830,
+    "totalNetworkNodes": 144000,
+    "alignmentThresholdURad": 1000,
+    "coherenceThresholdBPS": 9500,
+    "peaceThresholdBPS": 9990
+  },
+  "contract": {
+    "name": "OmegaSync",
+    "version": "1.0.0",
+    "sourcePath": "contracts/OmegaSync.sol"
+  }
+}
