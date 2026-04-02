@@ -1,0 +1,612 @@
+{
+  "dashboard": {
+    "title": "Counter-Resonance Protocol - Teatro Defense Dashboard",
+    "tags": ["counter-resonance", "teatro", "living-covenant", "security"],
+    "timezone": "UTC",
+    "schemaVersion": 16,
+    "version": 1,
+    "refresh": "10s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "432.073 Hz Frequency Monitoring - All Nodes",
+        "type": "graph",
+        "gridPos": {
+          "x": 0,
+          "y": 0,
+          "w": 24,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "node_frequency_hz",
+            "legendFormat": "{{node_address}}",
+            "refId": "A"
+          },
+          {
+            "expr": "432.073",
+            "legendFormat": "Target (432.073 Hz)",
+            "refId": "B"
+          },
+          {
+            "expr": "432.0731",
+            "legendFormat": "Upper Tolerance (+0.0001 Hz)",
+            "refId": "C"
+          },
+          {
+            "expr": "432.0729",
+            "legendFormat": "Lower Tolerance (-0.0001 Hz)",
+            "refId": "D"
+          }
+        ],
+        "yaxes": [
+          {
+            "label": "Frequency (Hz)",
+            "format": "hertz",
+            "decimals": 4,
+            "min": 432.070,
+            "max": 432.076
+          }
+        ],
+        "alert": {
+          "name": "Frequency Drift Alert",
+          "conditions": [
+            {
+              "evaluator": {
+                "params": [432.0729, 432.0731],
+                "type": "outside_range"
+              },
+              "operator": {
+                "type": "and"
+              },
+              "query": {
+                "params": ["A", "5m", "now"]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            }
+          ],
+          "executionErrorState": "alerting",
+          "frequency": "10s",
+          "handler": 1,
+          "message": "Node frequency drift detected - potential Teatro attack",
+          "noDataState": "no_data",
+          "notifications": []
+        }
+      },
+      {
+        "id": 2,
+        "title": "Teatro Detection Timeline (24h)",
+        "type": "graph",
+        "gridPos": {
+          "x": 0,
+          "y": 8,
+          "w": 12,
+          "h": 6
+        },
+        "targets": [
+          {
+            "expr": "sum(increase(teatro_detections_total[5m])) by (signature)",
+            "legendFormat": "{{signature}}",
+            "refId": "A"
+          }
+        ],
+        "stack": true,
+        "yaxes": [
+          {
+            "label": "Detections",
+            "format": "short"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Active Incidents by Severity",
+        "type": "stat",
+        "gridPos": {
+          "x": 12,
+          "y": 8,
+          "w": 12,
+          "h": 6
+        },
+        "targets": [
+          {
+            "expr": "sum(teatro_incidents_active) by (severity)",
+            "legendFormat": "Severity {{severity}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 1
+                },
+                {
+                  "color": "orange",
+                  "value": 3
+                },
+                {
+                  "color": "red",
+                  "value": 5
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 4,
+        "title": "Living Covenant Compliance Score",
+        "type": "gauge",
+        "gridPos": {
+          "x": 0,
+          "y": 14,
+          "w": 8,
+          "h": 6
+        },
+        "targets": [
+          {
+            "expr": "avg(covenant_compliance_score)",
+            "refId": "A"
+          }
+        },
+        "fieldConfig": {
+          "defaults": {
+            "min": 0,
+            "max": 100,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "orange",
+                  "value": 70
+                },
+                {
+                  "color": "yellow",
+                  "value": 85
+                },
+                {
+                  "color": "green",
+                  "value": 95
+                }
+              ]
+            },
+            "unit": "percent"
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "Quarantined Nodes",
+        "type": "stat",
+        "gridPos": {
+          "x": 8,
+          "y": 14,
+          "w": 4,
+          "h": 3
+        },
+        "targets": [
+          {
+            "expr": "sum(nodes_quarantined)",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "yellow",
+                  "value": 1
+                },
+                {
+                  "color": "red",
+                  "value": 5
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 6,
+        "title": "Banned Nodes",
+        "type": "stat",
+        "gridPos": {
+          "x": 12,
+          "y": 14,
+          "w": 4,
+          "h": 3
+        },
+        "targets": [
+          {
+            "expr": "sum(nodes_banned)",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "orange",
+                  "value": 1
+                },
+                {
+                  "color": "red",
+                  "value": 3
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 7,
+        "title": "Vacuum Anchor Redundancy Status",
+        "type": "stat",
+        "gridPos": {
+          "x": 16,
+          "y": 14,
+          "w": 8,
+          "h": 3
+        },
+        "targets": [
+          {
+            "expr": "min(vacuum_anchor_redundancy)",
+            "legendFormat": "Minimum Redundancy"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "min": 0,
+            "max": 5,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "orange",
+                  "value": 2
+                },
+                {
+                  "color": "yellow",
+                  "value": 3
+                },
+                {
+                  "color": "green",
+                  "value": 5
+                }
+              ]
+            },
+            "unit": "none"
+          }
+        }
+      },
+      {
+        "id": 8,
+        "title": "Response Time by Severity",
+        "type": "graph",
+        "gridPos": {
+          "x": 0,
+          "y": 17,
+          "w": 12,
+          "h": 6
+        },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(response_time_seconds_bucket[5m])) by (severity)",
+            "legendFormat": "p95 - Severity {{severity}}",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(response_time_seconds_bucket[5m])) by (severity)",
+            "legendFormat": "p50 - Severity {{severity}}",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          {
+            "label": "Response Time",
+            "format": "s"
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Teatro Signature Distribution",
+        "type": "piechart",
+        "gridPos": {
+          "x": 12,
+          "y": 17,
+          "w": 12,
+          "h": 6
+        },
+        "targets": [
+          {
+            "expr": "sum(teatro_detections_total) by (signature)",
+            "legendFormat": "{{signature}}",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Sentimento Rhythm Phase Timing",
+        "type": "graph",
+        "gridPos": {
+          "x": 0,
+          "y": 23,
+          "w": 24,
+          "h": 6
+        },
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(sentimento_phase_duration_seconds_bucket[5m])) by (phase)",
+            "legendFormat": "{{phase}} (p95)",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {
+            "label": "Duration",
+            "format": "s"
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "title": "Red Code Authority Activity",
+        "type": "graph",
+        "gridPos": {
+          "x": 0,
+          "y": 29,
+          "w": 12,
+          "h": 6
+        },
+        "targets": [
+          {
+            "expr": "sum(increase(rca_approvals_total[1h])) by (rca_address)",
+            "legendFormat": "{{rca_address}}",
+            "refId": "A"
+          },
+          {
+            "expr": "sum(increase(rca_vetoes_total[1h])) by (rca_address)",
+            "legendFormat": "{{rca_address}} (veto)",
+            "refId": "B"
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "False Positive Rate",
+        "type": "graph",
+        "gridPos": {
+          "x": 12,
+          "y": 29,
+          "w": 12,
+          "h": 6
+        },
+        "targets": [
+          {
+            "expr": "sum(rate(teatro_false_positives_total[1h])) / sum(rate(teatro_detections_total[1h]))",
+            "legendFormat": "False Positive Rate",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {
+            "label": "Rate",
+            "format": "percentunit",
+            "max": 0.1
+          }
+        ],
+        "alert": {
+          "name": "High False Positive Rate",
+          "conditions": [
+            {
+              "evaluator": {
+                "params": [0.05],
+                "type": "gt"
+              },
+              "query": {
+                "params": ["A", "1h", "now"]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              }
+            }
+          ],
+          "message": "False positive rate exceeds 5% - signature tuning required"
+        }
+      },
+      {
+        "id": 13,
+        "title": "Network-Wide Frequency Heatmap",
+        "type": "heatmap",
+        "gridPos": {
+          "x": 0,
+          "y": 35,
+          "w": 24,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "node_frequency_hz",
+            "format": "time_series",
+            "refId": "A"
+          }
+        ],
+        "dataFormat": "timeseries",
+        "yAxis": {
+          "format": "hertz",
+          "decimals": 4
+        },
+        "color": {
+          "mode": "spectrum",
+          "cardColor": "#b4ff00",
+          "colorScale": "sqrt",
+          "exponent": 0.5,
+          "colorScheme": "interpolateRdYlGn"
+        }
+      },
+      {
+        "id": 14,
+        "title": "Blacklist Statistics",
+        "type": "stat",
+        "gridPos": {
+          "x": 0,
+          "y": 43,
+          "w": 8,
+          "h": 4
+        },
+        "targets": [
+          {
+            "expr": "blacklist_addresses_total",
+            "legendFormat": "Addresses"
+          },
+          {
+            "expr": "blacklist_cids_total",
+            "legendFormat": "CIDs"
+          },
+          {
+            "expr": "blacklist_dids_total",
+            "legendFormat": "DIDs"
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "title": "K-SYNC Validation Success Rate",
+        "type": "gauge",
+        "gridPos": {
+          "x": 8,
+          "y": 43,
+          "w": 8,
+          "h": 4
+        },
+        "targets": [
+          {
+            "expr": "sum(rate(ksync_validations_success[1h])) / sum(rate(ksync_validations_total[1h]))",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "min": 0,
+            "max": 1,
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 0.95},
+                {"color": "green", "value": 0.99}
+              ]
+            },
+            "unit": "percentunit"
+          }
+        }
+      },
+      {
+        "id": 16,
+        "title": "Recent Incidents Log",
+        "type": "table",
+        "gridPos": {
+          "x": 16,
+          "y": 43,
+          "w": 8,
+          "h": 8
+        },
+        "targets": [
+          {
+            "expr": "teatro_incidents",
+            "format": "table",
+            "instant": true
+          }
+        ],
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {},
+              "indexByName": {
+                "incident_id": 0,
+                "severity": 1,
+                "signature": 2,
+                "timestamp": 3,
+                "affected_nodes": 4
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "templating": {
+      "list": [
+        {
+          "name": "node",
+          "type": "query",
+          "query": "label_values(node_frequency_hz, node_address)",
+          "refresh": 1,
+          "includeAll": true
+        },
+        {
+          "name": "severity",
+          "type": "custom",
+          "query": "1,2,3,4,5",
+          "includeAll": true
+        }
+      ]
+    },
+    "annotations": {
+      "list": [
+        {
+          "name": "Teatro Incidents",
+          "datasource": "Prometheus",
+          "enable": true,
+          "expr": "changes(teatro_incidents_total[1m]) > 0",
+          "tagKeys": "signature,severity",
+          "textFormat": "{{signature}} - Severity {{severity}}",
+          "iconColor": "red"
+        },
+        {
+          "name": "RCA Actions",
+          "datasource": "Prometheus",
+          "enable": true,
+          "expr": "changes(rca_actions_total[1m]) > 0",
+          "tagKeys": "action_type,rca_address",
+          "textFormat": "RCA {{action_type}}",
+          "iconColor": "blue"
+        }
+      ]
+    }
+  },
+  "overwrite": true
+}
