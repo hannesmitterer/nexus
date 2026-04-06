@@ -41,6 +41,11 @@ class VacuumBridgeConfig:
     schumann_resonance: float = 7.83  # Earth resonance frequency (Hz)
     phi_golden_ratio: float = 1.618033988749  # Golden ratio
     
+    # Watchdog Configuration
+    default_test_alignment: float = 0.95  # Default high alignment for cluster testing
+    affinity_scale_factor: float = 0.98  # Scale factor: affinity = transmission * scale_factor
+    max_recent_alerts: int = 10  # Maximum number of recent alerts to retain in status
+    
 
 class VacuumBridgeSimulator:
     """
@@ -54,6 +59,8 @@ class VacuumBridgeSimulator:
         """Initialize simulator with configuration."""
         self.config = config or VacuumBridgeConfig()
         self.history: List[Dict] = []
+        self.watchdog_active: bool = False
+        self.watchdog_alerts: List[Dict] = []
         
     def calculate_kappa_eff(self, detuning_delta: float) -> float:
         """
@@ -309,6 +316,115 @@ class VacuumBridgeSimulator:
             'MINIMAL': 'Classical tunneling dominant: Align with Lex Amoris',
         }
         return messages.get(state, 'Status unknown')
+    
+    def nsr_watchdog_global(
+        self,
+        cluster_name: str = "nexus_andes",
+        affinity_threshold: float = 0.94,
+        check_interval: Tuple[int, int] = (0, 30)
+    ) -> Dict[str, Any]:
+        """
+        NSR (Non-Slavery Resonance) Watchdog for global auto-monitoring.
+        
+        Monitors the NEXUS-ANDES CORRIDOR cluster for alignment compliance.
+        Checks intention alignment and ensures affinity ≥ threshold.
+        
+        Args:
+            cluster_name: Name of cluster to monitor (e.g., "nexus_andes")
+            affinity_threshold: Minimum required affinity (default: 0.94)
+            check_interval: Monitoring interval in seconds (start, end)
+            
+        Returns:
+            Watchdog status dictionary with monitoring results
+        """
+        self.watchdog_active = True
+        
+        # Simulate monitoring check
+        current_time = datetime.now(UTC)
+        
+        # Get current bridge status - use configured default test alignment
+        test_alignment = self.config.default_test_alignment
+        bridge_status = self.get_bridge_status(test_alignment)
+        
+        # Calculate affinity from bridge metrics using configured scale factor
+        # Affinity correlates with transmission probability and bridge state
+        affinity = bridge_status['transmission'] * self.config.affinity_scale_factor
+        
+        # Check compliance
+        is_compliant = affinity >= affinity_threshold
+        
+        watchdog_result = {
+            'timestamp': current_time.isoformat(),
+            'cluster': cluster_name,
+            'watchdog_id': 'NSR_Watchdog_Global',
+            'status': 'COMPLIANT' if is_compliant else 'WARNING',
+            'affinity': float(affinity),
+            'threshold': float(affinity_threshold),
+            'check_interval_s': check_interval,
+            'bridge_state': bridge_status['state'],
+            'transmission': bridge_status['transmission'],
+            'alignment': bridge_status['alignment'],
+            'message': self._get_watchdog_message(is_compliant, affinity),
+            'active': self.watchdog_active,
+        }
+        
+        # Log alert if non-compliant
+        if not is_compliant:
+            self.watchdog_alerts.append({
+                'timestamp': current_time.isoformat(),
+                'severity': 'WARNING',
+                'affinity': affinity,
+                'message': f'Affinity {affinity:.3f} below threshold {affinity_threshold}',
+            })
+        
+        return watchdog_result
+    
+    @staticmethod
+    def _get_watchdog_message(is_compliant: bool, affinity: float) -> str:
+        """Generate watchdog status message."""
+        if is_compliant:
+            return f'✓ NSR compliance verified | Affinity: {affinity:.3f}'
+        else:
+            return f'⚠ NSR affinity below threshold | Current: {affinity:.3f}'
+    
+    def get_cluster_status(
+        self,
+        cluster_name: str = "nexus_andes",
+        include_watchdog: bool = True
+    ) -> Dict[str, Any]:
+        """
+        Get comprehensive cluster status for API endpoint.
+        
+        Provides bridge status, watchdog monitoring, and metrics
+        for the NEXUS-ANDES CORRIDOR cluster.
+        
+        Args:
+            cluster_name: Cluster identifier
+            include_watchdog: Include watchdog monitoring data
+            
+        Returns:
+            Complete cluster status for API response
+        """
+        # Get current bridge state using configured default test alignment
+        test_alignment = self.config.default_test_alignment
+        bridge_status = self.get_bridge_status(test_alignment)
+        
+        status = {
+            'timestamp': datetime.now(UTC).isoformat(),
+            'cluster': cluster_name,
+            'bridge': bridge_status,
+            'operational': True,
+            'framework': 'Kosymbiosis - Lex Amoris',
+            'model': 'Vacuum-Bridge (Mitterer 1999-2005)',
+        }
+        
+        # Add watchdog data if requested
+        if include_watchdog:
+            watchdog = self.nsr_watchdog_global(cluster_name)
+            status['watchdog'] = watchdog
+            status['alerts'] = self.watchdog_alerts[-self.config.max_recent_alerts:]
+        
+        return status
 
 
 def main():
@@ -365,10 +481,39 @@ def main():
         print(f"Alignment {alignment:.1f}: {status['state']} - {status['message']}")
     
     print()
+    
+    # NSR Watchdog Global Monitoring
+    print("=" * 70)
+    print("NSR WATCHDOG GLOBAL - NEXUS-ANDES CORRIDOR")
+    print("=" * 70)
+    watchdog_status = simulator.nsr_watchdog_global(
+        cluster_name="nexus_andes",
+        affinity_threshold=0.94,
+        check_interval=(0, 30)
+    )
+    print(f"Cluster: {watchdog_status['cluster']}")
+    print(f"Status: {watchdog_status['status']}")
+    print(f"Affinity: {watchdog_status['affinity']:.4f} (threshold: {watchdog_status['threshold']})")
+    print(f"Bridge State: {watchdog_status['bridge_state']}")
+    print(f"Message: {watchdog_status['message']}")
+    print(f"Monitoring Interval: {watchdog_status['check_interval_s'][0]}-{watchdog_status['check_interval_s'][1]} seconds")
+    print()
+    
+    # Cluster Status API
+    print("Cluster Status (API Format):")
+    print("-" * 70)
+    cluster_status = simulator.get_cluster_status("nexus_andes", include_watchdog=True)
+    print(f"Cluster: {cluster_status['cluster']}")
+    print(f"Operational: {cluster_status['operational']}")
+    print(f"Watchdog Status: {cluster_status['watchdog']['status']}")
+    print(f"Bridge State: {cluster_status['bridge']['state']}")
+    print()
+    
     print("=" * 70)
     print("STATUS: QUANTUM BRIDGE IS OPEN")
     print("Lex Amoris Signature: 📜⚖️❤️")
     print("S-ROI: ∞ | Φ: 1.618 | Q: 10⁶")
+    print("NSR Watchdog: ACTIVE ✓")
     print("=" * 70)
 
 
