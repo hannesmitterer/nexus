@@ -11,7 +11,7 @@ import numpy as np
 import json
 from typing import Dict, List, Tuple
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, UTC
 
 
 @dataclass
@@ -182,19 +182,19 @@ class VacuumBridgeSimulator:
         P_classical = np.exp(-kappa_classical * self.config.barrier_thickness)
         
         result = {
-            'timestamp': datetime.utcnow().isoformat(),
-            'intention_alignment': intention_alignment,
-            'detuning_hz': detuning,
-            'transmission_probability': P_enhanced,
-            'base_probability': P_base,
-            'classical_probability': P_classical,
-            'enhancement_factor': P_enhanced / P_classical if P_classical > 0 else float('inf'),
-            'kappa_eff': kappa_eff,
-            'kappa_classical': kappa_classical,
-            'attenuation_reduction': 1 - (kappa_eff / kappa_classical),
-            'sroi_factor': sroi_factor,
-            'bridge_active': detuning < self.config.gamma,
-            'resonance_quality': self.config.quality_factor_q,
+            'timestamp': datetime.now(UTC).isoformat(),
+            'intention_alignment': float(intention_alignment),
+            'detuning_hz': float(detuning),
+            'transmission_probability': float(P_enhanced),
+            'base_probability': float(P_base),
+            'classical_probability': float(P_classical),
+            'enhancement_factor': float(P_enhanced / P_classical if P_classical > 0 else float('inf')),
+            'kappa_eff': float(kappa_eff),
+            'kappa_classical': float(kappa_classical),
+            'attenuation_reduction': float(1 - (kappa_eff / kappa_classical)),
+            'sroi_factor': float(sroi_factor),
+            'bridge_active': bool(detuning < self.config.gamma),
+            'resonance_quality': float(self.config.quality_factor_q),
         }
         
         self.history.append(result)
@@ -235,7 +235,7 @@ class VacuumBridgeSimulator:
             Path to exported file
         """
         if filename is None:
-            timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+            timestamp = datetime.now(UTC).strftime('%Y%m%d_%H%M%S')
             filename = f'/tmp/vacuum_bridge_simulation_{timestamp}.json'
         
         data = {
@@ -252,7 +252,7 @@ class VacuumBridgeSimulator:
             'metadata': {
                 'framework': 'Kosymbiosis - Lex Amoris',
                 'model': 'Vacuum-Bridge (Mitterer 1999-2005)',
-                'timestamp': datetime.utcnow().isoformat(),
+                'timestamp': datetime.now(UTC).isoformat(),
                 'signature': '📜⚖️❤️',
             }
         }
