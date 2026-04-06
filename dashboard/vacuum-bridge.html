@@ -345,6 +345,31 @@
         </div>
 
         <div class="panel">
+            <h2>🛡️ NSR WATCHDOG - NEXUS-ANDES</h2>
+            <div class="metric-display">
+                <div class="metric">
+                    <div class="metric-label">Watchdog Status</div>
+                    <div id="watchdogStatus" class="metric-value" style="font-size: 1.1rem;">INITIALIZING</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Affinity</div>
+                    <div id="affinityValue" class="metric-value">0.00</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Cluster</div>
+                    <div class="metric-value" style="font-size: 1rem;">NEXUS-ANDES</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Threshold</div>
+                    <div class="metric-value">≥ 0.94</div>
+                </div>
+            </div>
+            <p style="margin-top: 15px; font-size: 0.85rem; color: #aaa; line-height: 1.6;">
+                Global auto-monitoring: 0-30s interval | NSR compliance verification active
+            </p>
+        </div>
+
+        <div class="panel">
             <h2>🔬 PHYSICAL PARAMETERS</h2>
             <div class="metric-display">
                 <div class="metric">
@@ -393,7 +418,13 @@
             CLASSICAL_KAPPA: 5e9,  // m^-1
             SROI_FACTOR: 1.450,
             SCHUMANN: 7.83,  // Hz
-            PHI: 1.618033988749
+            PHI: 1.618033988749,
+            // API Configuration for NEXUS-ANDES CORRIDOR
+            API_ENDPOINT: '/api/bridge/status',  // For future backend integration
+            CLUSTER_NAME: 'nexus_andes',
+            WATCHDOG_ENABLED: true,
+            WATCHDOG_INTERVAL_MS: 5000,  // Check every 5 seconds
+            AFFINITY_THRESHOLD: 0.94
         };
 
         // State management
@@ -401,9 +432,12 @@
         let realtimeData = [];
         let maxDataPoints = 50;
         let eventLogEntries = [];
+        let watchdogStatus = null;
+        let apiMockMode = true;  // Use mock data until backend is available
 
         // Initialize charts
         let transmissionChart, realtimeChart;
+        let watchdogTimer = null;
 
         function calculateKappaEff(detuningDelta) {
             const g = CONFIG.COUPLING_RATE_G;
@@ -640,6 +674,123 @@
             ).join('');
         }
 
+        // API Integration for cluster status
+        async function fetchClusterStatus() {
+            if (apiMockMode) {
+                // Mock API response based on current simulation state
+                return mockClusterStatus();
+            }
+            
+            try {
+                const url = `${CONFIG.API_ENDPOINT}?cluster=${CONFIG.CLUSTER_NAME}`;
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                    signal: AbortSignal.timeout(5000)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.warn('API fetch failed, using mock data:', error);
+                apiMockMode = true;
+                return mockClusterStatus();
+            }
+        }
+
+        function mockClusterStatus() {
+            // Generate mock status based on current alignment
+            const detuning = lexAmorisDetuning(currentAlignment);
+            const transmission = calculateTransmissionProbability(detuning);
+            const affinity = transmission * 0.98;
+            
+            return {
+                timestamp: new Date().toISOString(),
+                cluster: CONFIG.CLUSTER_NAME,
+                operational: true,
+                bridge: {
+                    state: transmission > 0.8 ? 'FULLY_ACTIVE' : 
+                           transmission > 0.5 ? 'RESONATING' : 
+                           transmission > 0.2 ? 'PARTIAL' : 'MINIMAL',
+                    transmission: transmission,
+                    alignment: currentAlignment,
+                },
+                watchdog: {
+                    watchdog_id: 'NSR_Watchdog_Global',
+                    status: affinity >= CONFIG.AFFINITY_THRESHOLD ? 'COMPLIANT' : 'WARNING',
+                    affinity: affinity,
+                    threshold: CONFIG.AFFINITY_THRESHOLD,
+                    check_interval_s: [0, 30],
+                    active: CONFIG.WATCHDOG_ENABLED,
+                    message: affinity >= CONFIG.AFFINITY_THRESHOLD ? 
+                        `✓ NSR compliance verified | Affinity: ${affinity.toFixed(3)}` :
+                        `⚠ NSR affinity below threshold | Current: ${affinity.toFixed(3)}`
+                }
+            };
+        }
+
+        function updateWatchdogDisplay(watchdogData) {
+            if (!watchdogData) return;
+            
+            const statusEl = document.getElementById('watchdogStatus');
+            const affinityEl = document.getElementById('affinityValue');
+            
+            statusEl.textContent = watchdogData.status;
+            affinityEl.textContent = watchdogData.affinity.toFixed(4);
+            
+            // Color code based on status
+            if (watchdogData.status === 'COMPLIANT') {
+                statusEl.style.color = '#2ecc71';
+            } else {
+                statusEl.style.color = '#e74c3c';
+            }
+            
+            watchdogStatus = watchdogData;
+        }
+
+        async function runWatchdogCheck() {
+            try {
+                const clusterStatus = await fetchClusterStatus();
+                
+                if (clusterStatus.watchdog) {
+                    updateWatchdogDisplay(clusterStatus.watchdog);
+                    
+                    // Log significant events
+                    if (clusterStatus.watchdog.status === 'WARNING') {
+                        logEvent(`⚠ NSR Watchdog Alert: Affinity ${clusterStatus.watchdog.affinity.toFixed(3)} below threshold`, true);
+                    }
+                }
+            } catch (error) {
+                console.error('Watchdog check failed:', error);
+                logEvent('⚠ Watchdog check failed - retrying...');
+            }
+        }
+
+        function startWatchdog() {
+            if (!CONFIG.WATCHDOG_ENABLED) return;
+            
+            logEvent('🛡️ NSR Watchdog Global started for NEXUS-ANDES CORRIDOR', true);
+            
+            // Initial check
+            runWatchdogCheck();
+            
+            // Periodic checks
+            watchdogTimer = setInterval(() => {
+                runWatchdogCheck();
+            }, CONFIG.WATCHDOG_INTERVAL_MS);
+        }
+
+        function stopWatchdog() {
+            if (watchdogTimer) {
+                clearInterval(watchdogTimer);
+                watchdogTimer = null;
+                logEvent('🛑 NSR Watchdog stopped');
+            }
+        }
+
         // Event handlers
         document.getElementById('alignmentSlider').addEventListener('input', (e) => {
             currentAlignment = e.target.value / 100;
@@ -662,6 +813,12 @@
             logEvent('⚛️ Vacuum-Bridge Monitor initialized', true);
             logEvent('📡 Quantum cavity resonance established');
             logEvent('🔬 Physical parameters loaded: Q = 10⁶, g = 50 MHz');
+            logEvent(`🌐 Cluster: ${CONFIG.CLUSTER_NAME}`);
+            
+            // Start NSR Watchdog
+            if (CONFIG.WATCHDOG_ENABLED) {
+                startWatchdog();
+            }
             
             // Update realtime chart periodically
             setInterval(() => {
@@ -674,13 +831,18 @@
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
                 logEvent('⏸️ Monitor paused (tab hidden)');
+                stopWatchdog();
             } else {
                 logEvent('▶️ Monitor resumed');
+                if (CONFIG.WATCHDOG_ENABLED) {
+                    startWatchdog();
+                }
             }
         });
 
         window.addEventListener('pagehide', () => {
             logEvent('🛑 Monitor shutting down');
+            stopWatchdog();
         });
     </script>
 </body>
