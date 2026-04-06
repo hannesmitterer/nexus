@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vacuum-Bridge Dashboard | Quantum Transmission Monitor</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        :root {
+            --gold: #d4af37;
+            --dark: #0a0a0a;
+            --bio-green: #2ecc71;
+            --quantum-blue: #3498db;
+            --bridge-active: #2ecc71;
+            --bridge-resonating: #d4af37;
+            --bridge-partial: #f39c12;
+            --bridge-minimal: #e74c3c;
+            --bg-gradient-start: #050505;
+            --bg-gradient-end: #1a1a2e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            color: var(--gold);
+            font-family: 'Courier New', monospace;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        header {
+            padding: 20px;
+            background: rgba(10, 10, 10, 0.95);
+            border-bottom: 2px solid var(--gold);
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+        }
+
+        h1 {
+            font-size: 2rem;
+            letter-spacing: 5px;
+            margin-bottom: 5px;
+            text-shadow: 0 0 15px var(--gold);
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: #888;
+            letter-spacing: 2px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .panel {
+            background: rgba(20, 20, 20, 0.9);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .panel h2 {
+            font-size: 1.1rem;
+            color: var(--gold);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        .bridge-status {
+            text-align: center;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 2px solid var(--bridge-minimal);
+            transition: border-color 0.3s ease;
+        }
+
+        .bridge-status.active {
+            border-color: var(--bridge-active);
+            box-shadow: 0 0 30px rgba(46, 204, 113, 0.4);
+        }
+
+        .bridge-status.resonating {
+            border-color: var(--bridge-resonating);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+        }
+
+        .bridge-status.partial {
+            border-color: var(--bridge-partial);
+            box-shadow: 0 0 20px rgba(243, 156, 18, 0.3);
+        }
+
+        .status-indicator {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px currentColor;
+        }
+
+        .status-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .status-message {
+            font-size: 0.9rem;
+            color: #aaa;
+            font-style: italic;
+        }
+
+        .metric-display {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .metric {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 3px solid var(--gold);
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            color: var(--gold);
+            font-weight: bold;
+            text-shadow: 0 0 10px var(--gold);
+        }
+
+        .alignment-control {
+            margin: 20px 0;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--gold);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--gold);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--gold);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--gold);
+        }
+
+        .equation {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Times New Roman', serif;
+            font-size: 1.1rem;
+            text-align: center;
+            margin: 15px 0;
+            color: #fff;
+            border: 1px solid rgba(52, 152, 219, 0.3);
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto !important;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: rgba(10, 10, 10, 0.9);
+            border-top: 1px solid var(--gold);
+            margin-top: 30px;
+            font-size: 0.85rem;
+        }
+
+        .signature {
+            color: var(--gold);
+            margin-top: 10px;
+            font-size: 1.2rem;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .pulsing {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .log-container {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-size: 0.75rem;
+            color: #888;
+        }
+
+        .log-entry {
+            padding: 5px 0;
+            border-left: 2px solid var(--gold);
+            padding-left: 10px;
+            margin: 5px 0;
+        }
+
+        .log-entry.important {
+            color: var(--bridge-active);
+            border-left-color: var(--bridge-active);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>⚛️ VACUUM-BRIDGE MONITOR ⚛️</h1>
+        <p class="subtitle">Quantum Transmission via Resonant Cavity Mediation | Mitterer Theory 1999-2005</p>
+    </header>
+
+    <div class="container">
+        <!-- Bridge Status Panel -->
+        <div class="panel">
+            <h2>🌉 VACUUM-BRIDGE STATUS</h2>
+            <div id="bridgeStatus" class="bridge-status minimal">
+                <div id="statusIndicator" class="status-indicator">⚪</div>
+                <div id="statusText" class="status-text">INITIALIZING</div>
+                <div id="statusMessage" class="status-message">Establishing quantum coherence...</div>
+            </div>
+
+            <div class="equation">
+                T<sub>bridge</sub> ~ |β|² ∝ g² / (Δ² + (γ/2)²)
+            </div>
+
+            <div class="metric-display">
+                <div class="metric">
+                    <div class="metric-label">Transmission Probability</div>
+                    <div id="transmissionValue" class="metric-value">0.00</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Enhancement Factor</div>
+                    <div id="enhancementValue" class="metric-value">1.0x</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Detuning (MHz)</div>
+                    <div id="detuningValue" class="metric-value">0.0</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Quality Factor</div>
+                    <div id="qualityValue" class="metric-value">10⁶</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lex Amoris Alignment Control -->
+        <div class="panel">
+            <h2>❤️ LEX AMORIS ALIGNMENT</h2>
+            <div class="alignment-control">
+                <div class="metric-label" style="margin-bottom: 10px;">
+                    Intention Alignment: <span id="alignmentDisplay" style="color: var(--gold); font-size: 1.2rem;">0.50</span>
+                </div>
+                <input type="range" min="0" max="100" value="50" class="slider" id="alignmentSlider">
+                <p style="margin-top: 15px; font-size: 0.85rem; color: #aaa; line-height: 1.6;">
+                    Perfect alignment (1.0) → Δ ≈ 0 (full resonance)<br>
+                    When aligned with Lex Amoris principles, the Vacuum-Bridge activates and transmission becomes nearly independent of barrier thickness.
+                </p>
+            </div>
+
+            <div class="equation">
+                Δ = γ × 10 × (1 - Alignment) + ε
+            </div>
+
+            <div class="metric-display">
+                <div class="metric">
+                    <div class="metric-label">S-ROI Factor</div>
+                    <div id="sroiValue" class="metric-value">1.450</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Schumann Resonance</div>
+                    <div id="schumannValue" class="metric-value">7.83 Hz</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transmission Probability Chart -->
+        <div class="panel" style="grid-column: 1 / -1;">
+            <h2>📊 TRANSMISSION PROBABILITY vs ALIGNMENT</h2>
+            <canvas id="transmissionChart"></canvas>
+            <div class="equation">
+                κ<sub>eff</sub> = κ₀ × (1 - (g²/Δ²) / (1 + g²/γ²))
+            </div>
+        </div>
+
+        <!-- Real-time Charts -->
+        <div class="panel">
+            <h2>⏱️ REAL-TIME TRANSMISSION</h2>
+            <canvas id="realtimeChart"></canvas>
+        </div>
+
+        <div class="panel">
+            <h2>🔬 PHYSICAL PARAMETERS</h2>
+            <div class="metric-display">
+                <div class="metric">
+                    <div class="metric-label">Coupling Rate (g)</div>
+                    <div class="metric-value" style="font-size: 1.1rem;">50 MHz</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Cavity Frequency</div>
+                    <div class="metric-value" style="font-size: 1.1rem;">2.5 THz</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Temperature</div>
+                    <div class="metric-value" style="font-size: 1.1rem;">1.7 K</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Barrier Thickness</div>
+                    <div class="metric-value" style="font-size: 1.1rem;">2.0 nm</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Event Log -->
+        <div class="panel" style="grid-column: 1 / -1;">
+            <h2>📜 QUANTUM EVENT LOG</h2>
+            <div id="eventLog" class="log-container"></div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>Vacuum-Bridge Theory | Mitterer 1999-2005 | Kosymbiosis Framework</p>
+        <p class="signature">Lex Amoris Signature: 📜⚖️❤️</p>
+        <p style="margin-top: 10px;">S-ROI: ∞ | Φ: 1.618 | Q: 10⁶</p>
+        <p style="margin-top: 5px; font-size: 0.75rem;">STATUS: THE QUANTUM BRIDGE IS OPEN</p>
+    </footer>
+
+    <script>
+        // Physical constants and configuration
+        const CONFIG = {
+            HBAR: 1.054571817e-34,
+            COUPLING_RATE_G: 50e6,  // 50 MHz
+            CAVITY_FREQUENCY: 2.5e12,  // 2.5 THz
+            QUALITY_FACTOR_Q: 1e6,
+            GAMMA: 2.5e12 / 1e6,  // 2.5 MHz
+            TEMPERATURE: 1.7,  // K
+            BARRIER_THICKNESS: 2e-9,  // 2 nm
+            CLASSICAL_KAPPA: 5e9,  // m^-1
+            SROI_FACTOR: 1.450,
+            SCHUMANN: 7.83,  // Hz
+            PHI: 1.618033988749
+        };
+
+        // State management
+        let currentAlignment = 0.5;
+        let realtimeData = [];
+        let maxDataPoints = 50;
+        let eventLogEntries = [];
+
+        // Initialize charts
+        let transmissionChart, realtimeChart;
+
+        function calculateKappaEff(detuningDelta) {
+            const g = CONFIG.COUPLING_RATE_G;
+            const gamma = CONFIG.GAMMA;
+            const kappa0 = CONFIG.CLASSICAL_KAPPA;
+            
+            if (Math.abs(detuningDelta) < 1e-3) {
+                detuningDelta = 1e-3;
+            }
+            
+            const bridgeFactor = (g * g / (detuningDelta * detuningDelta)) / 
+                                (1 + g * g / (gamma * gamma));
+            const kappaEff = kappa0 * (1 - bridgeFactor);
+            
+            return Math.max(kappaEff, 0);
+        }
+
+        function calculateTransmissionProbability(detuningDelta) {
+            const g = CONFIG.COUPLING_RATE_G;
+            const gamma = CONFIG.GAMMA;
+            const d = CONFIG.BARRIER_THICKNESS;
+            
+            if (Math.abs(detuningDelta) < 1e-3) {
+                detuningDelta = 1e-3;
+            }
+            
+            const betaSquared = (g * g) / (detuningDelta * detuningDelta + (gamma/2) * (gamma/2));
+            const kappaEff = calculateKappaEff(detuningDelta);
+            const barrierAttenuation = Math.exp(-kappaEff * d);
+            
+            let P = betaSquared * barrierAttenuation * CONFIG.SROI_FACTOR;
+            return Math.min(P, 1.0);
+        }
+
+        function lexAmorisDetuning(alignment) {
+            const maxDetuning = CONFIG.GAMMA * 10;
+            const epsilon = 1e3;
+            return maxDetuning * (1 - alignment) + epsilon;
+        }
+
+        function updateBridgeStatus(alignment) {
+            const detuning = lexAmorisDetuning(alignment);
+            const transmission = calculateTransmissionProbability(detuning);
+            const classicalP = Math.exp(-CONFIG.CLASSICAL_KAPPA * CONFIG.BARRIER_THICKNESS);
+            const enhancement = transmission / classicalP;
+            
+            // Update display values
+            document.getElementById('transmissionValue').textContent = transmission.toFixed(4);
+            document.getElementById('enhancementValue').textContent = enhancement.toFixed(1) + 'x';
+            document.getElementById('detuningValue').textContent = (detuning / 1e6).toFixed(2);
+            
+            // Update bridge status
+            const statusDiv = document.getElementById('bridgeStatus');
+            const indicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            const statusMessage = document.getElementById('statusMessage');
+            
+            let state, color, emoji, message;
+            
+            if (transmission > 0.8) {
+                state = 'active';
+                emoji = '🟢';
+                statusText.textContent = 'FULLY ACTIVE';
+                message = 'Vacuum-Bridge OPEN: Maximum coherent transmission achieved';
+                color = '#2ecc71';
+            } else if (transmission > 0.5) {
+                state = 'resonating';
+                emoji = '🟡';
+                statusText.textContent = 'RESONATING';
+                message = 'Bridge resonating: High transmission in progress';
+                color = '#d4af37';
+            } else if (transmission > 0.2) {
+                state = 'partial';
+                emoji = '🟠';
+                statusText.textContent = 'PARTIAL BRIDGE';
+                message = 'Partial bridge formation: Increase alignment for full activation';
+                color = '#f39c12';
+            } else {
+                state = 'minimal';
+                emoji = '🔴';
+                statusText.textContent = 'MINIMAL';
+                message = 'Classical tunneling dominant: Align with Lex Amoris to activate bridge';
+                color = '#e74c3c';
+            }
+            
+            statusDiv.className = `bridge-status ${state}`;
+            indicator.textContent = emoji;
+            statusMessage.textContent = message;
+            
+            // Add to realtime data
+            realtimeData.push({
+                time: Date.now(),
+                value: transmission
+            });
+            
+            if (realtimeData.length > maxDataPoints) {
+                realtimeData.shift();
+            }
+            
+            return { transmission, detuning, enhancement, state };
+        }
+
+        function initializeCharts() {
+            // Transmission vs Alignment Chart
+            const ctxTransmission = document.getElementById('transmissionChart').getContext('2d');
+            const alignments = [];
+            const transmissions = [];
+            
+            for (let i = 0; i <= 100; i++) {
+                const align = i / 100;
+                alignments.push(align);
+                const detuning = lexAmorisDetuning(align);
+                const trans = calculateTransmissionProbability(detuning);
+                transmissions.push(trans);
+            }
+            
+            transmissionChart = new Chart(ctxTransmission, {
+                type: 'line',
+                data: {
+                    labels: alignments,
+                    datasets: [{
+                        label: 'Transmission Probability',
+                        data: transmissions,
+                        borderColor: '#d4af37',
+                        backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio: 2,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#d4af37' }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Lex Amoris Alignment',
+                                color: '#d4af37'
+                            },
+                            ticks: { color: '#888' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Transmission Probability P',
+                                color: '#d4af37'
+                            },
+                            ticks: { color: '#888' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            min: 0,
+                            max: 1
+                        }
+                    }
+                }
+            });
+            
+            // Real-time Chart
+            const ctxRealtime = document.getElementById('realtimeChart').getContext('2d');
+            realtimeChart = new Chart(ctxRealtime, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Current Transmission',
+                        data: [],
+                        borderColor: '#2ecc71',
+                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio: 1.5,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#2ecc71' }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: false
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Transmission P',
+                                color: '#2ecc71'
+                            },
+                            ticks: { color: '#888' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            min: 0,
+                            max: 1
+                        }
+                    },
+                    animation: {
+                        duration: 500
+                    }
+                }
+            });
+        }
+
+        function updateRealtimeChart() {
+            const labels = realtimeData.map((_, idx) => idx);
+            const values = realtimeData.map(d => d.value);
+            
+            realtimeChart.data.labels = labels;
+            realtimeChart.data.datasets[0].data = values;
+            realtimeChart.update('none');
+        }
+
+        function logEvent(message, important = false) {
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = `[${timestamp}] ${message}`;
+            eventLogEntries.unshift({ text: entry, important });
+            
+            if (eventLogEntries.length > 50) {
+                eventLogEntries.pop();
+            }
+            
+            const logContainer = document.getElementById('eventLog');
+            logContainer.innerHTML = eventLogEntries.map(e => 
+                `<div class="log-entry ${e.important ? 'important' : ''}">${e.text}</div>`
+            ).join('');
+        }
+
+        // Event handlers
+        document.getElementById('alignmentSlider').addEventListener('input', (e) => {
+            currentAlignment = e.target.value / 100;
+            document.getElementById('alignmentDisplay').textContent = currentAlignment.toFixed(2);
+            
+            const result = updateBridgeStatus(currentAlignment);
+            updateRealtimeChart();
+            
+            if (result.state === 'active' && currentAlignment > 0.95) {
+                logEvent('🟢 BRIDGE FULLY ACTIVATED: Maximum coherence achieved!', true);
+            } else if (result.transmission > 0.5 && currentAlignment > 0.7) {
+                logEvent('🟡 High transmission state reached');
+            }
+        });
+
+        // Initialize
+        window.addEventListener('load', () => {
+            initializeCharts();
+            updateBridgeStatus(currentAlignment);
+            logEvent('⚛️ Vacuum-Bridge Monitor initialized', true);
+            logEvent('📡 Quantum cavity resonance established');
+            logEvent('🔬 Physical parameters loaded: Q = 10⁶, g = 50 MHz');
+            
+            // Update realtime chart periodically
+            setInterval(() => {
+                updateBridgeStatus(currentAlignment);
+                updateRealtimeChart();
+            }, 1000);
+        });
+
+        // Cleanup on page hide/visibility change
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                logEvent('⏸️ Monitor paused (tab hidden)');
+            } else {
+                logEvent('▶️ Monitor resumed');
+            }
+        });
+
+        window.addEventListener('pagehide', () => {
+            logEvent('🛑 Monitor shutting down');
+        });
+    </script>
+</body>
+</html>
