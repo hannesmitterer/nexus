@@ -9,7 +9,7 @@ Integrates with Lex Amoris framework for intention-aligned quantum transport.
 
 import numpy as np
 import json
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Any
 from dataclasses import dataclass
 from datetime import datetime, UTC
 
@@ -262,7 +262,7 @@ class VacuumBridgeSimulator:
             
         return filename
     
-    def get_bridge_status(self, intention_alignment: float) -> Dict[str, any]:
+    def get_bridge_status(self, intention_alignment: float) -> Dict[str, Any]:
         """
         Get current bridge status for dashboard display.
         
