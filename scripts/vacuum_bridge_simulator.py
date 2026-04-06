@@ -41,6 +41,10 @@ class VacuumBridgeConfig:
     schumann_resonance: float = 7.83  # Earth resonance frequency (Hz)
     phi_golden_ratio: float = 1.618033988749  # Golden ratio
     
+    # Watchdog Configuration
+    default_test_alignment: float = 0.95  # Default high alignment for cluster testing
+    affinity_scale_factor: float = 0.98  # Scale factor: affinity = transmission * scale_factor
+    
 
 class VacuumBridgeSimulator:
     """
@@ -337,13 +341,13 @@ class VacuumBridgeSimulator:
         # Simulate monitoring check
         current_time = datetime.now(UTC)
         
-        # Get current bridge status - use high alignment as baseline
-        test_alignment = 0.95  # Representative high alignment for corridor
+        # Get current bridge status - use configured default test alignment
+        test_alignment = self.config.default_test_alignment
         bridge_status = self.get_bridge_status(test_alignment)
         
-        # Calculate affinity from bridge metrics
+        # Calculate affinity from bridge metrics using configured scale factor
         # Affinity correlates with transmission probability and bridge state
-        affinity = bridge_status['transmission'] * 0.98  # Scale to realistic affinity
+        affinity = bridge_status['transmission'] * self.config.affinity_scale_factor
         
         # Check compliance
         is_compliant = affinity >= affinity_threshold
@@ -400,8 +404,8 @@ class VacuumBridgeSimulator:
         Returns:
             Complete cluster status for API response
         """
-        # Get current bridge state with high alignment
-        test_alignment = 0.95
+        # Get current bridge state using configured default test alignment
+        test_alignment = self.config.default_test_alignment
         bridge_status = self.get_bridge_status(test_alignment)
         
         status = {

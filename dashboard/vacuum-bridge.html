@@ -424,7 +424,9 @@
             CLUSTER_NAME: 'nexus_andes',
             WATCHDOG_ENABLED: true,
             WATCHDOG_INTERVAL_MS: 5000,  // Check every 5 seconds
-            AFFINITY_THRESHOLD: 0.94
+            AFFINITY_THRESHOLD: 0.94,
+            // Affinity calculation - must match Python backend config
+            AFFINITY_SCALE_FACTOR: 0.98  // affinity = transmission * scale_factor
         };
 
         // State management
@@ -705,7 +707,7 @@
             // Generate mock status based on current alignment
             const detuning = lexAmorisDetuning(currentAlignment);
             const transmission = calculateTransmissionProbability(detuning);
-            const affinity = transmission * 0.98;
+            const affinity = transmission * CONFIG.AFFINITY_SCALE_FACTOR;
             
             return {
                 timestamp: new Date().toISOString(),
