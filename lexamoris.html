@@ -42,9 +42,36 @@
             margin-top: 20px;
             max-width: 80%;
         }
+        .nav-menu {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+            z-index: 1000;
+        }
+        .nav-menu a {
+            padding: 5px 10px;
+            background: var(--shield-color);
+            color: var(--resonance-color);
+            text-decoration: none;
+            font-size: 0.7rem;
+            border: 1px solid var(--resonance-color);
+            font-family: 'Courier New', monospace;
+        }
+        .nav-menu a:hover {
+            background: var(--resonance-color);
+            color: var(--shield-color);
+        }
     </style>
 </head>
 <body>
+
+    <nav class="nav-menu">
+        <a href="index.html">HOME</a>
+        <a href="QuantumInterface.html">QUANTUM</a>
+        <a href="apollo-nexus.html">APOLLO</a>
+    </nav>
 
     <div id="shield-status" class="resonance-pulse">
         <h1>LEX AMORIS</h1>
