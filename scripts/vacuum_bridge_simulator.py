@@ -44,6 +44,7 @@ class VacuumBridgeConfig:
     # Watchdog Configuration
     default_test_alignment: float = 0.95  # Default high alignment for cluster testing
     affinity_scale_factor: float = 0.98  # Scale factor: affinity = transmission * scale_factor
+    max_recent_alerts: int = 10  # Maximum number of recent alerts to retain in status
     
 
 class VacuumBridgeSimulator:
@@ -421,7 +422,7 @@ class VacuumBridgeSimulator:
         if include_watchdog:
             watchdog = self.nsr_watchdog_global(cluster_name)
             status['watchdog'] = watchdog
-            status['alerts'] = self.watchdog_alerts[-10:]  # Last 10 alerts
+            status['alerts'] = self.watchdog_alerts[-self.config.max_recent_alerts:]
         
         return status
 

@@ -425,6 +425,7 @@
             WATCHDOG_ENABLED: true,
             WATCHDOG_INTERVAL_MS: 5000,  // Check every 5 seconds
             AFFINITY_THRESHOLD: 0.94,
+            API_TIMEOUT_MS: 5000,  // API request timeout
             // Affinity calculation - must match Python backend config
             AFFINITY_SCALE_FACTOR: 0.98  // affinity = transmission * scale_factor
         };
@@ -688,7 +689,7 @@
                 const response = await fetch(url, {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' },
-                    signal: AbortSignal.timeout(5000)
+                    signal: AbortSignal.timeout(CONFIG.API_TIMEOUT_MS)
                 });
                 
                 if (!response.ok) {
