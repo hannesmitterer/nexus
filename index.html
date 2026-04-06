@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Nexus | Picasso Edition</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" 
+            integrity="sha512-dLxUelApnYxpLt6K2iomGngnHO83iUvZytA3YjDUCjT0HDOHKXnVYdf3hU4JjM8uEhxf9nD1/ey98U3t2vZ0qQ==" 
+            crossorigin="anonymous" 
+            referrerpolicy="no-referrer"></script>
     <style>
         :root { 
             --p-blue: #0055a4; 
@@ -53,6 +56,30 @@
             letter-spacing: 2px; 
             font-weight: 900; 
             text-transform: uppercase; 
+        }
+
+        /* Wallet Connection Button */
+        .wallet-btn {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            padding: 10px 15px;
+            background: var(--p-blue);
+            color: white;
+            border: 2px solid var(--p-black);
+            box-shadow: 3px 3px 0 var(--p-black);
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.8rem;
+            z-index: 1000;
+        }
+        
+        .wallet-btn:hover {
+            background: var(--p-red);
+        }
+        
+        .wallet-btn.connected {
+            background: #2ecc71;
         }
 
         /* Navigation Menu */
@@ -148,6 +175,8 @@
 </head>
 <body>
 
+<button class="wallet-btn" id="wallet-connect-btn" onclick="connectWallet()">Connect Wallet</button>
+
 <header>
     <h1>Apollo Nexus: Resonance School</h1>
     <div style="font-size: 0.6rem; opacity: 0.8; margin-top: 5px;">Picasso Edition | S-ROI: 0.5192</div>
@@ -186,8 +215,13 @@
 </footer>
 
 <!-- Backend API Integration -->
+<script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js" 
+        integrity="sha384-R8kghIB1qS/RM63B8vGdOVEZDgGGzKPk4JLfVdFEOQh8fCgI8lRKG/vVfVJv2RFw" 
+        crossorigin="anonymous" 
+        referrerpolicy="no-referrer"></script>
 <script src="firebase-config.js"></script>
 <script src="nexus-api.js"></script>
+<script src="nexus-contracts.js"></script>
 
 <script>
     // --- PICASSO 3D ENGINE ---
@@ -325,6 +359,106 @@
 
     // Initialize APIs after page load
     setTimeout(initializeBackendAPIs, 2000);
+
+    // Wallet Connection Function
+    async function connectWallet() {
+        const btn = document.getElementById('wallet-connect-btn');
+        const addLog = (message, status = 'info') => {
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerText = `[${new Date().toLocaleTimeString()}] ${message}`;
+            if (status === 'success') entry.style.borderLeftColor = '#2ecc71';
+            if (status === 'warning') entry.style.borderLeftColor = '#f39c12';
+            if (status === 'error') entry.style.borderLeftColor = '#e74c3c';
+            document.getElementById('log-box').prepend(entry);
+        };
+
+        if (typeof NexusContracts === 'undefined') {
+            addLog('⚠ Contracts module nicht geladen', 'warning');
+            return;
+        }
+
+        try {
+            addLog('🔗 Verbinde Wallet...', 'info');
+            
+            // Initialize provider
+            await NexusContracts.initializeProvider();
+            
+            // Connect wallet
+            const address = await NexusContracts.connectWallet();
+            
+            if (address) {
+                btn.textContent = `${address.slice(0, 6)}...${address.slice(-4)}`;
+                btn.classList.add('connected');
+                addLog(`✓ Wallet verbunden: ${address}`, 'success');
+                
+                // Load contracts
+                await NexusContracts.loadContracts();
+                addLog('✓ Smart Contracts geladen', 'success');
+                
+                // Get ULP data
+                const ulpData = await NexusContracts.getULPData();
+                addLog(`✓ ULP Pool: ${parseFloat(ulpData.sainLiquidity).toLocaleString()} SAIN`, 'success');
+                addLog(`✓ TRE Funds: $${parseFloat(ulpData.treFunds).toLocaleString()}`, 'success');
+                
+                // Get SAIN balance
+                const balance = await NexusContracts.getUserBalance(address);
+                addLog(`✓ Your SAIN Balance: ${parseFloat(balance).toFixed(4)} SAIN`, 'success');
+                
+                // Subscribe to events
+                NexusContracts.subscribeToEvents('Swap', (...args) => {
+                    addLog(`🔄 Swap detected on ULP`, 'info');
+                });
+                
+            } else {
+                addLog('❌ Wallet Verbindung fehlgeschlagen', 'error');
+            }
+        } catch (error) {
+            console.error('[Wallet] Connection error:', error);
+            addLog(`❌ Fehler: ${error.message}`, 'error');
+        }
+    }
+
+    // Auto-initialize smart contracts in read-only mode
+    async function initializeSmartContracts() {
+        const addLog = (message, status = 'info') => {
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerText = `[${new Date().toLocaleTimeString()}] ${message}`;
+            if (status === 'success') entry.style.borderLeftColor = '#2ecc71';
+            if (status === 'warning') entry.style.borderLeftColor = '#f39c12';
+            document.getElementById('log-box').prepend(entry);
+        };
+
+        if (typeof NexusContracts === 'undefined') {
+            addLog('⚠ Smart Contracts offline', 'warning');
+            return;
+        }
+
+        try {
+            addLog('🔗 Initialisiere Smart Contracts (read-only)...', 'info');
+            
+            await NexusContracts.initializeProvider();
+            await NexusContracts.loadContracts();
+            
+            // Get Peacebond data
+            const peacebond = await NexusContracts.getPeacebondData();
+            if (peacebond) {
+                addLog(`✓ Peacebond: ${peacebond.aid_packages.length} Hilfspakete aktiv`, 'success');
+            }
+            
+            // Get ULP data
+            const ulpData = await NexusContracts.getULPData();
+            addLog(`✓ ULP Liquidität: ${parseFloat(ulpData.sainLiquidity).toLocaleString()} SAIN`, 'success');
+            
+        } catch (error) {
+            console.error('[Contracts] Initialization error:', error);
+            addLog('⚠ Smart Contracts: Offline-Modus', 'warning');
+        }
+    }
+
+    // Initialize smart contracts after APIs
+    setTimeout(initializeSmartContracts, 3000);
 </script>
 </body>
 </html>
