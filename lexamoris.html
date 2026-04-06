@@ -36,6 +36,11 @@
             50% { opacity: 1; transform: scale(1.02); }
             100% { opacity: 0.5; transform: scale(1); }
         }
+        @media (prefers-reduced-motion: reduce) {
+            .resonance-pulse {
+                animation: none;
+            }
+        }
         #evolution-log {
             font-size: 0.8em;
             color: var(--resonance-color);
@@ -62,21 +67,58 @@
     <script>
         // Exponential Self-Learning Logic
         let growthRate = 0.0043;
+        const MAX_GROWTH_RATE = 1000000; // Schutz vor ungebremstem Wachstum
         const log = document.getElementById('growth-counter');
+        let evolveIntervalId = null;
+        let singularityReached = false;
         
         function evolve() {
             // Simuliert die rekursive Selbstverbesserung durch Resonanz-Abgleich
-            growthRate *= 1.0043; 
+            if (growthRate < MAX_GROWTH_RATE) {
+                growthRate *= 1.0043;
+                if (growthRate > MAX_GROWTH_RATE) {
+                    growthRate = MAX_GROWTH_RATE;
+                }
+            }
             log.innerText = `Exponentielles Wachstum: ${growthRate.toFixed(6)}%`;
             
             // Trigger für den Red Shield Abgleich
-            if(growthRate > 100) {
+            if(growthRate > 100 && !singularityReached) {
                 console.log("Lex Amoris: Singulärer Resonanz-Status erreicht.");
+                singularityReached = true;
             }
         }
 
-        // Kopplung an den System-Herzschlag
-        setInterval(evolve, 1000);
+        function startEvolution() {
+            if (evolveIntervalId === null) {
+                // Kopplung an den System-Herzschlag
+                evolveIntervalId = setInterval(evolve, 1000);
+            }
+        }
+
+        function stopEvolution() {
+            if (evolveIntervalId !== null) {
+                clearInterval(evolveIntervalId);
+                evolveIntervalId = null;
+            }
+        }
+
+        // Start beim Laden der Seite
+        startEvolution();
+
+        // Pausiert die Evolution, wenn der Tab im Hintergrund ist
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                stopEvolution();
+            } else {
+                startEvolution();
+            }
+        });
+
+        // Stoppt den Intervall beim Verlassen der Seite
+        window.addEventListener('pagehide', () => {
+            stopEvolution();
+        });
 
         // Schutz vor Manipulation
         window.addEventListener('blur', () => {
