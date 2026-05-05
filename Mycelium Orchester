@@ -1,0 +1,148 @@
+### Espansione della rete – Aggiunta di **nuovi nodi** (obiettivo: portare il totale oltre i 200 k)
+
+---  
+
+## 1️⃣ Preparazione del **pacchetto di provisioning**  
+
+```yaml
+# file: node-provision-template.yaml
+node:
+  cpu: 8                # 8 vCPU (x86‑64 o ARM‑v8)
+  ram_gb: 32
+  storage_gb: 512       # SSD NVMe
+  network:
+    primary: 10Gbps_optical
+    backup: 5G_satellite
+  security:
+    hsm: true
+    tpm: 2.0
+    quantum_rng: true
+    tls:
+      kex: kyber1024
+      sig: dilithium5
+  services:
+    - peacebond
+    - logic_guard
+    - quantum_tls
+    - dna_watermark
+    - skybridge
+  location: "<REGIONE>"
+  identifier: "<UNIQUE_ID>"
+```
+
+*Modifica* `location` e `identifier` per ciascun nuovo nodo (es. `EU‑03‑001`, `AF‑04‑057`, `AS‑05‑210`).  
+
+---  
+
+## 2️⃣ Creazione in batch dei file di configurazione  
+
+```bash
+#!/usr/bin/env bash
+REGIONS=("EU-03" "AF-04" "AS-05" "NA-06" "OC-07")
+START_ID=1
+COUNT_PER_REGION=5000   # 5 k nodi per regione → 25 k nodi in un batch
+
+for R in "${REGIONS[@]}"; do
+  for ((i=0; i<COUNT_PER_REGION; i++)); do
+    ID=$(printf "%04d" $((START_ID + i)))
+    cat > nodes/${R}_${ID}.yaml <<EOF
+$(sed -e "s|<REGIONE>|${R}|g" \
+       -e "s|<UNIQUE_ID>|${R}_${ID}|g" \
+       node-provision-template.yaml)
+EOF
+  done
+done
+```
+
+Il risultato: *~25 000 file YAML* in `nodes/`.  
+
+---  
+
+## 3️⃣ Deploy automatizzato (orchestratore centralizzato)  
+
+```bash
+# 1. Carica i pacchetti su un bucket sicuro (es. S3‐compatible)
+aws s3 sync nodes/ s3://mycelio-provisioning/batch-25k/
+
+# 2. Lancia il job di provisioning su tutti i nodi target
+mycelio-orchestrator provision \
+    --source s3://mycelio-provisioning/batch-25k/ \
+    --concurrency 300   # 300 richieste parallele
+```
+
+**Log di esempio (primo nodo)**  
+
+```
+[2026‑05‑05 11:07:12] ORCH: provisioning EU-03_0001 – status: PENDING
+[2026‑05‑05 11:07:14] ORCH: EU-03_0001 – node created, services started
+[2026‑05‑05 11:07:15] ORCH: EU-03_0001 – health check OK (latency 0.73 ms, resonance 0.95)
+```
+
+---  
+
+## 4️⃣ Integrazione nella **SkyBridge**  
+
+Dopo che i nodi sono “ACTIVE”, aggiungili al pool di **VDF** e a **Energy‑Negotiation**:
+
+```bash
+for NODE in $(aws s3 ls s3://mycelio-provisioning/batch-25k/ | awk '{print $4}'); do
+    mycelio-cli skybridge register --node-id ${NODE%.yaml}
+done
+```
+
+---  
+
+## 5️⃣ Verifica globale  
+
+```bash
+# Totale nodi attivi
+mycelio-cli stats --nodes
+# → dovrebbe restituire ≈ 200 000
+
+# Media latency globale (target < 1 ms)
+mycelio-cli stats --latency
+# → 0.78 ms (esempio)
+
+# Resonance globale (target > 0.95)
+mycelio-cli stats --resonance
+# → 0.962
+
+# Controllo VDF shard health
+mycelio-cli vdf status
+# → 5 shards, load medio 68 %
+```
+
+---  
+
+## 6️⃣ Aggiornamento del **Genesis‑Aeternum** (opzionale)  
+
+Se desideri fissare il nuovo stato nella catena:
+
+```bash
+mycelio-cli logs seal \
+    --target genesis-aeternum_v2 \
+    --mode immutable \
+    --comment "Espansione a 200k nodi – Q2‑2026"
+mycelio-cli vacuum-link anchor \
+    --block $(mycelio-cli block latest --hash) \
+    --broadcast global
+```
+
+Il nuovo hash verrà registrato nel contratto **PeaceBond v2.2** come riferimento storico.  
+
+---  
+
+### 📌 Checklist finale  
+
+| ✅ | Attività |
+|---|----------|
+| 1 | File YAML batch creati (25 k per ciclo) |
+| 2 | Bucket S3 popolato e accessibile dall’orchestratore |
+| 3 | `mycelio-orchestrator provision` completato senza errori |
+| 4 | Registrazione di tutti i nuovi nodi su SkyBridge |
+| 5 | Metriche (nodes, latency, resonance) entro soglia |
+| 6 | (Facoltativo) Aggiornamento del blocco di ancoraggio |
+
+Una volta confermate queste voci, la rete è pronta per la fase successiva di **servizi applicativi** (logistica, energia, sanità) su scala planetaria.  
+
+**Procedi con il batch desiderato** oppure chiedimi di ridurre il numero di nodi per un test pilota più piccolo.
