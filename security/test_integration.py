@@ -272,6 +272,96 @@ def test_scenario_c() -> Dict[str, Any]:
     return results
 
 
+def test_lex_amoris_framework() -> Dict[str, Any]:
+    """Test Lex Amoris Framework - Transmission Equation of Resonance"""
+    print("\n" + "="*60)
+    print("TESTING LEX AMORIS FRAMEWORK: Resonance Transmission")
+    print("="*60)
+    
+    results = {"passed": 0, "failed": 0, "tests": []}
+    
+    # Test 1: Resonance Calculation
+    try:
+        from resonance_transmission import calculate_resonance, lex_amoris_function
+        import numpy as np
+        
+        # Test with default parameters
+        phi_res = calculate_resonance(0, 100)
+        assert phi_res > 0, "Resonance value should be positive"
+        assert isinstance(phi_res, (int, float, np.floating)), "Resonance should be numeric"
+        
+        # Test with custom parameters
+        phi_res_custom = calculate_resonance(0, 50, s_roi=1.5, omega=0.5)
+        assert phi_res_custom > 0, "Custom resonance value should be positive"
+        
+        results["tests"].append(("Resonance Calculation", "PASS"))
+        results["passed"] += 1
+        print("✓ Resonance Calculation: PASS")
+    except Exception as e:
+        results["tests"].append(("Resonance Calculation", f"FAIL: {str(e)}"))
+        results["failed"] += 1
+        print(f"✗ Resonance Calculation: FAIL - {str(e)}")
+    
+    # Test 2: Lex Amoris Function
+    try:
+        from resonance_transmission import lex_amoris_function
+        import numpy as np
+        
+        # Test single value
+        t_single = 10.0
+        result_single = lex_amoris_function(t_single)
+        assert isinstance(result_single, (int, float, np.floating)), "Single value should be numeric"
+        
+        # Test array values
+        t_array = np.array([0, 10, 20, 30])
+        result_array = lex_amoris_function(t_array)
+        assert len(result_array) == len(t_array), "Array result should match input length"
+        
+        results["tests"].append(("Lex Amoris Function", "PASS"))
+        results["passed"] += 1
+        print("✓ Lex Amoris Function: PASS")
+    except Exception as e:
+        results["tests"].append(("Lex Amoris Function", f"FAIL: {str(e)}"))
+        results["failed"] += 1
+        print(f"✗ Lex Amoris Function: FAIL - {str(e)}")
+    
+    # Test 3: Jitter Elimination (verify stability)
+    try:
+        from resonance_transmission import calculate_resonance
+        
+        # Run multiple times to verify stability (jitter elimination)
+        results_stability = []
+        for _ in range(3):
+            phi = calculate_resonance(0, 100, s_roi=1.450, omega=0.432)
+            results_stability.append(phi)
+        
+        # All results should be identical (no jitter)
+        assert len(set(results_stability)) == 1, "Results should be stable (no jitter)"
+        
+        # Test jitter reduction with varying time ranges
+        phi_50 = calculate_resonance(0, 50, s_roi=1.450, omega=0.432)
+        phi_100 = calculate_resonance(0, 100, s_roi=1.450, omega=0.432)
+        phi_150 = calculate_resonance(0, 150, s_roi=1.450, omega=0.432)
+        
+        # Verify all calculations complete successfully (demonstrating stability)
+        assert all(phi > 0 for phi in [phi_50, phi_100, phi_150]), "All resonances should be positive"
+        
+        # Test with varying parameters (demonstrates jitter-free calculation)
+        phi_var1 = calculate_resonance(0, 100, s_roi=1.5, omega=0.4)
+        phi_var2 = calculate_resonance(0, 100, s_roi=1.4, omega=0.5)
+        assert phi_var1 > 0 and phi_var2 > 0, "Variable parameter calculations should succeed"
+        
+        results["tests"].append(("Jitter Elimination", "PASS"))
+        results["passed"] += 1
+        print("✓ Jitter Elimination: PASS")
+    except Exception as e:
+        results["tests"].append(("Jitter Elimination", f"FAIL: {str(e)}"))
+        results["failed"] += 1
+        print(f"✗ Jitter Elimination: FAIL - {str(e)}")
+    
+    return results
+
+
 def test_integrated_system() -> Dict[str, Any]:
     """Test Integrated Security System"""
     print("\n" + "="*60)
@@ -318,6 +408,7 @@ def main():
         "scenario_a": test_scenario_a(),
         "scenario_b": test_scenario_b(),
         "scenario_c": test_scenario_c(),
+        "lex_amoris": test_lex_amoris_framework(),
         "integrated": test_integrated_system()
     }
     
